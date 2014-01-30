@@ -1,34 +1,1146 @@
-HOST: http://www.google.com/
+HOST: https://api.dealini.ch
 
---- Sample API v2 ---
+--- Dealini API ---
 ---
-Welcome to the our sample API documentation. All comments can be written in (support [Markdown](http://daringfireball.net/projects/markdown/syntax) syntax)
+Welcome to the Dealini API documentation. We are constantly adding and improving features of this API. Please add your comments and feedback to the API as comments!
+
+All responses will to be JSON encoded. The Content-Type will always be application/json
+
+#### General fields always available
+* suppress_response_codes: (bool) If this is provided and set to "true", the Error Codes will always return as a HTTP OK (200). The correct HTTP Error Code is stored in the JSOn encoded Error response
+* rollback: (bool) If this is set to "true", no changes will be saved in the database. Userful for testing.
+
+#### Optional attributes
+Some resources have optional attributes (see resource description). Whenever an object of this type is returned, the optional fields can be specified by adding them to the "fields" parameter. One example is the /cards resource, which has the optional attribute "deal". A valid query to get a card with the deal attribute set would be "/cards/123456?fields=deal". This works for any query returning a card, so if the "fields" parameter is set to "deal", the deal attribute will be returned as part of the "CardsObject".
+
+#### Error Codes
+Error codes specific for the resources are described at the corresponding resource
+
+* 0: (HTTP 500 - Internal Server Error) Something did not work out as expected. An automatic E-Mail is sent to Dealini and we will look into the problem.
+* 1: (HTTP 400 - Bad Request) Generally malformatted input. A detailed description of the error is given in the error description
+* 2: (HTTP 401 - Unauthorized) A resource which is only available to logged-in user is requested by an unauthorized user. Either the user is not logged in or his session timed out.
+* 3: (HTTP 404 - NotFound) The resource does not exist
 ---
 
 --
-Shopping Cart Resources
-The following is a section of resources related to the shopping cart
+Sessions
+Creation & removal of sessions. Login and Logout are handled here
+
+### SessionObject
+* token: (string) encrypted hex-encoded 36 byte (72 chars) session ID
+* expiresAt (isodatetime) ISO 8601 formatted DateTime representing the time when the session times out. This time is automatically extended every time a request is made.
+
+#### Error-Codes
+* 10: (HTTP 400 - Bad Request) "Email and password or the Facebook access token must be provided" - This happens if either the facebook access token, the email or the password werent provided at all
+* 11: (HTTP 401 - Unauthorized) "Email or password did not match."
+* 12: (HTTP 401 - Unauthorized) "Session does not exist" - The session either never existed or it was already terminated
+* 13: (HTTP 400 - Bad Request) "Invalid Facebook access token" - The access token could not be used, either because it is malformatted or expired.
+* 14: (HTTP 404 - NotFound) "Could not find user based on Facebook access_token" - The user never connected his account with dealini
+* 15: (HTTP 401 - Unauthorized) "The user is banned" - The user is marked as banned. Normally the user is informed by email about the reasons.
 --
-List products added into your shopping-cart. (comment block again in Markdown)
-GET /shopping-cart
+
+Create a new Session by providing user credentials login(email) & password. Returns a SessionObject and (in the Header) a set of cookies used for authentification.
+
+#### Fields
+* email: The login of the user
+* password: The password of the user
+* fb_access_token: (optional, instead of email&password): A valid access token as provided by Facebook
+
+POST /sessions
+email=dealinitest1@dealini.ch&password=dealinitest1
+< 200
+< Set-Cookie: "dealiniapi_auth"="Unique72charSHAgeneratedsessionUnique72charSHAgeneratedsession"
+< Content-Type: application/json
+{
+    "token": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef01234567",
+    "expiresAt": "2012-07-13T07:55:52.558280"
+}
+
+Example with a FB access token as a user credential
+
+#### Fields
+* fb_access_token: (optional, instead of email&password): A valid access token as provided by Facebook
+
+POST /sessions
+fb_access_token=AAACukElzvo0BALBn7XKCA6ZAnJ5MZCaDV6JJK4f0XDVUENgqGyRRWLXAUV4yL8MnHaw4JUCzFvBZC7if9ZAsIoVhIuv3TljWxNKVY83eJR6sTX6pOZBqs
+< 200
+< Set-Cookie: "dealiniapi_auth"="Unique72charSHAgeneratedsessionUnique72charSHAgeneratedsession"
+< Content-Type: application/json
+{
+    "token": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef01234567",
+    "expiresAt": "2012-07-13T07:55:52.558280"
+}
+
+To logout a user, his session must be removed. Additionally the expire-time of the session cookie is set to a date in the past
+
+DELETE /sessions/current
+< 200
+< Set-Cookie: "dealiniapi_auth"="0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef01234567"; "expires"="Wed, 13-Jul-2011 12:00:15 GMT";
+< Content-Type: application/json
+{}
+
+
+--
+Users
+Create or retrieve a user object. Most actions possible with this API rely on a user object for which the actions should be executed.
+
+### UsersObject
+* id: (int) User id
+* image: (string) URL of the profile image
+* username: (string) Alias of the User in the Game
+* invite_code: (string) A unique user-specific code used by other new users if they want to indicate who invited them
+* status_message: (string) The custom status of the user. Maximum 40 chars.
+
+#### Optional attributes
+* deals: (list of DealsObject) Returns the tradeable deals for which the user has at least one card. Activate with: fields=users-deals
+* settings: (list of SettingsObject) Returns the settings for this user. Activate with: fields=users-settings
+* state: (string) Tells if how much the user is verified. Activate with: fields=users-state
+
+    > confirm: User needs to confirm his email  
+    > active: User verified his email, but did not confirm his uniqueness using Facebook or a mobile number  
+    > verified: User is fully verified
+
+* mobile: (string) Mobile number of the user. Write-only, cannot be returned.
+
+#### Error-Codes
+* 20: (HTTP 403 - Forbidden) "Invalid email address" - The provided email is not considered a valid email based on some basic regex
+* 21: (HTTP 403 - Forbidden) "Email address forbidden" - The provided email domain is on a blacklist (mostly one-time trash email providers), the user must use another email address
+* 22: (HTTP 403 - Forbidden) "Password too short" - The password must have at least 6 characters
+* 23: (HTTP 403 - Forbidden) "User already exists" - A user with the same email address already registered. Good oportunity to allow the user to re-send the confirmation mail or the password-forgotten dialog
+* 24: (HTTP 404 - NotFound) "User does not exist" - No User with this ID ever existed
+* 25: (HTTP 400 - Bad Request) "Could not add new user. Invalid access_token or user already registered" - Most likely the access token expired.
+  In rare cases (e.g. on fast double registrations of the same user), this can also indicate that the user already exisited
+* 26: (HTTP 403 - Forbidden) "Username too short" - The username must have at least one non-blank character
+* 27: (HTTP 403 - Forbidden) "Invalid confirmation code" - The user tried to verify with an invalid verification code
+* 28: (HTTP 403 - Forbidden) "Invalid or already used mobile number" - The user tried to verify with an invalid or already used mobile number
+* 29: (HTTP 403 - Forbidden) "Invalid change of a user attribute" - Most fields of the user cannot be changed.
+Some other fields like "state" or "mobile" can only be changed once.
+--
+
+Create a new user. Needs an email, password and username. After a user is created, a confirmation mail must be accepted if the "normal" website should be available for usage
+
+#### Fields
+* email: The new login name (must be a valid email) of the user
+* password: The new password of the user
+* username: Any string, will be used as the Username in the game
+* invite_code: (optional) The unique user-specific code from the user who invited this new user (available from UsersObject.invite_code)
+
+POST /users
+email=dealinitest1@dealini.ch&password=dealinitest1&username=dealinitest1
+< 200
+< Set-Cookie: "dealiniapi_auth"="Unique72charSHAgeneratedsessionUnique72charSHAgeneratedsession"
+< Content-Type: application/json
+{
+    "session":
+    {
+        "token": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef01234567",
+        "expiresAt": "2012-07-13T07:55:52.558280"
+    }
+    "user":
+    {
+        "id": "12345",
+        "image": "https://d2bus1b529rui1.cloudfront.net/userpics/default_medium.jpg",
+        "username": "dealinitest1",
+        "invite_code": "V9ruNY0"
+    }
+}
+
+
+Alternatively a user can be created by providing a Facebook access token and its expiry time
+
+#### Fields
+* fb_access_token: (optional, if provided will be used instead of other settings): A valid access token as provided by Facebook. Needs Email Access rights. Username & Email will be extracted from Facebook
+* expires: (nonoptional if fb_access_token is provided): Seconds until the fb_access_token will expire
+* invite_code: (optional) The unique user-specific code from the user who invited this new user (available from UsersObject.invite_code)
+
+POST /users
+fb_access_token=AAACukElzvo0BALBn7XKCA6ZAnJ5MZCaDV6JJK4f0XDVUENgqGyRRWLXAUV4yL8MnHaw4JUCzFvBZC7if9ZAsIoVhIuv3TljWxNKVY83eJR6sTX6pOZBqs&expires=4321
+< 200
+< Set-Cookie: "dealiniapi_auth"="Unique72charSHAgeneratedsessionUnique72charSHAgeneratedsession"
+< Content-Type: application/json
+{
+    "session":
+    {
+        "token": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef01234567",
+        "expiresAt": "2012-07-13T07:55:52.558280"
+    }
+    "user":
+    {
+        "id": "12345",
+        "image": "https://d2bus1b529rui1.cloudfront.net/userpics/default_medium.jpg",
+        "username": "dealinitest1",
+        "invite_code": "V9ruNY0"
+    }
+}
+
+
+Return a User - ID, Username & URL of UserImage
+
+GET /users/4809?fields=users-deals
 < 200
 < Content-Type: application/json
-{ "items": [
-  { "url": "/shopping-cart/1", "product":"2ZY48XPZ", "quantity": 1, "name": "New socks", "price": 1.25 }
-] }
+{
+    "id": "4809",
+    "image": "https://graph.facebook.com/100003644026806/picture?return_ssl_resources=true&type=square",
+    "username": "dealinitest1",
+    "invite_code": "V9ruNY0",
+    "deals": [
+        {
+            "id": 100,
+            "dealname": "FRESHBOX.CH TESTABO",
+            "price": 136,
+            "title": "Bananen, Äpfel, Trauben, Mango oder doch Melonen? Hol dir jetzt dein Testabo im Wert von CHF 136.– und finde heraus, welche Freshbox dir am besten schmeckt"
+            "longDesc": "<h2>So frisch wie selbst gepflückt: Freshbox.ch</h2>Eine Freshbox enthält marktfrische Früchte und/oder Gemüse. Der Freshbox Kurier liefert die Vitamin-Boxen direkt zu dir ins Büro oder nach Hause; Natürlich, marktfrisch, saisonal und innert 24 Stunden in der ganzen Schweiz ausgeliefert.<br><br>Bestelle deine Früchtebox im Abo. Dein Abo kannst du frei nach deinen Wünschen zusammenstellen (Lieferung: wöchentlich, täglich, 2 mal pro Woche; freie Wahl aus dem Freshbox-Sortiment). Das Abo kann zu jeder Zeit geändert, angepasst, unterbrochen (Festtage, Ferien) oder gekündet werden. Überzeuge dich noch heute von der Qualität und erspiele dir bei Dealini das Freshbox Testabo.<br><br>Je eine Green Box, Yellow Box, Red Box und Blue Box erhältst du in den nächsten 4 Wochen zugeliefert. Pro Woche je eine Box in der Grösse S. Hol dir jetzt dein Freshbox Testabo im Wert von CHF 136.–.",
+            "likes": 120,
+            "image": 'https://s3-eu-west-1.amazonaws.com/dealini-assets/content/100/deal2.jpg',
+            "imageLogo": 'https://s3-eu-west-1.amazonaws.com/dealini-assets/content/100/logo_deal2.png',
+            "albumurl": 'https://app.dealini.ch/album/#100'
+        }
+    ]
+}
 
-Save new products in your shopping cart
-POST /shopping-cart
-> Content-Type: application/json
-{ "product":"1AB23ORM", "quantity": 2 }
-< 201
-< Content-Type: application/json
-{ "status": "created", "url": "/shopping-cart/2" }
 
+Return the UserObject for the currently logged-in user
 
--- Payment Resources --
-This resource allows you to submit payment information to process your *shopping cart* items
-POST /payment
-{ "cc": "12345678900", "cvc": "123", "expiry": "0112" }
+GET /users/current
 < 200
-{ "receipt": "/payment/receipt/1" }
+< Content-Type: application/json
+{
+    "id": "4809",
+    "image": "https://graph.facebook.com/100003644026806/picture?return_ssl_resources=true&type=square",
+    "username": "dealinitest1",
+    "invite_code": "V9ruNY0"
+}
+
+
+Return the list of credits (see below) the user still can redeem. Accepts the optional parameter ?redeemable=true/false (default: true).
+If redeemable=false is provided, all credits are returned, even the credits which may not be turned today.
+Only if the redeemable credits are queried, the list of Credits is sorted, where the first credit should be used for the next card the user wishes to turn.
+
+GET /users/4809/credits
+< 200
+< Content-Type: application/json
+[
+    {"type": "free", "userid": 631, "id": 1696388, "source": "god"},
+    {"type": "free", "userid": 631, "id": 1696389, "source": "god"}
+]
+
+
+The same as above, but always for the currently logged-in user
+
+GET /users/current/credits
+< 200
+< Content-Type: application/json
+[
+    {"type": "free", "userid": 631, "id": 1696388, "source": "god"},
+    {"type": "free", "userid": 631, "id": 1696389, "source": "god"}
+]
+
+
+Get all tradeable cards of a user
+
+GET /users/4809/cards
+< 200
+< Content-Type: application/json
+[
+    {
+        "dealid": 236,
+        "typeid": 3,
+        "quantity": 1,
+        "image": "http://s3-eu-west-1.amazonaws.com/dealini-assets/content/236/card_3.png",
+    },
+    {
+        "dealid": 236,
+        "typeid": 4,
+        "quantity": 2,
+        "image": "http://s3-eu-west-1.amazonaws.com/dealini-assets/content/236/card_4.png",
+    }
+]
+
+
+Send a confirmation SMS to a number to verify a user
+
+PUT /users/4809
+mobile="+41791234567"
+< 200
+< Content-Type: application/json
+{
+    "id": "4809",
+    "image": "https://graph.facebook.com/100003644026806/picture?return_ssl_resources=true&type=square",
+    "username": "dealinitest1",
+    "invite_code": "V9ruNY0"
+}
+
+
+Update the state of the user. For now, only the transition from "active" to "verified" works,
+where the sms code needs to be provided additionally.
+
+PUT /users/4809
+state=verified&code=2468&fields=users-state
+< 200
+< Content-Type: application/json
+{
+    "id": "4809",
+    "image": "https://graph.facebook.com/100003644026806/picture?return_ssl_resources=true&type=square",
+    "username": "dealinitest1",
+    "invite_code": "V9ruNY0",
+    "state": "verified"
+}
+
+
+Search for users owning cards
+
+#### Fields
+* cards_seek: (json list of cards) Find users who have these cards (at least one of the cards)
+* cards_offer: (json list of cards) Find users who want these cards (at least one of the cards)
+* limit: (int) how many results should be returned. Default and maximum are 21 results per search query
+* offset: (int) If more results are available (check the "total" counter) than this can be used to
+    return additional results starting at this number.
+
+GET /users/search
+cards_seek=[{"dealid": 236, "typeid": 3}]
+< 200
+< Content-Type: application/json
+{
+    "total": 2,
+    "users":
+        [
+            {
+                "id": "4809",
+                "image": "https://graph.facebook.com/100003644026806/picture?return_ssl_resources=true&type=square",
+                "username": "dealinitest1",
+                "invite_code": "V9ruNY0",
+                "state": "verified"
+            },
+            {
+                "id": "4810",
+                "image": "https://graph.facebook.com/100003644026807/picture?return_ssl_resources=true&type=square",
+                "username": "dealinitest2",
+                "invite_code": "V9ruNY1",
+                "state": "verified"
+            }
+        ]
+}
+
+
+Search for users wanting cards
+
+GET /users/search
+cards_offer=[{"dealid": 236, "typeid": 3}]
+< 200
+< Content-Type: application/json
+{
+    "total": 2,
+    "users":
+        [
+            {
+                "id": "4809",
+                "image": "https://graph.facebook.com/100003644026806/picture?return_ssl_resources=true&type=square",
+                "username": "dealinitest1",
+                "invite_code": "V9ruNY0",
+                "state": "verified"
+            },
+            {
+                "id": "4810",
+                "image": "https://graph.facebook.com/100003644026807/picture?return_ssl_resources=true&type=square",
+                "username": "dealinitest2",
+                "invite_code": "V9ruNY1",
+                "state": "verified"
+            }
+        ]
+}
+
+--
+Credits
+Credits are the dealini-tokens which can be changed into dealini cards. Each credit (if it is redeemable) can be converted into a card.
+
+### CreditsObject
+* id: (integer) unique ID of the credit as stored in the DB
+* userid: (integer) ID of the user owning this credit (or 0 if noone owns the credit)
+* type: (string) Kind of credit, important for the number of credits allowed to be redeemed.
+      "free" (unlimited), "tellafriend" (max 3 per day), "buy" (max 3 per day), "other" (not directly allowed to be redeemed)
+* source: (string) Origin of the credit.
+        "dailycard", "signup", "promotion", "tellafriend", "buy", "god", "wishcard", "quest"
+
+#### Error-Codes
+* 30: (HTTP 404 - NotFound) "Credit not found" - This credit does not exist in the database
+* 31: (HTTP 403 - Forbidden) "Access denied to credits of another user" - The logged-in user does not own the queried credit
+* 32: (HTTP 403 - Forbidden) "This user has no more redeemable credits left today" - There is no credit left which can be converted to a card for this user
+* 33: (HTTP 403 - Forbidden) "The credit may not be redeemed. (Already used, quota for today reached or not yet valid)" - 
+  Most likely the credit was already used. Also thrown if a credit belonging to this user is redeemed, but the credit may not be redeemed right now (e.g. already 3 bought credits used today)
+* 34: (HTTP 404 - NotFound) "Could not find a suitable new card to redeem" - There are no more cards in the game. May happen if the credit was given for a very specific deal which is not available anymore
+--
+
+Show infos about a single credit
+
+GET /credits/1696388
+< 200
+< Content-Type: application/json
+{
+    "type": "free",
+    "userid": 631, 
+    "id": 1696388,
+    "source": "god"
+}
+
+Redeem a single credit. The card (see CardsObject) which is turned is returned.
+
+DELETE /credits/1696388
+< 200
+< Content-Type: application/json
+{
+    "dealid": 100,
+    "typeid": 5,
+    "quantity": 1,
+    "image": "https://s3-eu-west-1.amazonaws.com/dealini-assets/content/100/card_5.png"
+}
+
+Same as above, but always take the next available credit.
+
+DELETE /credits/current
+< 200
+< Content-Type: application/json
+{
+    "dealid": 100,
+    "typeid": 5,
+    "quantity": 1,
+    "image": "https://s3-eu-west-1.amazonaws.com/dealini-assets/content/100/card_5.png"
+}
+
+Get a guess on what the card will be when redeeming (deleting) an credit. This can be used to pre-cache animations.
+Sometimes the guess will not be identical with the card which actually gets redeemed (more likely if more time passes between guessing and redeeming).
+The card returned when redeeming the credit has prevalence over the card which is guessed here.
+
+GET /credits/123456/card
+< 200
+< Content-Type: application/json
+{
+    "dealid": 100,
+    "typeid": 5,
+    "quantity": 1,
+    "image": "https://s3-eu-west-1.amazonaws.com/dealini-assets/content/100/card_5.png"
+}
+
+
+--
+Cards
+A card represents 10% discount on a certain deal. Users get a free card each day, can buy additional cards and earn cards during quests & invitations. Cards can be traded.
+
+### CardsObject
+* dealid: (int) ID of the deal this card belongs to
+* typeid: (int) a number between 1 and 10 for deals, 0 for special cards like wishcards or giftcards
+* quantity: (int) number of cards of this dealid/typeid combinations (e.g. if a user has a card twice, this number is 2)
+* image: (string) URL of image for this card
+
+#### Optional attributes
+* deal: (DealsObject) Returns the deal of this card. Activate with: fields=deal
+
+### Error-Codes
+* 40: (HTTP 404 - NotFound) "Card not found" - The card does not exist in the database (anymore). When a deal cannot be collected anymore, the unsold cards are removed.
+--
+
+Get a single card
+
+GET /cards/1234567
+< 200
+< Content-Type: application/json
+{
+    "dealid": 236,
+    "typeid": 3,
+    "quantity": 1,
+    "image": "http://s3-eu-west-1.amazonaws.com/dealini-assets/content/236/card_3.png",
+}
+
+Get a single card, directly loading the deal together with the card
+
+GET /cards/1234567?fields=deal
+< 200
+< Content-Type: application/json
+{
+    "dealid": 236,
+    "typeid": 3,
+    "quantity": 1,
+    "image": "http://s3-eu-west-1.amazonaws.com/dealini-assets/content/236/card_3.png",
+    "deal": {
+        "id": 100,
+        "dealname": "FRESHBOX.CH TESTABO",
+        "price": 136,
+        "title": "Bananen, Äpfel, Trauben, Mango oder doch Melonen? Hol dir jetzt dein Testabo im Wert von CHF 136.– und finde heraus, welche Freshbox dir am besten schmeckt"
+        "longdesc": "<h2>So frisch wie selbst gepflückt: Freshbox.ch</h2>Eine Freshbox enthält marktfrische Früchte und/oder Gemüse. Der Freshbox Kurier liefert die Vitamin-Boxen direkt zu dir ins Büro oder nach Hause; Natürlich, marktfrisch, saisonal und innert 24 Stunden in der ganzen Schweiz ausgeliefert.<br><br>Bestelle deine Früchtebox im Abo. Dein Abo kannst du frei nach deinen Wünschen zusammenstellen (Lieferung: wöchentlich, täglich, 2 mal pro Woche; freie Wahl aus dem Freshbox-Sortiment). Das Abo kann zu jeder Zeit geändert, angepasst, unterbrochen (Festtage, Ferien) oder gekündet werden. Überzeuge dich noch heute von der Qualität und erspiele dir bei Dealini das Freshbox Testabo.<br><br>Je eine Green Box, Yellow Box, Red Box und Blue Box erhältst du in den nächsten 4 Wochen zugeliefert. Pro Woche je eine Box in der Grösse S. Hol dir jetzt dein Freshbox Testabo im Wert von CHF 136.–.",
+        "likes": 120,
+        "image": 'https://s3-eu-west-1.amazonaws.com/dealini-assets/content/100/deal2.jpg',
+        "imageLogo": 'https://s3-eu-west-1.amazonaws.com/dealini-assets/content/100/logo_deal2.png',
+        "albumurl": "https://app.dealini.ch/album/#123",
+    }
+}
+
+
+--
+Deals
+Deals are products for which the player can collect cards and, by doing that, earn a discount on the product.
+Inside of dealini, a deal has a specially designed album apge explaining the product. The already collected cards are displayed here, too.
+
+### DealsObject
+* id: (int) unique ID of the deal
+* dealname: (string) Name of that deal
+* price: (int) Price of that deal
+* title: (string) Title of that deal
+* longDesc: (string) the html long description of that deal
+* likes: (int) number of likes that deal has
+* image: (string) url to the album picture of that deal
+* imageLogo: (string) url to the logo picture of that deal
+* albumurl: (string) direct url to the mobile album
+* time_end: (isodatetime) end of the trading period of this deal
+* time_redeem_end: (isodatetime) end of the redemption period
+
+#### Optional attributes
+* liked: (boolean) The logged in user's like status. Activate with: fields=dealUserData
+* percentage: (int) Number of distinct cards a user holds for that deal. Activate with: fields=dealUserData
+* cards: (list of CardsObjects) Returns the cards which the user has from this deal. Activate with: fields=deals-usercards
+* remainingproducts: (int or string) Remaining products. Activate with: fields=deals-remainingproducts
+
+    > "infinity" if there is an infinite number left.  
+    > "high" if there is more than 70% of the original stock left.  
+    > "medium" if there is less than 70% and more than 30% of the original stock left.  
+    > "low" if there is less than 30% of the original stock left.  
+    > (int) The exact number of items left if there are few items left (custom threshold per deal)  
+
+
+### Search Fields (/deals/search)
+* query: (urlencoded string) A list of deals where the deal name or deal content matches the query parameter
+* category: (string) Get a list of all deals inside the given category. Valid categories are 'featured' (the top deal and the 3 featured deals) and the deal categories: 'electronics', 'beauty', 'fun', 'travel', 'home', 'food', 'automoto', 'fashion'. If category is used, the query parameter is ignored.
+
+### Error-Codes:
+* 50: (HTTP 404 - NotFound) "No Deal found" - This deal never existed or the search returned no results
+* 51: (HTTP 403 - Forbidden) "Cannot access deal" - This deal is not yet active
+--
+
+Get a single deal
+
+GET /deals/100?fields=dealUserData&fields=deals-usercards
+< 200
+< Content-Type: application/json
+{
+    "id": 100,
+    "dealname": "FRESHBOX.CH TESTABO",
+    "price": 136,
+    "title": "Bananen, Äpfel, Trauben, Mango oder doch Melonen? Hol dir jetzt dein Testabo im Wert von CHF 136.– und finde heraus, welche Freshbox dir am besten schmeckt"
+    "longDesc": "<h2>So frisch wie selbst gepflückt: Freshbox.ch</h2>Eine Freshbox enthält marktfrische Früchte und/oder Gemüse. Der Freshbox Kurier liefert die Vitamin-Boxen direkt zu dir ins Büro oder nach Hause; Natürlich, marktfrisch, saisonal und innert 24 Stunden in der ganzen Schweiz ausgeliefert.<br><br>Bestelle deine Früchtebox im Abo. Dein Abo kannst du frei nach deinen Wünschen zusammenstellen (Lieferung: wöchentlich, täglich, 2 mal pro Woche; freie Wahl aus dem Freshbox-Sortiment). Das Abo kann zu jeder Zeit geändert, angepasst, unterbrochen (Festtage, Ferien) oder gekündet werden. Überzeuge dich noch heute von der Qualität und erspiele dir bei Dealini das Freshbox Testabo.<br><br>Je eine Green Box, Yellow Box, Red Box und Blue Box erhältst du in den nächsten 4 Wochen zugeliefert. Pro Woche je eine Box in der Grösse S. Hol dir jetzt dein Freshbox Testabo im Wert von CHF 136.–.",
+    "likes": 120,
+    "image": 'https://s3-eu-west-1.amazonaws.com/dealini-assets/content/100/deal2.jpg',
+    "imageLogo": 'https://s3-eu-west-1.amazonaws.com/dealini-assets/content/100/logo_deal2.png',
+    "percentage": 1,
+    "liked": false,
+    "albumurl": 'https://app.dealini.ch/album/#100',
+    "time_end": '2012-06-22T21:59:59',
+    "time_redeem_end": '2012-06-28T21:59:59',
+    "cards": [
+        {
+            "dealid": 100,
+            "typeid": 5,
+            "image": "http://s3-eu-west-1.amazonaws.com/dealini-assets/content/100/card_5.png",
+            "quantity": 2,
+        }
+    ]
+}
+
+
+Get all deals which are tradeable right now
+
+GET /deals
+< 200
+< Content-Type: application/json
+[
+    {
+        "imageLogo": "http://s3-eu-west-1.amazonaws.com/dealini-assets/content/87/logo_deal2.png",
+        "image": "http://s3-eu-west-1.amazonaws.com/dealini-assets/content/87/deal2.jpg",
+        "longDesc": "<h2>Und endlich eine coole Tasche f\u00fcr die Herren. Die \u00dcberschlagtasche Enzo!</h2>\r\nDiese coole Herrentasche ist aus Nubuk/Vacchetta und hat einen stufenlosen verstellbaren Schultertragriemen. Auf der R\u00fcckseite befindet sich ein Fach mit Reissverschluss. Ebenfalls besitzt die Tasche ein Innenfach mit Reissverschluss, wo du deine Wertsachen verstauen kannst. Unter anderem verf\u00fcgt sie ebenfalls \u00fcber zwei Steckf\u00e4cher, einem Schreiberhalter und einem Schl\u00fcsselband mit Karabiner.\r\n<br><br>\r\nDiese wunderbare \u00dcberschlagtasche f\u00fcr Herren ist in der Farbe der Saison \u201cTaupe / Braun\u201d erh\u00e4ltlich. Die Masse der Tasche sind 39 x 31 x 10 cm. F\u00fcr nat\u00fcrliche Eleganz im Design, Finesse im Material und in der Funktionalit\u00e4t steht diese Marke! Schweizer Design, produziert in Italien.",
+        "likes": 112,
+        "title": "Liebe Herren extra f\u00fcr euch: coole \u00dcberschlagtasche (DIN A4) von 07 14 im Wert von CHF 398.00",
+        "price": 398,
+        "id": 87,
+        "dealname": "Coole Herren-\u00dcberschlagtasche",
+        "albumurl": 'https://app.dealini.ch/album/#87',
+        "time_end": '2012-06-22T21:59:59',
+        "time_redeem_end": '2012-06-28T21:59:59'
+    },
+    {
+        "imageLogo": "http://s3-eu-west-1.amazonaws.com/dealini-assets/content/88/logo_deal2.png",
+        "image": "http://s3-eu-west-1.amazonaws.com/dealini-assets/content/88/deal2.jpg",
+        "longDesc": "<h2>Einfach handlich: der perfekte Begleiter f\u00fcr den n\u00e4chsten Anlass</h2>\r\nDer 07 14 Clutch-Bag aus der neuen Fr\u00fchling / Sommer 2012 Kollektion h\u00f6rt auf den Namen Andrea. Wir sind fest davon \u00fcberzeugt, dass Andrea dich auf der n\u00e4chsten Party gl\u00e4nzen lassen wird. \r\n<br><br>\r\nDie Clutch ist aus aus feinstem Kalbleder und f\u00fchlt sich dementsprechend geschmeidig an. Sie verf\u00fcgt \u00fcber abnehmbare Schulterriemen und kann somit auch als \u00dcberschlag-T\u00e4schchen verwendet werden. Ein Innenfach mit Reissverschluss sorgt daf\u00fcr, dass deine Wertsachen immer gut und sicher verstaut sind. \r\n<br><br>\r\nDer 07 14 Clutch-Bag ist in den Farben der Saison, n\u00e4mlich in Weiss, Rot, Blau, Taupe und Schwarz erh\u00e4ltlich. Die Masse der Tasche sind 28.5 x 15.5 cm. F\u00fcr nat\u00fcrliche Eleganz im Design, Finesse im Material und in der Funktionalit\u00e4t steht diese Marke! Schweizer Design, produziert in Italien.",
+        "likes": 96,
+        "title": "Der wundersch\u00f6ne Clutch-Bag von 0714 im Wert von CHF 169.\u2013 macht selbst auf dem roten Teppich eine gute Figur",
+        "price": 169,
+        "id": 88,
+        "dealname": "Der wundersch\u00f6ne Clutch Bag von 07 14",
+        "albumurl": 'https://app.dealini.ch/album/#88',
+        "time_end": '2012-06-22T21:59:59',
+        "time_redeem_end": '2012-06-28T21:59:59'
+    },
+    ...
+]
+
+
+Get deals matching a query string
+
+GET /deals/search?query=07%2014
+< 200
+< Content-Type: application/json
+[
+    {
+        "imageLogo": "http://s3-eu-west-1.amazonaws.com/dealini-assets/content/87/logo_deal2.png",
+        "image": "http://s3-eu-west-1.amazonaws.com/dealini-assets/content/87/deal2.jpg",
+        "longDesc": "<h2>Und endlich eine coole Tasche f\u00fcr die Herren. Die \u00dcberschlagtasche Enzo!</h2>\r\nDiese coole Herrentasche ist aus Nubuk/Vacchetta und hat einen stufenlosen verstellbaren Schultertragriemen. Auf der R\u00fcckseite befindet sich ein Fach mit Reissverschluss. Ebenfalls besitzt die Tasche ein Innenfach mit Reissverschluss, wo du deine Wertsachen verstauen kannst. Unter anderem verf\u00fcgt sie ebenfalls \u00fcber zwei Steckf\u00e4cher, einem Schreiberhalter und einem Schl\u00fcsselband mit Karabiner.\r\n<br><br>\r\nDiese wunderbare \u00dcberschlagtasche f\u00fcr Herren ist in der Farbe der Saison \u201cTaupe / Braun\u201d erh\u00e4ltlich. Die Masse der Tasche sind 39 x 31 x 10 cm. F\u00fcr nat\u00fcrliche Eleganz im Design, Finesse im Material und in der Funktionalit\u00e4t steht diese Marke! Schweizer Design, produziert in Italien.",
+        "likes": 112,
+        "title": "Liebe Herren extra f\u00fcr euch: coole \u00dcberschlagtasche (DIN A4) von 07 14 im Wert von CHF 398.00",
+        "price": 398,
+        "id": 87,
+        "dealname": "Coole Herren-\u00dcberschlagtasche",
+        "albumurl": 'https://app.dealini.ch/album/#87',
+        "time_end": '2012-06-22T21:59:59',
+        "time_redeem_end": '2012-06-28T21:59:59'
+    },
+    {
+        "imageLogo": "http://s3-eu-west-1.amazonaws.com/dealini-assets/content/88/logo_deal2.png",
+        "image": "http://s3-eu-west-1.amazonaws.com/dealini-assets/content/88/deal2.jpg",
+        "longDesc": "<h2>Einfach handlich: der perfekte Begleiter f\u00fcr den n\u00e4chsten Anlass</h2>\r\nDer 07 14 Clutch-Bag aus der neuen Fr\u00fchling / Sommer 2012 Kollektion h\u00f6rt auf den Namen Andrea. Wir sind fest davon \u00fcberzeugt, dass Andrea dich auf der n\u00e4chsten Party gl\u00e4nzen lassen wird. \r\n<br><br>\r\nDie Clutch ist aus aus feinstem Kalbleder und f\u00fchlt sich dementsprechend geschmeidig an. Sie verf\u00fcgt \u00fcber abnehmbare Schulterriemen und kann somit auch als \u00dcberschlag-T\u00e4schchen verwendet werden. Ein Innenfach mit Reissverschluss sorgt daf\u00fcr, dass deine Wertsachen immer gut und sicher verstaut sind. \r\n<br><br>\r\nDer 07 14 Clutch-Bag ist in den Farben der Saison, n\u00e4mlich in Weiss, Rot, Blau, Taupe und Schwarz erh\u00e4ltlich. Die Masse der Tasche sind 28.5 x 15.5 cm. F\u00fcr nat\u00fcrliche Eleganz im Design, Finesse im Material und in der Funktionalit\u00e4t steht diese Marke! Schweizer Design, produziert in Italien.",
+        "likes": 96,
+        "title": "Der wundersch\u00f6ne Clutch-Bag von 0714 im Wert von CHF 169.\u2013 macht selbst auf dem roten Teppich eine gute Figur",
+        "price": 169,
+        "id": 88,
+        "dealname": "Der wundersch\u00f6ne Clutch Bag von 07 14",
+        "albumurl": 'https://app.dealini.ch/album/#88',
+        "time_end": '2012-06-22T21:59:59',
+        "time_redeem_end": '2012-06-28T21:59:59'
+    },
+    {
+        "imageLogo": "http://s3-eu-west-1.amazonaws.com/dealini-assets/content/108/logo_deal2.png",
+        "image": "http://s3-eu-west-1.amazonaws.com/dealini-assets/content/108/deal2.jpg",
+        "longDesc": "<h2><b>Die Businesstaschen f\u00fcr alle Power-Frauen</b></h2>\r\nDie 07 14 Businesstasche aus der neuen Fr\u00fchling / Sommer 2012 Kollektion stammt aus der Chiara-Familie. Das Design der Chiara Kollektion ist schlicht, edel und steht f\u00fcr taffe Frauen. \u00a0 <br><br>Die Businesstasche ist aus weichem Kalbleder und f\u00fchlt sich dementsprechend geschmeidig an. Sie verf\u00fcgt \u00fcber ein Innenfach mit Reissverschluss, zwei Steckf\u00e4cher, einen Schreibhalter und einem Schl\u00fcsselband mit Karabiner. \u00a0 <br><br>Die 07 14 Businesstasche ist in der Farbe Schwarz erh\u00e4ltlich. Die Masse der Tasche ist 42 x 29 x 18cm. F\u00fcr nat\u00fcrliche Eleganz im Design, Finesse im Material und in der Funktionalit\u00e4t steht diese Marke! Schweizer Design, produziert in Italien.", "likes": 86, "title": "Die Businesstasche von 07 14 im Wert von CHF 398.\u2013 ist der perfekte Begleiter f\u00fcr deine Karriere", "price": 398, "id": 108, "dealname": "Businesstasche in DIN A4 Format Chiara 8500, schwarz"}, {"imageLogo": "http://s3-eu-west-1.amazonaws.com/dealini-assets/content/215/logo_deal2.png", "image": "http://s3-eu-west-1.amazonaws.com/dealini-assets/content/215/deal2.jpg", "longDesc": "<h2><b>Der Zugbeutel von 07 14 mit farblich passendem G\u00fcrtel verleiht jedem Outfit das gewisse Etwas.</b>\u00a0</h2>\r\nDer 07 14 Zugbeutel aus der neuen Herbst/Winter 2012/13 Kollektion ist ein absolutes Schmuckst\u00fcck. Das Design der gesamten Kollektion ist schlicht, edel und steht f\u00fcr elegante, selbstbewusste Frauen. <b>\u00a0</b> <br><br>Egal ob f\u00fcrs Gesch\u00e4ft, im Alltag oder zum eleganten Abendkleid: Der Zugbeutel ist wieder in und macht vor allem in edlem Kalbleder zu jedem Outfit eine gute Figur. Mit dem farblich passenden G\u00fcrtel wirst du auf jeder Veranstaltung Gespr\u00e4chsthema sein und bewundernde Blicke ernten. \u00a0 <br><br>Der 07 14 Zugbeutel ist in den Farben Schwarz, Cognac, Gr\u00fcn und Kirsch erh\u00e4ltlich. Der Zugbeutel verf\u00fcgt \u00fcber viele Extrat\u00e4schchen zum praktischen verstauen. Der G\u00fcrtel ist aus feinstem Kalbleder sorgt so f\u00fcr ein komfortables Tragegef\u00fchl. F\u00fcr nat\u00fcrliche Eleganz im Design, Finesse im Material und in der Funktionalit\u00e4t steht diese Marke! Schweizer Design, produziert in Italien.", "likes": 78, "title": "Der Zugbeutel von 07 14 mit passendem G\u00fcrtel im Wert von CHF 518.\u2013 sind die perfekten Begleiter f\u00fcr jeden Anlass.", "price": 518, "id": 215, "dealname": "Zugbeutel von 07 14 mit passendem G\u00fcrtel"}, {"imageLogo": "http://s3-eu-west-1.amazonaws.com/dealini-assets/content/216/logo_deal2.png", "image": "http://s3-eu-west-1.amazonaws.com/dealini-assets/content/216/deal2.jpg", "longDesc": "<h2><b>Die durchdachte Aktenmappe \u201eDaniel\u201c von 07 14 f\u00fcr M\u00e4nner die wissen, was sie wollen.</b>\u00a0</h2>\r\nElegant und im typischen 07 14-Stil pr\u00e4sentiert sich die Aktenmappe. Weiches, schwarzes Kalbleder und ausreichend Platz f\u00fcr Akten oder Laptop machen die Businesstasche zum perfekten Begleiter durch den B\u00fcroalltag. \u00a0 <br><br>Die Aktenmappe aus Kalbleder hat genarbte und mit stufenlos verstellbaren Schultertragriemen. Zwei Reissverschluss-Vortaschen, ein Fach mit Reissverschluss auf der R\u00fcckseite und ein Innenfach mit Reissverschluss erm\u00f6glichen allem einen festen Platz. Damit einem auch das l\u00e4stige Suchen nach dem so oft gebrauchten Stift oder Block erspart bleib, verf\u00fcgt die Aktenmappe zus\u00e4tzlich noch \u00fcber einen Schreiberhalter und zwei Steckf\u00e4cher. \u00a0 <br><br>Die 07 14 Aktenmappe f\u00fchlt sich geschmeidig an und verleiht zeitlosen Schick. Mit den Massen 42 x 31 x 9 cm hat sie die perfekte Gr\u00f6sse ohne m\u00e4chtig zu wirken. Durch den vergr\u00f6sserbaren Taschenboden ist sie auch bestens f\u00fcr l\u00e4ngere Gesch\u00e4ftsreisen geeignet. Nat\u00fcrliche Eleganz im Design, Finesse im Material und in der Funktionalit\u00e4t, daf\u00fcr steht diese Marke! Schweizer Design, produziert in Italien.\u00a0",
+        "likes": 44,
+        "title": "Der perfekte Begleiter f\u00fcr den zielorientierten Mann von heute. Die Aktenmappe \u201cDaniel\u201d von 07 14 im Wert von CHF 459.-.",
+        "price": 459,
+        "id": 216,
+        "dealname": "Aktenmappe \u201cDaniel\u201d",
+        "albumurl": 'https://app.dealini.ch/album/#216',
+        "time_end": '2012-06-22T21:59:59',
+        "time_redeem_end": '2012-06-28T21:59:59'
+   }
+]
+
+or if you just wanna search for a category
+
+GET /deals/search?category=electronics
+< 200
+< Content-Tyype: application/json
+[
+    {
+        "imageLogo": "http://s3-eu-west-1.amazonaws.com/dealini-assets/content/124/logo_deal2.png",
+        "image": "http://s3-eu-west-1.amazonaws.com/dealini-assets/content/124/deal2.jpg",
+        "longDesc": "<h2><b>Das neue iPad der dritten Generation: einfach anders</b>\u00a0</h2>\r\nDie grundlegenden Elemente des iPad \u2013 das Display, die Kamera und die drahtlose Verbindung \u2013 wurden von Apple noch besser gemacht. Das neue iPad der dritten Generation kann also noch mehr, als du je f\u00fcr m\u00f6glich gehalten hast. Wahnsinn! \u00a0 <br><br>Viermal mehr Pixel als das iPad 2, gestochen scharfer Text und noch sattere Farben: Das Retina Display sorgt ganz klar f\u00fcr ein v\u00f6llig neues iPad Erlebnis. Alles sieht einfach unglaublich realistisch und detailliert aus. Unter anderem hat das neue iPad eine 5-Megapixel iSight Kamera. Und mit dieser fortschrittlichen Optik nimmt sie unglaubliche Fotos und beeindruckende 1080p HD Videos auf. \u00a0 <br><br>Das neue iPad kommt mit neuester drahtloser Technologie daher. Du kannst dich somit auf der ganzen Welt mit den schnellsten Datennetzen verbinden und bist \u00fcberall online. Du hast also die beste Verbindung weltweit. Echt cool, das neue iPad 32GB Wi-Fi im Wert von CHF 629.\u2013. Hol es dir jetzt bei Dealini.\u00a0\u00a0 \u00a0",
+        "likes": 741,
+        "title": "Das neue iPad 32GB Wi-Fi: Beeindruckendes Retina Display, 5-Megapixel iSight Kamera und ultraschnelle mobile Daten",
+        "price": 629,
+        "id": 124,
+        "dealname": "Apple iPad 32GB Wi-Fi",
+        "albumurl": 'https://app.dealini.ch/album/#124',
+        "time_end": '2012-06-22T21:59:59',
+        "time_redeem_end": '2012-06-28T21:59:59'
+    },
+    {
+        "imageLogo": "http://s3-eu-west-1.amazonaws.com/dealini-assets/content/129/logo_deal2.png",
+        "image": "http://s3-eu-west-1.amazonaws.com/dealini-assets/content/129/deal2.jpg",
+        "longDesc": "<h2><b>iTunes Karte im Wert von CHF 100.\u2013</b>\u00a0</h2>\r\nEine iTunes Karte f\u00fcr iPad-, iPod- und iPhone-Freunde in deiner Umgebung ist das perfekte Geschenk, mit dem Freunde und Familie alte Lieblingslieder neu entdecken oder die neuesten Hits, Podcasts und Apps geniessen k\u00f6nnen. \u00a0 <br><br>Mit der iTunes Karte im Wert von CHF 100.\u2013 kannst du im f\u00fchrenden Download-Store alle Arten digitaler Unterhaltung kaufen und \u00fcberall, ja sogar unterwegs, auf deinen iPads, iPods, iPhones oder auch zu Hause mit iTunes f\u00fcr Mac oder Windows abspielen. Enjoy! \u00a0 <br><br>Ob du dir den aktuellen Nummer 1 Hit der amerikanischen iTunes Charts Somebody That I Used to Know (feat. Kimbra) von Gotye herunterladen m\u00f6chtest oder den meist gekauften Film \u201eEin Quantum Trost\u201c mit Daniel Craig, unterwegs auf deinem iPad geniessen willst, mit der iTunes Karte ist dies alles m\u00f6glich. Hol Sie dir jetzt bei Dealini im Wert von CHF 100.\u2013 und durchst\u00f6bere den iTunes Store. Viel Spass!\u00a0",
+        "likes": 280,
+        "title": "Brauchst du Nachschub f\u00fcr deinen iPad, deinen iPod oder dein iPhone? Hol dir deine iTunes Geschenkkarte im Wert von CHF 100.\u2013",
+        "price": 100,
+        "id": 129,
+        "dealname": "iTunes Geschenkkarte CHF 100.\u2013",
+        "albumurl": 'https://app.dealini.ch/album/#129',
+        "time_end": '2012-06-22T21:59:59',
+        "time_redeem_end": '2012-06-28T21:59:59'
+    },
+    {
+        "imageLogo": "http://s3-eu-west-1.amazonaws.com/dealini-assets/content/193/logo_deal2.png",
+        "image": "http://s3-eu-west-1.amazonaws.com/dealini-assets/content/193/deal2.jpg",
+        "longDesc": "<h2><b>Unabh\u00e4ngig vom Anfang bis zum Ende</b></h2>\r\nSamsung pr\u00e4sentiert einen Staubsauger-Roboter, der so fortschrittlich ist, dass er sich selbst reinigt! Wenn sein Staubbeh\u00e4lter voll ist, kehrt der NaviBot-S automatisch zu seiner Aufladestation zur\u00fcck und entleert sich selbstst\u00e4ndig in einen zentralen Staubbeh\u00e4lter. \u00a0 <br><br>Anders als andere Staubsaugerroboter, die st\u00e4ndig entleert werden m\u00fcssen, kann der NaviBot-S tagelang arbeiten \u2013 sogar in H\u00e4usern mit Haustieren oder Teppichen \u2013 bevor der Staubbeh\u00e4lter entleert werden muss. Der Roboter pflegt sich sogar selbst, indem er Schmutz aus seiner Hauptb\u00fcrste entfernt, bevor er dorthin zur\u00fcckkehrt, wo er seine Arbeit unterbrochen hat. \u00a0 <br><br>Schnellere Beschleunigung. Engere Kurven. Obwohl er kein Rennauto ist, f\u00e4hrt der NaviBot-S nicht nur anderen Staubsaugerrobotern davon, sondern bietet auch das vision\u00e4re Mapping\u2122-System. Mithilfe von zw\u00f6lf Sensoren, zwei CPU-Chips und einer Bordkamera, plant der NaviBot-S den besten Kurs durch dein Haus. Und wenn die Batterie schwach wird, schwirrt er zur\u00fcck zu seiner Aufladestation, l\u00e4dt sich auf und rast dann zur\u00fcck, um dort weiterzumachen, wo er die Reinigung unterbrochen hat.",
+        "likes": 183,
+        "title": "Der intelligente Haushaltshelfer: Der Samsung Staubsauger-Roboter SR8957 im Wert von CHF 660.\u2013",
+        "price": 660,
+        "id": 193,
+        "dealname": "Staubsauger-Roboter von Samsung",
+        "albumurl": 'https://app.dealini.ch/album/#193',
+        "time_end": '2012-06-22T21:59:59',
+        "time_redeem_end": '2012-06-28T21:59:59'
+    }
+]
+
+
+Like a deal
+
+PUT /deals/100?liked=true&fields=dealUserData
+< 200
+< Content-Tyype: application/json
+{
+    "id": 100,
+    "dealname": "FRESHBOX.CH TESTABO",
+    "price": 136,
+    "title": "Bananen, Äpfel, Trauben, Mango oder doch Melonen? Hol dir jetzt dein Testabo im Wert von CHF 136.– und finde heraus, welche Freshbox dir am besten schmeckt"
+    "longDesc": "<h2>So frisch wie selbst gepflückt: Freshbox.ch</h2>Eine Freshbox enthält marktfrische Früchte und/oder Gemüse. Der Freshbox Kurier liefert die Vitamin-Boxen direkt zu dir ins Büro oder nach Hause; Natürlich, marktfrisch, saisonal und innert 24 Stunden in der ganzen Schweiz ausgeliefert.<br><br>Bestelle deine Früchtebox im Abo. Dein Abo kannst du frei nach deinen Wünschen zusammenstellen (Lieferung: wöchentlich, täglich, 2 mal pro Woche; freie Wahl aus dem Freshbox-Sortiment). Das Abo kann zu jeder Zeit geändert, angepasst, unterbrochen (Festtage, Ferien) oder gekündet werden. Überzeuge dich noch heute von der Qualität und erspiele dir bei Dealini das Freshbox Testabo.<br><br>Je eine Green Box, Yellow Box, Red Box und Blue Box erhältst du in den nächsten 4 Wochen zugeliefert. Pro Woche je eine Box in der Grösse S. Hol dir jetzt dein Freshbox Testabo im Wert von CHF 136.–.",
+    "likes": 120,
+    "image": 'https://s3-eu-west-1.amazonaws.com/dealini-assets/content/100/deal2.jpg',
+    "imageLogo": 'https://s3-eu-west-1.amazonaws.com/dealini-assets/content/100/logo_deal2.png',
+    "percentage": 1,
+    "liked": true,
+    "albumurl": 'https://app.dealini.ch/album/#100',
+    "time_end": '2012-06-22T21:59:59',
+    "time_redeem_end": '2012-06-28T21:59:59'
+}
+
+--
+Specials
+A special card like wishcard, giftcard or allianz card. Often with custom properties
+
+### SpecialsObject
+* nothing generic yet
+
+### AllianzSpecialsObject
+* card_count: (int) How many allianz cards the logged in player has
+* last_card: (int) The ID of the last turned card - this must be used when redeeming (DELETE) an allianz card
+
+#### Error-Codes:
+* 80: (HTTP 403 - Forbidden) "Cannot use allianz card. No allianz cards or expired cardid" - Likely reasons for an invalid cardid include it being traded away from the player or another newer card was redeemed in the meantime. This also happens when no more allianz cards are available.
+--
+
+Get allianz special deal for this user
+
+GET /specials/allianzcard
+< 200
+< Content-Type: application/json
+{
+    "card_count": 2,
+    "last_card": 123456
+}
+
+
+Use an allianz card to exchange the last card with a new credit
+
+#### Fields
+* cardid: (int) ID of the card which should be returned to the stack. Must be the last turned card and belong to the user to work.
+
+DELETE /specials/allianzcard?cardid=123456
+< 200
+< Content-Type: application/json
+{
+    "card_count": 1,
+    "last_card": null
+}
+
+
+--
+Settings
+The user can control his mobile experience with various settings. This resource lets you read and set these settings
+
+### SettingsObject
+
+####Private attributes (can only be viewed for the currently logged-in user)
+* pushDailyCard: (bool) Remind the user to turn his daily card using PushNotifications
+* pushNewTrade: (bool) Remind the user if he has a new trade offer using PushNotifications
+* pushNewDeal: (bool) Remind the user if a new deal is available using PushNotifications
+* pushNewFriend: (bool) Notify the user if he has a new friend
+* pushToAndroid: (bool) If the notification should be sent to Android
+* pushToIOS: (bool) If the notification should be sent to IOS
+
+#### Public attributes (can be viewed for all users)
+* addTradeCards: (bool) If the player allows the requesting user to add cards in a trade
+
+#### Error-Codes:
+* 60: (HTTP 403 - Forbidden) "User may not change this setting" - The user is not allowed to change the setting to the wished-for value. Not used so far
+* 61: (HTTP 403 - Forbidden) "Access denied to settings of another user" - Only the currently logged-in user has access to all settings. Only he can update settings.
+--
+
+Get settings for a user, returning a SettingsObject
+
+GET /users/4809/settings
+< 200
+< Content-Type: application/json
+{
+    "pushDailyCard": true,
+    "pushNewTrade": true,
+    "pushNewDeal": false,
+    "pushNewFriend": false,
+    "pushToAndroid": false,
+    "pushToIOS": true,
+    "addTradeCards": true
+}
+
+Shortcut for getting the settings for the current user
+
+GET /users/current/settings
+< 200
+< Content-Type: application/json
+{
+    "pushDailyCard": true,
+    "pushNewTrade": true,
+    "pushNewDeal": false,
+    "pushNewFriend": false,
+    "pushToAndroid": false,
+    "pushToIOS": true,
+    "addTradeCards": true
+}
+
+Change settings for a user (also works with the "current" shortcut)
+
+#### Fields
+Identical to the fields of the SettingsObject. Only the fields which should be changed have to be provided. Will return the complete new settings of the user
+
+PUT /users/4809/settings
+pushDailyCard=true&pushNewTrade=false
+< 200
+< Content-Type: application/json
+{
+    "pushDailyCard": true,
+    "pushNewTrade": false,
+    "pushNewDeal": false,
+    "pushNewFriend": false,
+    "pushToAndroid": false,
+    "pushToIOS": true,
+    "addTradeCards": true
+}
+
+
+--
+Trades
+A trade is an ongoing or finished transaction of cards between two players.
+
+### TradesObject
+* id: (int) Unique ID of the trade
+* thisuser: (UsersObject) The first user of the trade. This is defined as the currently logged-in user or the user who started the trade
+* otheruser: (UsersObject) The user who is the trade partner
+* thiscards: (list of CardsObjects) Cards offered by "thisuser" in this trade
+* othercards: (list of CardsObjects) Cards offered by "otheruser" in this trade
+* time_updated: (isodatetime) Last time this trade was changed by a user. Either by posting a new message or by removing/adding a card
+* state: (string) State of the trade. This can be:
+
+    > open: cards can be added by both players.  
+    > this_accepted: Accepted by thisplayer.  
+    > other_accepted: Accepted by otherplayer.  
+    > closed: Trade was successfull completed and the cards have been traded  
+    > canceled: Trade was canceled, no cards were exchanged  
+    > invisible: This trade is not displayed in the trade overview  
+
+* unread_messages: (int) Number of trade messages not read by the logged-in player
+
+#### Error-Codes:
+* 70: (HTTP 404 - NotFound) "Trade not found" - The requested trade could not be found
+* 71: (HTTP 403 - Forbidden) "Not allowed to request a foreign trade" - The currently logged-in user tried to access a trade in which he is not part of
+* 72: (HTTP 403 - Forbidden) "Not allowed to view trades of another player" - The logged-in user is not the same as the one for whom the trade(s) have been requested
+* 73: (HTTP 403 - Forbidden) "Cannot update trade state, invalid state transition or updated trade" - Only some trade state transitions are allowed (e.g. other_accepted -> closed). If the time_updated parameter was provided during the request, and the trade was changed by the trade partner, this error is also thrown
+* 74: (HTTP 403 - Forbidden) "Cannot add cards to the trade. Player does not own the cards or trade is not open" - You can only add or remove cards in "open" trades. The player needs to own the cards you add to trade
+* 75: (HTTP 403 - Forbidden) "Player is not verified" - Only verified players can accept a trade.
+--
+
+Get a specific trade
+
+GET /trades/1015690
+< 200
+< Content-Type: application/json
+{
+    "id": 1015690,
+    "thisuser":
+        {
+            "id": "4809",
+            "image": "https://graph.facebook.com/100003644026806/picture?return_ssl_resources=true&type=square",
+            "username": "dealinitest1",
+            "invite_code": "V9ruNY0",
+        },
+    "otheruser": 
+        {
+            "id": "4809",
+            "image": "https://graph.facebook.com/100003644026806/picture?return_ssl_resources=true&type=square",
+            "username": "dealinitest1",
+            "invite_code": "V9ruNY0",
+        },
+    "thiscards": [
+            {
+                "dealid": 3,
+                "typeid": 5,
+                "image": "http://s3-eu-west-1.amazonaws.com/dealini-assets/content/236/card_3.png",
+                "quantity": 2,
+            }
+        ],
+    "othercards": [
+        {
+            "dealid": 3,
+            "typeid": 5,
+            "image": "http://s3-eu-west-1.amazonaws.com/dealini-assets/content/236/card_3.png",
+            "quantity": 2,
+        }
+    ],
+    "time_updated": "2012-07-13T07:55:52.558280",
+    "state": "open",
+    "unread_messages": 1
+}
+
+
+Get all trades from the currently logged-in user
+
+#### Fields
+* offset: (int) Where to start returning trades from. 0 (default) marks the newest (changed) trade
+* limit: (int) How many results to return. Default is 25.
+* state: (string) Which state the trade should be in. See the state-attribute in the TradesObject.
+         This field can be repeated to include trades with different states. Default: 'open' & 'this_accepted' & 'other_accepted'
+
+GET /users/current/trades
+< 200
+< Content-Type: application/json
+{
+    "total": 1,
+    "trades": 
+        [
+            {
+                "id": 1015690,
+                "thisuser":
+                    {
+                        "id": "4809",
+                        "image": "https://graph.facebook.com/100003644026806/picture?return_ssl_resources=true&type=square",
+                        "username": "dealinitest1",
+                        "invite_code": "V9ruNY0",
+                    },
+                "otheruser": 
+                    {
+                        "id": "4809",
+                        "image": "https://graph.facebook.com/100003644026806/picture?return_ssl_resources=true&type=square",
+                        "username": "dealinitest1",
+                        "invite_code": "V9ruNY0",
+                    },
+                "thiscards": [
+                        {
+                            "dealid": 3,
+                            "typeid": 5,
+                            "image": "http://s3-eu-west-1.amazonaws.com/dealini-assets/content/236/card_3.png",
+                            "quantity": 2,
+                        }
+                    ],
+                "othercards": [
+                    {
+                        "dealid": 3,
+                        "typeid": 5,
+                        "image": "http://s3-eu-west-1.amazonaws.com/dealini-assets/content/236/card_3.png",
+                        "quantity": 2,
+                    }
+                ],
+                "time_updated": "2012-07-13T07:55:52.558280",
+                "state": "open",
+                "unread_messages": 1
+            }
+        ]
+}
+
+
+Update changes in the trade
+
+#### Fields
+* state: (string) Accept, unaccept, close or cancel a trade by setting the new tradestate (see state-attribute in TradesObject)
+* thiscards: (string, JSON) JSON list with all cards offered by this player (usually the currently logged-in player)
+* othercards: (string, JSON) JSON list with all cards offered by the other player
+* time_updated: (int) Timestamp of last update of the trade as remembered by the GUI.
+                If this is provided, a state change will only succeed if the trade wasnt changed in the meantime
+
+
+Cancel a trade
+
+PUT /trades/{tradeid}
+state=canceled
+< 200
+< Content-Type: application/json
+{
+    "id": 1015690,
+    "thisuser":
+        {
+            "id": "4809",
+            "image": "https://graph.facebook.com/100003644026806/picture?return_ssl_resources=true&type=square",
+            "username": "dealinitest1",
+            "invite_code": "V9ruNY0",
+        },
+    "otheruser": 
+        {
+            "id": "4809",
+            "image": "https://graph.facebook.com/100003644026806/picture?return_ssl_resources=true&type=square",
+            "username": "dealinitest1",
+            "invite_code": "V9ruNY0",
+        },
+    "thiscards": [
+            {
+                "dealid": 3,
+                "typeid": 5,
+                "image": "http://s3-eu-west-1.amazonaws.com/dealini-assets/content/236/card_3.png",
+                "quantity": 2,
+            }
+        ],
+    "othercards": [
+        {
+            "dealid": 3,
+            "typeid": 5,
+            "image": "http://s3-eu-west-1.amazonaws.com/dealini-assets/content/236/card_3.png",
+            "quantity": 2,
+        }
+    ],
+    "time_updated": "2012-10-13T07:55:52.558280",
+    "state": "canceled",
+    "unread_messages": 0
+}
+
+
+Update cards in a trade
+
+PUT /trades/{tradeid}
+thiscards='[
+    {
+        "dealid": 3,
+        "typeid": 5,
+        "image": "http://s3-eu-west-1.amazonaws.com/dealini-assets/content/236/card_3.png",
+        "quantity": 3,
+    }
+]'
+< 200
+< Content-Type: application/json
+{
+    "id": 1015690,
+    "thisuser":
+        {
+            "id": "4809",
+            "image": "https://graph.facebook.com/100003644026806/picture?return_ssl_resources=true&type=square",
+            "username": "dealinitest1",
+            "invite_code": "V9ruNY0",
+        },
+    "otheruser": 
+        {
+            "id": "4809",
+            "image": "https://graph.facebook.com/100003644026806/picture?return_ssl_resources=true&type=square",
+            "username": "dealinitest1",
+            "invite_code": "V9ruNY0",
+        },
+    "thiscards": [
+            {
+                "dealid": 3,
+                "typeid": 5,
+                "image": "http://s3-eu-west-1.amazonaws.com/dealini-assets/content/236/card_3.png",
+                "quantity": 3,
+            }
+        ],
+    "othercards": [
+        {
+            "dealid": 3,
+            "typeid": 5,
+            "image": "http://s3-eu-west-1.amazonaws.com/dealini-assets/content/236/card_3.png",
+            "quantity": 2,
+        }
+    ],
+    "time_updated": "2012-10-13T07:55:52.558280",
+    "state": "canceled",
+    "unread_messages": 0
+}
+
+
+Create a new trade, or find an ongoing trade with the partner
+
+#### Fields
+* partnerid: (int) ID of the other player which whom we want to trade
+
+POST /trades
+partnerid=631
+< 200
+< Content-Type: application/json
+{
+    "id": 1015691,
+    "thisuser":
+        {
+            "id": "4809",
+            "image": "https://graph.facebook.com/100003644026806/picture?return_ssl_resources=true&type=square",
+            "username": "dealinitest1",
+            "invite_code": "V9ruNY0",
+        },
+    "otheruser": 
+        {
+            "id": "631",
+            "image": "https://graph.facebook.com/100003644026807/picture?return_ssl_resources=true&type=square",
+            "username": "Matthias",
+            "invite_code": "V9ruNY1",
+        },
+    "thiscards": [
+        ],
+    "othercards": [
+    ],
+    "time_updated": "2012-10-13T07:55:52",
+    "state": "invisible",
+    "unread_messages": 0
+}
+
+
+--
+TradeMessages
+A trade message is a textual message between two players, mainly used for bargaining
+
+### TradeMessagesObject
+* userid: (int) ID of the user who wrote the message
+* message: (string) The message itself
+* time_sent: (isodatetime) The time when the message was sent
+
+#### Error-Codes:
+None so far
+--
+
+
+Retrieve all trade messages from a single trade
+
+GET /trades/{tradeid}/messages
+< 200
+< Content-Type: application/json
+[
+    {
+        "userid": 1234,
+        "message": "my text",
+        "time_sent": 2012-10-13T09:55:52.558280
+    },
+    {
+        "userid": 1234,
+        "message": "my text",
+        "time_sent": 2012-10-13T08:55:52.558280
+    },
+    {
+        "userid": 1234,
+        "message": "my text",
+        "time_sent": 2012-10-13T07:55:52.558280
+    },
+]
+
+
+Add new trade message
+
+POST /trades/{tradeid}/messages
+message=my%20new%20text
+< 200
+< Content-Type: application/json
+[
+    {
+        "userid": 1234,
+        "message": "my new text",
+        "time_sent": 2012-10-13T10:55:52.558280
+    },
+    {
+        "userid": 1234,
+        "message": "my text",
+        "time_sent": 2012-10-13T09:55:52.558280
+    },
+    {
+        "userid": 1234,
+        "message": "my text",
+        "time_sent": 2012-10-13T08:55:52.558280
+    },
+    {
+        "userid": 1234,
+        "message": "my text",
+        "time_sent": 2012-10-13T07:55:52.558280
+    },
+]
