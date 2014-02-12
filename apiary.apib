@@ -1,86 +1,95 @@
-HOST: https://api.dealini.ch
+FORMAT: 1A
+HOST: https://apitest.dealini.ch
 
---- Dealini API ---
----
+# Dealini API
 Welcome to the Dealini API documentation. We are constantly adding and improving features of this API. Please add your comments and feedback to the API as comments!
 
 All responses will to be JSON encoded. The Content-Type will always be application/json
 
-#### General fields always available
+## General fields always available
 * suppress_response_codes: (bool) If this is provided and set to "true", the Error Codes will always return as a HTTP OK (200). The correct HTTP Error Code is stored in the JSOn encoded Error response
 * rollback: (bool) If this is set to "true", no changes will be saved in the database. Userful for testing.
 
-#### Optional attributes
+## Optional attributes
 Some resources have optional attributes (see resource description). Whenever an object of this type is returned, the optional fields can be specified by adding them to the "fields" parameter. One example is the /cards resource, which has the optional attribute "deal". A valid query to get a card with the deal attribute set would be "/cards/123456?fields=deal". This works for any query returning a card, so if the "fields" parameter is set to "deal", the deal attribute will be returned as part of the "CardsObject".
 
-#### Error Codes
+## Error Codes
 Error codes specific for the resources are described at the corresponding resource
 
 * 0: (HTTP 500 - Internal Server Error) Something did not work out as expected. An automatic E-Mail is sent to Dealini and we will look into the problem.
 * 1: (HTTP 400 - Bad Request) Generally malformatted input. A detailed description of the error is given in the error description
 * 2: (HTTP 401 - Unauthorized) A resource which is only available to logged-in user is requested by an unauthorized user. Either the user is not logged in or his session timed out.
 * 3: (HTTP 404 - NotFound) The resource does not exist
----
 
---
-Sessions
+
+# Group Sessions
 Creation & removal of sessions. Login and Logout are handled here
 
-### SessionObject
-* token: (string) encrypted hex-encoded 36 byte (72 chars) session ID
-* expiresAt (isodatetime) ISO 8601 formatted DateTime representing the time when the session times out. This time is automatically extended every time a request is made.
-
-#### Error-Codes
+## Error-Codes
 * 10: (HTTP 400 - Bad Request) "Email and password or the Facebook access token must be provided" - This happens if either the facebook access token, the email or the password werent provided at all
 * 11: (HTTP 401 - Unauthorized) "Email or password did not match."
 * 12: (HTTP 401 - Unauthorized) "Session does not exist" - The session either never existed or it was already terminated
 * 13: (HTTP 400 - Bad Request) "Invalid Facebook access token" - The access token could not be used, either because it is malformatted or expired.
 * 14: (HTTP 404 - NotFound) "Could not find user based on Facebook access_token" - The user never connected his account with dealini
 * 15: (HTTP 401 - Unauthorized) "The user is banned" - The user is marked as banned. Normally the user is informed by email about the reasons.
---
 
-Create a new Session by providing user credentials login(email) & password. Returns a SessionObject and (in the Header) a set of cookies used for authentification.
+## Session [/sessions/current]
 
-#### Fields
-* email: The login of the user
-* password: The password of the user
-* fb_access_token: (optional, instead of email&password): A valid access token as provided by Facebook
+The session object
 
-POST /sessions
-email=dealinitest1@dealini.ch&password=dealinitest1
-< 200
-< Set-Cookie: "dealiniapi_auth"="Unique72charSHAgeneratedsessionUnique72charSHAgeneratedsession"
-< Content-Type: application/json
-{
-    "token": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef01234567",
-    "expiresAt": "2012-07-13T07:55:52.558280"
-}
+Attributes:
 
-Example with a FB access token as a user credential
+- token: (string) encrypted hex-encoded 36 byte (72 chars) session ID
+- userid: (int) ID of the user who owns the session token
 
-#### Fields
-* fb_access_token: (optional, instead of email&password): A valid access token as provided by Facebook
++ Model (application/json)
 
-POST /sessions
-fb_access_token=AAACukElzvo0BALBn7XKCA6ZAnJ5MZCaDV6JJK4f0XDVUENgqGyRRWLXAUV4yL8MnHaw4JUCzFvBZC7if9ZAsIoVhIuv3TljWxNKVY83eJR6sTX6pOZBqs
-< 200
-< Set-Cookie: "dealiniapi_auth"="Unique72charSHAgeneratedsessionUnique72charSHAgeneratedsession"
-< Content-Type: application/json
-{
-    "token": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef01234567",
-    "expiresAt": "2012-07-13T07:55:52.558280"
-}
+    + Headers
 
-To logout a user, his session must be removed. Additionally the expire-time of the session cookie is set to a date in the past
+            Set-Cookie: "dealiniapi_auth"="Unique72charSHAgeneratedsessionUnique72charSHAgeneratedsession"
 
-DELETE /sessions/current
-< 200
-< Set-Cookie: "dealiniapi_auth"="0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef01234567"; "expires"="Wed, 13-Jul-2011 12:00:15 GMT";
-< Content-Type: application/json
-{}
+    + Body
+
+            {
+                "token": "Unique72charSHAgeneratedsessionUnique72charSHAgeneratedsession",
+                "userid": 4809
+            }
+
+### Logout a user [DELETE]
+
++ Response 204
+
+## Sessions collection [/sessions]
+
+### Create a new Session with Email and Password [POST]
+The following parameters are available:
+
+- email (string, optional, `dealinitest1@dealini.ch`) ... The login of the user
+- password (string, optional, `de-a-lini`) ... The password of the user
+- fb_access_token (string, optional, ``) ... A valid access token as provided by Facebook
+
++ Request (application/json)
+
+        {
+            "email": "dealinitest1@dealini.ch",
+            "password": "de-a-lini"
+        }
+
++ Request with Facebook (application/json)
+
+        {
+            "fb_access_token": "AAACukElzvo0BALBn7XKCA6ZAnJ5MZCaDV6JJK4f0XDVUENgqGyRRWLXAUV4yL8MnHaw4JUCzFvBZC7if9ZAsIoVhIuv3TljWxNKVY83eJR6sTX6pOZBqs"
+        }
+
++ Response 200
+
+    [Session][]
 
 
---
+
+# Group old documentation
+
+---
 Users
 Create or retrieve a user object. Most actions possible with this API rely on a user object for which the actions should be executed.
 
@@ -101,6 +110,7 @@ Create or retrieve a user object. Most actions possible with this API rely on a 
     > verified: User is fully verified
 
 * mobile: (string) Mobile number of the user. Write-only, cannot be returned.
+* session: (SessionObject) A currectly valid session for this user.
 
 #### Error-Codes
 * 20: (HTTP 403 - Forbidden) "Invalid email address" - The provided email is not considered a valid email based on some basic regex
@@ -131,17 +141,16 @@ email=dealinitest1@dealini.ch&password=dealinitest1&username=dealinitest1
 < Set-Cookie: "dealiniapi_auth"="Unique72charSHAgeneratedsessionUnique72charSHAgeneratedsession"
 < Content-Type: application/json
 {
-    "session":
-    {
-        "token": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef01234567",
-        "expiresAt": "2012-07-13T07:55:52.558280"
-    }
     "user":
     {
         "id": "12345",
         "image": "https://d2bus1b529rui1.cloudfront.net/userpics/default_medium.jpg",
         "username": "dealinitest1",
-        "invite_code": "V9ruNY0"
+        "invite_code": "V9ruNY0",
+        "session": {
+            "token": "Unique72charSHAgeneratedsessionUnique72charSHAgeneratedsession",
+            "expiresAt": "2012-07-13T07:55:52.558280"
+        }
     }
 }
 
@@ -159,17 +168,16 @@ fb_access_token=AAACukElzvo0BALBn7XKCA6ZAnJ5MZCaDV6JJK4f0XDVUENgqGyRRWLXAUV4yL8M
 < Set-Cookie: "dealiniapi_auth"="Unique72charSHAgeneratedsessionUnique72charSHAgeneratedsession"
 < Content-Type: application/json
 {
-    "session":
-    {
-        "token": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef01234567",
-        "expiresAt": "2012-07-13T07:55:52.558280"
-    }
     "user":
     {
         "id": "12345",
         "image": "https://d2bus1b529rui1.cloudfront.net/userpics/default_medium.jpg",
         "username": "dealinitest1",
-        "invite_code": "V9ruNY0"
+        "invite_code": "V9ruNY0",
+        "session": {
+            "token": "Unique72charSHAgeneratedsessionUnique72charSHAgeneratedsession",
+            "expiresAt": "2012-07-13T07:55:52.558280"
+        }
     }
 }
 
@@ -369,6 +377,8 @@ Credits are the dealini-tokens which can be changed into dealini cards. Each cre
 * 33: (HTTP 403 - Forbidden) "The credit may not be redeemed. (Already used, quota for today reached or not yet valid)" - 
   Most likely the credit was already used. Also thrown if a credit belonging to this user is redeemed, but the credit may not be redeemed right now (e.g. already 3 bought credits used today)
 * 34: (HTTP 404 - NotFound) "Could not find a suitable new card to redeem" - There are no more cards in the game. May happen if the credit was given for a very specific deal which is not available anymore
+* 35: (HTTP 403 - Forbidden) "You don't have enough dollarini" - User should have at least 2 dollarinis to be able to exchange it into a credit
+* 36: (HTTP 400 - Bad Request) "Cannot redeem dollarini" - For unknown reason user cannot redeem dollarini, logs should be checked
 --
 
 Show infos about a single credit
@@ -407,6 +417,37 @@ DELETE /credits/current
     "image": "https://s3-eu-west-1.amazonaws.com/dealini-assets/content/100/card_5.png"
 }
 
+
+Reedem a credit for three cards - used for slotmachine turn
+
+DELETE /credits/current?fields=slotmachine
+< 200
+< Content-Type: application/json
+[
+    {
+        "typeid": 5,
+        "image": "http://s3-eu-west-1.amazonaws.com/dealini-temp/content/397/card_5.png",
+        "quantity": 1,
+        "cardprice": 10,
+        "dealid": 397
+    },
+    {
+        "typeid": 4,
+        "image": "http://s3-eu-west-1.amazonaws.com/dealini-temp/content/10002/card_4.png",
+        "quantity": 1,
+        "cardprice": 0,
+        "dealid": 10002
+    },
+    {
+        "typeid": 2,
+        "image": "http://s3-eu-west-1.amazonaws.com/dealini-temp/content/10002/card_2.png",
+        "quantity": 1,
+        "cardprice": 0,
+        "dealid": 10002
+    }
+]
+
+
 Get a guess on what the card will be when redeeming (deleting) an credit. This can be used to pre-cache animations.
 Sometimes the guess will not be identical with the card which actually gets redeemed (more likely if more time passes between guessing and redeeming).
 The card returned when redeeming the credit has prevalence over the card which is guessed here.
@@ -419,6 +460,19 @@ GET /credits/123456/card
     "typeid": 5,
     "quantity": 1,
     "image": "https://s3-eu-west-1.amazonaws.com/dealini-assets/content/100/card_5.png"
+}
+
+
+Exchange 2 of users dollarinis into a credit
+
+POST /credits
+< 200
+< Content-Type: application/json
+{
+    "type": "buy",
+    "userid": 631,
+    "id": 1696388,
+    "source": "dollarini"
 }
 
 
@@ -474,7 +528,6 @@ GET /cards/1234567?fields=deal
     }
 }
 
-
 --
 Deals
 Deals are products for which the player can collect cards and, by doing that, earn a discount on the product.
@@ -494,8 +547,8 @@ Inside of dealini, a deal has a specially designed album apge explaining the pro
 * time_redeem_end: (isodatetime) end of the redemption period
 
 #### Optional attributes
-* liked: (boolean) The logged in user's like status. Activate with: fields=dealUserData
-* percentage: (int) Number of distinct cards a user holds for that deal. Activate with: fields=dealUserData
+* liked: (boolean) The logged in user's like status. Activate with: fields=deals-liked
+* percentage: (int) Number of distinct cards a user holds for that deal. Activate with: fields=deals-percentage
 * cards: (list of CardsObjects) Returns the cards which the user has from this deal. Activate with: fields=deals-usercards
 * remainingproducts: (int or string) Remaining products. Activate with: fields=deals-remainingproducts
 
@@ -517,7 +570,7 @@ Inside of dealini, a deal has a specially designed album apge explaining the pro
 
 Get a single deal
 
-GET /deals/100?fields=dealUserData&fields=deals-usercards
+GET /deals/100?fields=deals-liked&fields=deals-percentage&fields=deals-usercards
 < 200
 < Content-Type: application/json
 {
@@ -678,7 +731,7 @@ GET /deals/search?category=electronics
 
 Like a deal
 
-PUT /deals/100?liked=true&fields=dealUserData
+PUT /deals/100?liked=true&fields=deals-liked
 < 200
 < Content-Tyype: application/json
 {
@@ -690,7 +743,6 @@ PUT /deals/100?liked=true&fields=dealUserData
     "likes": 120,
     "image": 'https://s3-eu-west-1.amazonaws.com/dealini-assets/content/100/deal2.jpg',
     "imageLogo": 'https://s3-eu-west-1.amazonaws.com/dealini-assets/content/100/logo_deal2.png',
-    "percentage": 1,
     "liked": true,
     "albumurl": 'https://app.dealini.ch/album/#100',
     "time_end": '2012-06-22T21:59:59',
@@ -723,6 +775,16 @@ GET /specials/allianzcard
 }
 
 
+Get number of dollarinis for currently logged user
+
+GET /specials/dollarini
+< 200
+< Content-Type: application/json
+{
+    "count": 20
+}
+
+
 Use an allianz card to exchange the last card with a new credit
 
 #### Fields
@@ -734,6 +796,22 @@ DELETE /specials/allianzcard?cardid=123456
 {
     "card_count": 1,
     "last_card": null
+}
+
+Use an allianz card to exchange one of last slotmachine turn cards
+
+#### Fields
+* slotid: (int) ID of the slotmachine result that should be changed. Possible values: [0, 1, 2]. Newly issued card is returned.
+
+DELETE /specials/allianzcard?slotid=0
+< 200
+< Content-Type: application/json
+{
+    "dealid": 236,
+    "typeid": 3,
+    "quantity": 1,
+    "cardprice": 0.0,
+    "image": "http://s3-eu-west-1.amazonaws.com/dealini-assets/content/236/card_3.png",
 }
 
 
@@ -1144,3 +1222,133 @@ message=my%20new%20text
         "time_sent": 2012-10-13T07:55:52.558280
     },
 ]
+
+--
+Wells
+A well is a place where players can pick up goods.
+
+### Wells object
+* id: (int) Unique ID of a well.
+* lat: (string) The latitude of this well.
+* long: (string) The longitude of this well.
+* radius: (int) The maximum distance in meters a player can have to be able to pick up goods from this well.w
+* contains: (string) The product to pick up from this well, currently only "dollarini".
+* per_pickup: (int) The amount of goods to give out per pickup.
+* overall_limit: (int) The total limit of goods to give out from this well, null for "infinity".
+* overall_remaining: (int) The remaining total amount of goods at this well.
+* daily_limit: (int) The limit of goods to give out per day, null for "infinity".
+* daily_remaining: (int) The remaining limit of goods for today.
+* time_start: (isodatetime) The datetime after which this well becomes active.
+* time_end: (isodatetime) The datetime after which this well gets inactive again (null for "never").
+* is_active: (bool) If this well is active at the moment.
+
+#### Error-Codes:
+None so far
+--
+
+
+Create new well
+
+POST /wells
+lat=47.397772&long=8.461362&radius=50&daily_limit=25&time_start=2013-10-23T08:00:00
+< 200
+< Content-Type: application/json
+{
+    "id": 123,
+    "lat": "47.397772",
+    "long": "8.461362",
+    "radius": 30,
+    "contains": "dollarini",
+    "per_pickup": 1,
+    "overall_limit": null,
+    "overall_remaining": null,
+    "daily_limit": 25,
+    "daily_remaining": 25,
+    "time_start": 2013-10-23T08:00:00.000000,
+    "time_end": null,
+    "is_active": false,
+}
+
+
+Fetch all wells
+
+GET /wells
+< 200
+< Content-Type: application/json
+{
+    "total": 1,
+    "wells": [
+        {
+            "id": 123,
+            "lat": "47.397772",
+            "long": "8.461362",
+            "radius": 30,
+            "contains": "dollarini",
+            "per_pickup": 1,
+            "overall_limit": null,
+            "overall_remaining": null,
+            "daily_limit": 25,
+            "daily_remaining": 25,
+            "time_start": 2013-10-30T20:00:00.000000,
+            "time_end": null,
+            "is_active": false,
+        },
+    ],
+}
+
+
+Fetch a specific well
+
+GET /wells/{wellid}
+< 200
+< Content-Type: application/json
+{
+    "id": 123,
+    "lat": "47.397772",
+    "long": "8.461362",
+    "radius": 30,
+    "contains": "dollarini",
+    "per_pickup": 1,
+    "overall_limit": null,
+    "overall_remaining": null,
+    "daily_limit": 25,
+    "daily_remaining": 25,
+    "time_start": 2013-10-30T20:00:00.000000,
+    "time_end": null,
+    "is_active": false,
+}
+
+
+Update an existing well
+
+PUT /wells/{wellid}
+per_pickup=3&time_end=2013-10-30T20:00:00
+< 200
+< Content-Type: application/json
+{
+    "id": 123,
+    "lat": "47.397772",
+    "long": "8.461362",
+    "radius": 30,
+    "contains": "dollarini",
+    "per_pickup": 1,
+    "overall_limit": null,
+    "overall_remaining": null,
+    "daily_limit": 25,
+    "daily_remaining": 25,
+    "time_start": 2013-10-30T20:00:00.000000,
+    "time_end": null,
+    "is_active": false,
+}
+
+
+Delete a well
+
+Only works when there was not already a pickup
+
+DELETE /wells/{wellid}
+< 200
+< Content-Type: application/json
+{}
+
+---
