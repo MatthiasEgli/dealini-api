@@ -4,6 +4,7 @@ HOST: https://apitest.dealini.ch
 # Dealini API
 Welcome to the Dealini API documentation. We are constantly adding and improving features of this API. Please add your comments and feedback to the API as comments!
 
+Requests with data (POST / PUT) will be JSON encoded. The Content-Type will be application/json
 All responses will to be JSON encoded. The Content-Type will always be application/json
 
 ## General fields always available
@@ -51,8 +52,10 @@ Attributes:
     + Body
 
             {
-                "token": "Unique72charSHAgeneratedsessionUnique72charSHAgeneratedsession",
-                "userid": 4809
+                "session": {
+                    "token": "Unique72charSHAgeneratedsessionUnique72charSHAgeneratedsession",
+                    "userid": 4809
+                }
             }
 
 ### Logout a user [DELETE]
@@ -64,9 +67,9 @@ Attributes:
 ### Create a new Session with Email and Password [POST]
 The following parameters are available:
 
-- email (string, optional, `dealinitest1@dealini.ch`) ... The login of the user
-- password (string, optional, `de-a-lini`) ... The password of the user
-- fb_access_token (string, optional, ``) ... A valid access token as provided by Facebook
+- email: (unicode string) login of user
+- password: (unicode string) password of user
+- fb_access_token: (string) A valid FB access token. If this is given, email&password are ignored
 
 + Request (application/json)
 
