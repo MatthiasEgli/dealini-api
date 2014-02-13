@@ -175,11 +175,8 @@ or
     [User][]
 
 
-# Group Deals and CardUnits
-
+# Group Deals
 A deal is an offer which can be redeemed if a certain amount of distinct cards have been collected.
-
-A cardunit belongs to a deal and has a number, differentiating it from other cards from the same deal.
 
 ## Error-Codes:
 * 40: (HTTP 404 - NotFound) "Card not found" - The card does not exist in the database (anymore).
@@ -241,6 +238,10 @@ Attributes:
             }
 
 
+# Group CardUnits
+A cardunit describes the different cards collectable. A user can have multiple identical cards, but to redeem a deal it
+is necessary to have at least one card belonging to each of the cardunits of the deal.
+
 ## CardUnits [/cardUnits]
 Enumerates the different kind of cards available for all active deals.
 
@@ -300,6 +301,10 @@ Attributes:
                     }
                 ]
             }
+
+
+# Group DealLikes
+A player can show that he wants to collect a deal by liking it.
 
 ## DealLikes [/users/{user_id}/dealLikes{/deal_id}]
 
