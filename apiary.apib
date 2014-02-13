@@ -301,6 +301,67 @@ Attributes:
                 ]
             }
 
+## DealLikes [/users/{user_id}/dealLikes{/deal_id}]
+
+### DealLikes for a user [GET]
+
++ Parameters
+    + user_id (int, required, `4809`) ... The ID of the user whoes likes should be fetched. *current* for the logged-in user
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "dealLikes": [
+                    {
+                        "deal_id": 1012,
+                        "user_id": 4809
+                    }
+                ]
+            }
+
+### Like a Deal [POST]
+
++ Parameters
+    + user_id (string, required, `current`) ... The user liking a deal. Only *current* is allowed here.
+
++ Request (application/json)
+
+    + Body
+
+            {
+                "deal_id": 1013,
+                "user_id": 4809
+            }
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "dealLike": {
+                    "deal_id": 1013,
+                    "user_id": 4809
+                }
+            }
+
+### Unlike a Deal [DELETE]
+
++ Parameters
+    + user_id (string, required, `current`) ... The user liking a deal. Only *current* is allowed here.
+    + deal_id (int, required, `1012`) ... ID of the deal which should be unliked
+
++ Response 204
+
+
+
+
+
+
+
+
+
 
 
 
