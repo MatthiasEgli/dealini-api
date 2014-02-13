@@ -1,6 +1,7 @@
 FORMAT: 1A
 HOST: https://apitest.dealini.ch
 
+
 # Dealini API
 Welcome to the Dealini API documentation. We are constantly adding and improving features of this API. Please add your comments and feedback to the API as comments!
 
@@ -40,8 +41,8 @@ The session object
 
 Attributes:
 
-- token: (string) encrypted hex-encoded 36 byte (72 chars) session ID
-- userid: (int) ID of the user who owns the session token
+* token: (string) encrypted hex-encoded 36 byte (72 chars) session ID
+* userid: (int) ID of the user who owns the session token
 
 + Model (application/json)
 
@@ -67,9 +68,9 @@ Attributes:
 ### Create a new Session with Email and Password [POST]
 The following parameters are available:
 
-- email: (unicode string) login of user
-- password: (unicode string) password of user
-- fb_access_token: (string) A valid FB access token. If this is given, email&password are ignored
+* email: (unicode string) login of user
+* password: (unicode string) password of user
+* fb_access_token: (string) A valid FB access token. If this is given, email&password are ignored
 
 + Request (application/json)
 
@@ -127,7 +128,7 @@ One player of dealini.ch.
 ### Fetch a  User [GET]
 
 + Parameters
-    + id (int, required, `4809`) ... The id of the `user` to retrieve
+    + id (int, required, `4809`) ... The id of the `user` to retrieve. Use "custom" to fetch the currently logged-in user
 
 + Response 200
 
@@ -172,6 +173,80 @@ or
 + Response 200
 
     [User][]
+
+
+# Group Deals and Cards
+
+A deal is an offer which can be redeemed if a certain amount of distinct cards have been collected.
+
+A card belongs to a deal and has a number, differentiating it from other cards from the same deal.
+
+## Error-Codes:
+* 50: (HTTP 404 - NotFound) "No Deal found" - This deal never existed or the search returned no results
+* 51: (HTTP 403 - Forbidden) "Cannot access deal" - This deal is not yet active
+
+## Deal [/deals/{id}]
+Deals are products for which the player can collect cards and, by doing that, earn a discount on the product.
+
+Attributes:
+
+* id: (int) ID of the deal
+* dealname: (string) Short name for this deal
+* image: (string, url) The URL to the image for this deal. This image is guaranteed to not change (=can be cached)
+
++ Model (application/json)
+
+    + Body
+
+            {
+                "deal": {
+                    "id": 1012
+                    "dealname": "250 Visitenkarten"
+                    "image": "https://s3-eu-west-1.amazonaws.com/dealini-temp/content/1012/deal2.jpg"
+                }
+            }
+
+### Fetch a single deal [GET]
+
++ Parameters
+    + id (int, required, `1012`) ... ID of the deal
+
++ Response 200
+    
+    [Deal][]
+
+## Deal collection [/deals]
+
+### All active deals [GET]
+
++ Response 200 (application/json)
+    
+    + Body
+
+            {
+                "deals": [
+                    {
+                        "id": 1012
+                        "dealname": "250 Visitenkarten"
+                        "image": "https://s3-eu-west-1.amazonaws.com/dealini-temp/content/1012/deal2.jpg"
+                    },
+                    {
+                        "id": 1013
+                        "dealname": "Gutschein auf das ganze Herrensocken-Sortiment"
+                        "image": "https://s3-eu-west-1.amazonaws.com/dealini-temp/content/1013/deal2.jpg"
+                    }
+                ]
+            }
+
+
+
+
+
+
+
+
+
+
 
 
 
