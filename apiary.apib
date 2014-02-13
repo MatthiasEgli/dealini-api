@@ -89,12 +89,98 @@ The following parameters are available:
     [Session][]
 
 
+# Group Users
+All requests belonging to a user, e.g.. creating, changing and fetching.
+
+## Error-Codes
+* 20: (HTTP 403 - Forbidden) "Invalid email address" - The provided email is not considered a valid email based on some basic regex
+* 21: (HTTP 403 - Forbidden) "Email address forbidden" - The provided email domain is on a blacklist (mostly one-time trash email providers), the user must use another email address
+* 22: (HTTP 403 - Forbidden) "Password too short" - The password must have at least 6 characters
+* 23: (HTTP 403 - Forbidden) "User already exists" - A user with the same email address already registered. Good oportunity to allow the user to re-send the confirmation mail or the password-forgotten dialog
+* 24: (HTTP 404 - NotFound) "User does not exist" - No User with this ID ever existed
+* 25: (HTTP 400 - Bad Request) "Could not add new user. Invalid access_token or user already registered" - Most likely the access token expired.
+  In rare cases (e.g. on fast double registrations of the same user), this can also indicate that the user already exisited
+* 26: (HTTP 403 - Forbidden) "Username too short" - The username must have at least one non-blank character
+* 27: (HTTP 403 - Forbidden) "Invalid confirmation code" - The user tried to verify with an invalid verification code
+* 28: (HTTP 403 - Forbidden) "Invalid or already used mobile number" - The user tried to verify with an invalid or already used mobile number
+* 29: (HTTP 403 - Forbidden) "Invalid change of a user attribute" - Most fields of the user cannot be changed.
+  Some fields like "state" or "mobile" can only be changed once.
+
+## User [/users/{id}]
+
+One player of dealini.ch. 
+
++ Model (application/json)
+
+    + Body
+    
+            {
+                "user": {
+                    "username": "dealinitest1"
+                    "image": "https://s3-eu-west-1.amazonaws.com/dealini-temp/userpics/default_medium.jpg"
+                    "status_message": ""
+                    "id": 4809
+                    "invite_code": "V9ruNY0"
+                }
+            }
+
+### Fetch a  User [GET]
+
++ Parameters
+    + id (int, required, `4809`) ... The id of the `user` to retrieve
+
++ Response 200
+
+    [User][]
+
+
+## User collection [/users]
+
+### Create a User [POST]
+
+Create a new user. After a user is created, a confirmation mail must be accepted if the "normal" website
+should be available for usage
+
+Available parameters:
+
+* username: (string) Will be used as the displayed name in the game.
+* invite_code: (string, optional) The unique user-specific code from the user who invited this new user
+
+* email: (string, valid email) The new login name of the user
+* password: (string) The new password of the user
+or
+* access_token: (string, fb access token) an authorized Facebook access token for the user
+
+
++ Request (application/json)
+
+        {
+            "email": "dealinitest1@dealini.ch",
+            "password": "de-a-lini",
+            "username": "Dealini Test",
+            "invite_code": "friend_code"
+        }
+
++ Request with FB token (application/json)
+
+        {
+            "access_token": "AAACukElzvo0BALBn7XKCA6ZAnJ5MZCaDV6JJK4f0XDVUENgqGyRRWLXAUV4yL8MnHaw4JUCzFvBZC7if9ZAsIoVhIuv3TljWxNKVY83eJR6sTX6pOZBqs"
+            "username": "Dealini Test",
+            "invite_code": "friend_code"
+        }
+
++ Response 200
+
+    [User][]
+
+
 
 # Group old documentation
 
 ---
-Users
+## Users
 Create or retrieve a user object. Most actions possible with this API rely on a user object for which the actions should be executed.
+
 
 ### UsersObject
 * id: (int) User id
