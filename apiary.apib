@@ -117,10 +117,10 @@ One player of dealini.ch.
     
             {
                 "user": {
-                    "username": "dealinitest1"
-                    "image": "https://s3-eu-west-1.amazonaws.com/dealini-temp/userpics/default_medium.jpg"
-                    "status_message": ""
-                    "id": 4809
+                    "username": "dealinitest1",
+                    "image": "https://s3-eu-west-1.amazonaws.com/dealini-assets/userpics/default_medium.jpg",
+                    "status_message": "",
+                    "id": 4809,
                     "invite_code": "V9ruNY0"
                 }
             }
@@ -175,13 +175,15 @@ or
     [User][]
 
 
-# Group Deals and Cards
+# Group Deals and CardUnits
 
 A deal is an offer which can be redeemed if a certain amount of distinct cards have been collected.
 
-A card belongs to a deal and has a number, differentiating it from other cards from the same deal.
+A cardunit belongs to a deal and has a number, differentiating it from other cards from the same deal.
 
 ## Error-Codes:
+* 40: (HTTP 404 - NotFound) "Card not found" - The card does not exist in the database (anymore).
+    When a deal cannot be collected anymore, the unsold cards are removed.
 * 50: (HTTP 404 - NotFound) "No Deal found" - This deal never existed or the search returned no results
 * 51: (HTTP 403 - Forbidden) "Cannot access deal" - This deal is not yet active
 
@@ -200,9 +202,9 @@ Attributes:
 
             {
                 "deal": {
-                    "id": 1012
-                    "dealname": "250 Visitenkarten"
-                    "image": "https://s3-eu-west-1.amazonaws.com/dealini-temp/content/1012/deal2.jpg"
+                    "id": 1012,
+                    "dealname": "250 Visitenkarten",
+                    "image": "https://s3-eu-west-1.amazonaws.com/dealini-assets/content/1012/deal2.jpg"
                 }
             }
 
@@ -226,20 +228,78 @@ Attributes:
             {
                 "deals": [
                     {
-                        "id": 1012
-                        "dealname": "250 Visitenkarten"
-                        "image": "https://s3-eu-west-1.amazonaws.com/dealini-temp/content/1012/deal2.jpg"
+                        "id": 1012,
+                        "dealname": "250 Visitenkarten",
+                        "image": "https://s3-eu-west-1.amazonaws.com/dealini-assets/content/1012/deal2.jpg"
                     },
                     {
-                        "id": 1013
-                        "dealname": "Gutschein auf das ganze Herrensocken-Sortiment"
-                        "image": "https://s3-eu-west-1.amazonaws.com/dealini-temp/content/1013/deal2.jpg"
+                        "id": 1013,
+                        "dealname": "Gutschein auf das ganze Herrensocken-Sortiment",
+                        "image": "https://s3-eu-west-1.amazonaws.com/dealini-assets/content/1013/deal2.jpg"
                     }
                 ]
             }
 
 
+## CardUnits [/cardUnits]
+Enumerates the different kind of cards available for all active deals.
 
+Attributes:
+
+* image: (string, url) The image of the card. The image itself will never change (=can be cached).
+* deal_id: (int) ID of the deal this cardunit belongs to
+* number: (int) The identifier of the specific card inside a deal
+
+### GET
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "cardUnits": [
+                    {
+                        image: "https://s3-eu-west-1.amazonaws.com/dealini-assets/content/1012/card_1.png",
+                        deal_id: 1012,
+                        number: 1
+                    },
+                    {
+                        image: "https://s3-eu-west-1.amazonaws.com/dealini-assets/content/1012/card_2.png",
+                        deal_id: 1012,
+                        number: 2
+                    },
+                    {
+                        image: "https://s3-eu-west-1.amazonaws.com/dealini-assets/content/1012/card_3.png",
+                        deal_id: 1012,
+                        number: 3
+                    },
+                    {
+                        image: "https://s3-eu-west-1.amazonaws.com/dealini-assets/content/1012/card_4.png",
+                        deal_id: 1012,
+                        number: 4
+                    },
+                    {
+                        image: "https://s3-eu-west-1.amazonaws.com/dealini-assets/content/1013/card_1.png",
+                        deal_id: 1013,
+                        number: 1
+                    },
+                    {
+                        image: "https://s3-eu-west-1.amazonaws.com/dealini-assets/content/1013/card_2.png",
+                        deal_id: 1013,
+                        number: 2
+                    },
+                    {
+                        image: "https://s3-eu-west-1.amazonaws.com/dealini-assets/content/1013/card_3.png",
+                        deal_id: 1013,
+                        number: 3
+                    },
+                    {
+                        image: "https://s3-eu-west-1.amazonaws.com/dealini-assets/content/1013/card_4.png",
+                        deal_id: 1013,
+                        number: 4
+                    }
+                ]
+            }
 
 
 
