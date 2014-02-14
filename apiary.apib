@@ -175,6 +175,36 @@ or
     [User][]
 
 
+## Cards of a user [/users/{user_id}/cards]
+A user has cards which can be traded with other users.
+
+### Get all tradeable cards [GET]
+
++ Response 200 (applicaton/json)
+
+    + Body
+
+            {
+                "cards": [
+                    {
+                        "deal_id": 1012,
+                        "number": 1,
+                        "quantity": 2
+                    },
+                    {
+                        "deal_id": 1012,
+                        "number": 2,
+                        "quantity": 1
+                    },
+                    {
+                        "deal_id": 1013,
+                        "number": 3,
+                        "quantity": 1
+                    }
+                ]
+            }
+
+
 # Group Deals
 A deal is an offer which can be redeemed if a certain amount of distinct cards have been collected.
 
