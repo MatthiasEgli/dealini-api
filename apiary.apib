@@ -10,10 +10,11 @@ All responses will to be JSON encoded. The Content-Type will always be applicati
 
 ## General fields always available
 * suppress_response_codes: (bool) If this is provided and set to "true", the Error Codes will always return as a HTTP OK (200). The correct HTTP Error Code is stored in the JSOn encoded Error response
-* rollback: (bool) If this is set to "true", no changes will be saved in the database. Userful for testing.
+* rollback: (bool) If this is set to "true", no changes will be saved in the database. Useful for testing.
 
 ## Optional attributes
-Some resources have optional attributes (see resource description). Whenever an object of this type is returned, the optional fields can be specified by adding them to the "fields" parameter. One example is the /cards resource, which has the optional attribute "deal". A valid query to get a card with the deal attribute set would be "/cards/123456?fields=deal". This works for any query returning a card, so if the "fields" parameter is set to "deal", the deal attribute will be returned as part of the "CardsObject".
+Some resources have optional attributes (see resource description). Whenever an object of this type is returned, the optional fields can be specified by adding them to the "additional_fields[]" parameter.
+The format is always "additional_fields[]=resource_field", e.g. `additional_fields[]=deals_featured` to get the optional attribute "features" for the returned deals.
 
 ## Error Codes
 Error codes specific for the resources are described at the corresponding resource
