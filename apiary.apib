@@ -180,6 +180,9 @@ A user has cards which can be traded with other users.
 
 ### Get all tradeable cards [GET]
 
++ Parameters
+    + user_id (int, required, `4809`) ... The user for which we want to fetch the cards. *current* for the logged-in user.
+
 + Response 200 (applicaton/json)
 
     + Body
@@ -203,6 +206,35 @@ A user has cards which can be traded with other users.
                     }
                 ]
             }
+
+
+## Friendships of a user [/users/{user_id}/friendships]
+
+### Get all friends of this user [GET]
+
++ Parameters
+    + user_id (int, required, `4809`) ... The user for which we want to fetch the friendships. *current* for the logged-in user.
+
++ Response 200 (applicaton/json)
+
+    + Body
+
+            {
+                "friendships": [
+                    {
+                        "friend_id": 631,
+                        "user_id": 4809,
+                        "friend": {
+                            username: "Matthias©"
+                            image: "https://s3-eu-west-1.amazonaws.com/dealini-temp/userpics/medium/631_1347348157.jpg"
+                            status_message: ""
+                            id: 631
+                            invite_code: "x4quNY0"
+                        }
+                    }
+                ]
+            }
+
 
 
 # Group Deals
