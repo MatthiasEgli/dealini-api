@@ -424,6 +424,81 @@ A player can show that he wants to collect a deal by liking it.
 + Response 204
 
 
+# Group Trades
+
+## Trade [/trades/{id}]
+
+Attributes of a trade:
+
+* id: (int) The unique ID of the trade
+* from_user_id: (int) ID of the user who sent the trade
+* to_user_id: (int) ID of the user who recieved the trade
+* state: (string) The current state the trade is in. Can be one of the following:
+
+    > suggested: A trade which is suggested to the from_user user.  
+    > sent: A trade offer sent to the to_user, ready for him to accept or decline.  
+    > declined: The trade was declined by the to_user.  
+    > accepted: Trade was successfull completed and the cards have been traded  
+    > cancelled: Trade was cancelled by the from_user, no cards were exchanged  
+
+* time_updated: (isodatetime) The last time the trade was changed.
+
+
++ Model (application/json)
+
+    + Body
+
+            {
+                "trade": {
+                    "id": 123,
+                    "from_user_id": 4801,
+                    "to_user_id": 631,
+                    "state": "sent",
+                    "time_updated": "2013-12-31T23:59:59",
+                    "cards": [
+                        {
+                            "user_id": 4809,
+                            "deal_id": 1012,
+                            "number": 1,
+                            "quantity": 1
+                        },
+                        {
+                            "user_id": 631,
+                            "deal_id": 1013,
+                            "number": 1,
+                            "quantity": 1
+                        }
+                    ]
+                }
+            }
+
+### Get a single Trade [GET]
+
++ Parameters
+    + id (int, required, `123`) ... ID of the trade to fetch
+
++ Response 200
+
+    [Trade][]
+
+### Change a trade state [PUT]
+
++ Parameters
+    + id (int, required, `123`) ... ID of the trade to fetch
+
++ Request (application/json)
+
+    + Body
+
+            {
+                "state": "sent"
+            }
+
++ Response 200
+
+    [Trade][]
+
+
 # Group admin
 
 ## Session [/admin/sessions]
@@ -455,6 +530,7 @@ The following parameters are available:
                     "userid": 288
                 }
             }
+
 
 
 
