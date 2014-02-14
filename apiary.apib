@@ -499,6 +499,47 @@ Attributes of a trade:
     [Trade][]
 
 
+## Trade collection [/trades?state,from_user_id,to_user_id]
+
+### Get trades for a user for the different views [GET]
+
++ Parameters
+    + state (string, required, `suggested`) ... Can be any of the states described as possible trade states
+    + from_user_id = `current` (int, optional) ... The ID of the user who started the trade. *current* for the logged-in user.
+    + to_user_id (int, optional) ... The ID of the user recieving the trade. *current* for the logged-in user.
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "trades": [
+                    {
+                        "id": 123,
+                        "from_user_id": 4801,
+                        "to_user_id": 631,
+                        "state": "suggested",
+                        "time_updated": "2013-12-31T23:59:59",
+                        "cards": [
+                            {
+                                "user_id": 4809,
+                                "deal_id": 1012,
+                                "number": 1,
+                                "quantity": 1
+                            },
+                            {
+                                "user_id": 631,
+                                "deal_id": 1013,
+                                "number": 1,
+                                "quantity": 1
+                            }
+                        ]
+                    }
+                ]
+            }
+
+
+
 # Group admin
 
 ## Session [/admin/sessions]
