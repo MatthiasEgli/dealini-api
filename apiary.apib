@@ -424,6 +424,37 @@ A player can show that he wants to collect a deal by liking it.
 + Response 204
 
 
+# Group admin
+
+## Session [/admin/sessions]
+
+### Create a new Session with Email and Password [POST]
+The following parameters are available:
+
+* email: (unicode string) login of user
+* password: (unicode string) password of user
+
++ Request (application/json)
+
+        {
+            "email": "dealiniadmin@dealini.ch",
+            "password": "de-a-lini-admin"
+        }
+
++ Response 200
+
+    + Headers
+    
+            Set-Cookie: dealinidev_auth=5b068891ae586391d30c4aeed158ce5a6829af58b5bb9280f22c46689c9314b61482edf8; httponly; Path=/
+    
+    + Body
+    
+            {
+                "session": {
+                    "token": "5b068891ae586391d30c4aeed158ce5a6829af58b5bb9280f22c46689c9314b61482edf8",
+                    "userid": 288
+                }
+            }
 
 
 
