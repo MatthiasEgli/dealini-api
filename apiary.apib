@@ -138,13 +138,11 @@ One player of dealini.ch.
 
 ### Create a User [POST]
 
-Create a new user. After a user is created, a confirmation mail must be accepted if the "normal" website
-should be available for usage
+Create a new user.
 
 Available parameters:
 
 * username: (string) Will be used as the displayed name in the game.
-* invite_code: (string, optional) The unique user-specific code from the user who invited this new user
 
 * email: (string, valid email) The new login name of the user
 * password: (string) The new password of the user
@@ -157,16 +155,14 @@ or
         {
             "email": "dealinitest1@dealini.ch",
             "password": "de-a-lini",
-            "username": "Dealini Test",
-            "invite_code": "friend_code"
+            "username": "Dealini Test"
         }
 
 + Request with FB token (application/json)
 
         {
             "access_token": "AAACukElzvo0BALBn7XKCA6ZAnJ5MZCaDV6JJK4f0XDVUENgqGyRRWLXAUV4yL8MnHaw4JUCzFvBZC7if9ZAsIoVhIuv3TljWxNKVY83eJR6sTX6pOZBqs"
-            "username": "Dealini Test",
-            "invite_code": "friend_code"
+            "username": "Dealini Test"
         }
 
 + Response 200
@@ -548,16 +544,31 @@ Attributes of a trade:
 A new trade which is offered to another player. Special case is when the new trade gets created based on an existing
 trade (parent_trade_id is set), in which case the old trade will automatically be declinded or cancelled.
 
-Parameters:
-* 
-
 + Request (application/json)
 
     + Body
 
             {
-
+                "cards": [
+                    {
+                        "user_id": 4809,
+                        "deal_id": 1012,
+                        "number": 1,
+                        "quantity": 1
+                    },
+                    {
+                        "user_id": 631,
+                        "deal_id": 1013,
+                        "number": 1,
+                        "quantity": 1
+                    }
+                ],
+                "to_user_id": 631,
             }
+
++ Response 200
+
+    [Trade][]
 
 
 
