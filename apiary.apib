@@ -426,6 +426,12 @@ A player can show that he wants to collect a deal by liking it.
 
 # Group Trades
 
+#### Error-Codes:
+* 70: (HTTP 404 - NotFound) "Trade not found" - The requested trade could not be found
+* 71: (HTTP 403 - Forbidden) "Not allowed to request a foreign trade" - The currently logged-in user tried to access a trade in which he is not part of
+* 72: (HTTP 403 - Forbidden) "Cannot create trade, illegal participants or added cards" - You can only create trades where you are the from_user and where all cards belong to the players in the trade.
+* 73: (HTTP 403 - Forbidden) "Cannot update trade state, invalid state transition" - Only some trade state changes are allowed.
+
 ## Trade [/trades/{id}]
 
 Attributes of a trade:
@@ -536,6 +542,22 @@ Attributes of a trade:
                         ]
                     }
                 ]
+            }
+
+### Create a new trade [POST]
+
+A new trade which is offered to another player. Special case is when the new trade gets created based on an existing
+trade (parent_trade_id is set), in which case the old trade will automatically be declinded or cancelled.
+
+Parameters:
+* 
+
++ Request (application/json)
+
+    + Body
+
+            {
+
             }
 
 
