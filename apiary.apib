@@ -10,10 +10,11 @@ All responses will to be JSON encoded. The Content-Type will always be applicati
 
 ## General fields always available
 * suppress_response_codes: (bool) If this is provided and set to "true", the Error Codes will always return as a HTTP OK (200). The correct HTTP Error Code is stored in the JSOn encoded Error response
-* rollback: (bool) If this is set to "true", no changes will be saved in the database. Userful for testing.
+* rollback: (bool) If this is set to "true", no changes will be saved in the database. Useful for testing.
 
 ## Optional attributes
-Some resources have optional attributes (see resource description). Whenever an object of this type is returned, the optional fields can be specified by adding them to the "fields" parameter. One example is the /cards resource, which has the optional attribute "deal". A valid query to get a card with the deal attribute set would be "/cards/123456?fields=deal". This works for any query returning a card, so if the "fields" parameter is set to "deal", the deal attribute will be returned as part of the "CardsObject".
+Some resources have optional attributes (see resource description). Whenever an object of this type is returned, the optional fields can be specified by adding them to the "additional_fields[]" parameter.
+The format is always "additional_fields[]=resource_field", e.g. `additional_fields[]=deals_featured` to get the optional attribute "features" for the returned deals.
 
 ## Error Codes
 Error codes specific for the resources are described at the corresponding resource
@@ -562,9 +563,9 @@ Parameters:
 
 
 
-# Group admin
+# Group Admin
 
-## Session [/admin/sessions]
+## Sessions [/admin/sessions]
 
 ### Create a new Session with Email and Password [POST]
 The following parameters are available:
@@ -584,6 +585,7 @@ The following parameters are available:
     + Headers
     
             Set-Cookie: dealinidev_auth=5b068891ae586391d30c4aeed158ce5a6829af58b5bb9280f22c46689c9314b61482edf8; httponly; Path=/
+            Access-Control-Allow-Credentials: true
     
     + Body
     
@@ -594,9 +596,48 @@ The following parameters are available:
                 }
             }
 
+### Return permissions of setting sessions [OPTIONS]
+
++ Response 200
+
+    + Headers
+    
+            Access-Control-Allow-Credentials: true
+
+## Sessions/Current [/admin/sessions/current]
+
+### Return permissions of setting sessions [OPTIONS]
+
++ Response 200
+
+    + Headers
+    
+            Access-Control-Allow-Credentials: true
+
+### Logout a user [DELETE]
+
++ Response 204
+    
+    + Headers
+            
+            Access-Control-Allow-Credentials: true
+            Set-Cookie: dealinidev_auth=5b068891ae586391d30c4aeed158ce5a6829af58b5bb9280f22c46689c9314b61482edf8; expires=Mon, 18-Feb-2013 12:17:57 GMT; httponly; Path=/
 
 
+## Users [/admin/users]
 
+### Get user info [POST]
+
++ Response 200
+
+    + Body
+    
+            {
+                "user": {
+                    "id": 288,
+                    "role": "admin"
+                }
+            }
 
 
 
