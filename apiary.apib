@@ -100,7 +100,8 @@ All requests belonging to a user, e.g.. creating, changing and fetching.
 * 22: (HTTP 403 - Forbidden) "Password too short" - The password must have at least 6 characters
 * 23: (HTTP 403 - Forbidden) "User already exists" - A user with the same email address already registered. Good oportunity to allow the user to re-send the confirmation mail or the password-forgotten dialog
 * 24: (HTTP 404 - NotFound) "User does not exist" - No User with this ID ever existed
-* 25: (HTTP 400 - Bad Request) "Invalid access_token" - Most likely the access token expired.
+* 25: (HTTP 400 - Bad Request) "Invalid access_token" - Most likely the access token expired. Other reasons include not having installed the dealini app
+    or not having provided the necessary permissions (only email permission is required)
 * 26: (HTTP 403 - Forbidden) "Username too short" - The username must have at least one non-blank character
 * 27: (HTTP 403 - Forbidden) "Invalid confirmation code" - The user tried to verify with an invalid verification code
 * 28: (HTTP 403 - Forbidden) "Invalid or already used mobile number" - The user tried to verify with an invalid or already used mobile number
