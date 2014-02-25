@@ -249,8 +249,13 @@ Deals are products for which the player can collect cards and, by doing that, ea
 Attributes:
 
 * id: (int) ID of the deal
-* dealname: (string) Short name for this deal
-* image: (string, url) The URL to the image for this deal. This image is guaranteed to not change (=can be cached)
+* name: (string) Short name for this deal
+* imageAAAxBBB: (string, url) The deal image with AAA width and BBB height. This image is guaranteed to not change (=can be cached)
+* logo: (string, url) The logo of the deal. Size and aspect ratio are variable. Can also be cached.
+* rank: (int) Used for ordering multiple deals, e.g. in the album. Lower rank equals higher position (e.g. rank 1 = topmost deal)
+* likes: (int) Number of peoples who favourited this deal
+* number: (int) The identifier for this deal in numeric form for display purposes.
+* featured: (bool) If the deal should be featured (highlighted) in the album overview
 
 + Model (application/json)
 
@@ -259,8 +264,14 @@ Attributes:
             {
                 "deal": {
                     "id": 1012,
-                    "dealname": "250 Visitenkarten",
-                    "image": "https://s3-eu-west-1.amazonaws.com/dealini-assets/content/1012/deal2.jpg"
+                    "name": "Tolle Visitenkarten",
+                    "image320x130": "http://lorempixel.com/320/130/food/5/",
+                    "image320x180": "http://lorempixel.com/320/180/food/3/",
+                    "logo": "http://s3-eu-west-1.amazonaws.com/dealini-assets/content/1009/logo.png",
+                    "rank": 1,
+                    "likes": 896,
+                    "number": 35,
+                    "featured": False
                 }
             }
 
