@@ -639,9 +639,9 @@ trade (parent_trade_id is set), in which case the old trade will automatically b
 
 
 
-# Group Admin
+# Group Dashboard
 
-## Sessions [/admin/sessions]
+## Sessions [/dashboard/sessions]
 
 ### Create a new Session with Email and Password [POST]
 The following parameters are available:
@@ -680,7 +680,7 @@ The following parameters are available:
     
             Access-Control-Allow-Credentials: true
 
-## Sessions/Current [/admin/sessions/current]
+## Sessions/Current [/dashboard/sessions/current]
 
 ### Return permissions of setting sessions [OPTIONS]
 
@@ -700,7 +700,7 @@ The following parameters are available:
             Set-Cookie: dealinidev_auth=5b068891ae586391d30c4aeed158ce5a6829af58b5bb9280f22c46689c9314b61482edf8; expires=Mon, 18-Feb-2013 12:17:57 GMT; httponly; Path=/
 
 
-## Users [/admin/users]
+## Users [/dashboard/users]
 
 ### Get user info [POST]
 
@@ -709,7 +709,7 @@ The following parameters are available:
     + Body
     
             {
-                "adminuser": {
+                "dashboarduser": {
                     "id": 288,
                     "roles": ["bp", "investor"]
                 }
