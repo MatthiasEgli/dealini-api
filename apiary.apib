@@ -271,6 +271,7 @@ Attributes:
                     "rank": 1,
                     "likes": 896,
                     "number": 35,
+                    "category_id": 1,
                     "featured": false
                 }
             }
@@ -303,6 +304,7 @@ Attributes:
                         "rank": 1,
                         "likes": 0,
                         "number": 4,
+                        "category_id": 7,
                         "featured": true
                     },
                     {
@@ -314,6 +316,7 @@ Attributes:
                         "rank": 5,
                         "likes": 5,
                         "number": 10,
+                        "category_id": 7,
                         "featured": false
                     },
                     {
@@ -325,6 +328,7 @@ Attributes:
                         "rank": 4,
                         "likes": 10,
                         "number": 35,
+                        "category_id": 7,
                         "featured": false
                     },
                     {
@@ -336,6 +340,7 @@ Attributes:
                         "rank": 3,
                         "likes": 345,
                         "number": 45,
+                        "category_id": 7,
                         "featured": false
                     },
                     {
@@ -347,6 +352,7 @@ Attributes:
                         "rank": 2,
                         "likes": 1234,
                         "number": 80,
+                        "category_id": 6,
                         "featured": false
                     },
                     {
@@ -358,8 +364,86 @@ Attributes:
                         "rank": 6,
                         "likes": 9654,
                         "number": 90,
+                        "category_id": 6,
                         "featured": false
                     }
+                ]
+            }
+
+
+# Group Categories
+A deal can have a category.
+
+## Error-Codes:
+* 40: (HTTP 404 - NotFound) "Category not found" - The card does not exist in the database (anymore).
+    When a deal cannot be collected anymore, the unsold cards are removed.
+* 50: (HTTP 404 - NotFound) "No Deal found" - This deal never existed or the search returned no results
+* 51: (HTTP 403 - Forbidden) "Cannot access deal" - This deal is not yet active
+
+## Category collection [/categories]
+
+### All active categories [GET]
+
++ Response 200 (application/json)
+    
+    + Body
+
+            {
+                "categories": [
+                    {
+                        "id": 1,
+                        "name": "Reisen",
+                        "icon": "https://s3-eu-west-1.amazonaws.com/dealini-assets/img/redesign/icons/travel.png",
+                        "rank": 1,
+                    },
+                    {
+                        "id": 2,
+                        "name": "Fashion",
+                        "icon": "https://s3-eu-west-1.amazonaws.com/dealini-assets/img/redesign/icons/fashion.png",
+                        "rank": 2,
+                    },
+                    {
+                        "id": 3,
+                        "name": "Elektronik",
+                        "icon": "https://s3-eu-west-1.amazonaws.com/dealini-assets/img/redesign/icons/electronics.png",
+                        "rank": 3,
+                    },
+                    {
+                        "id": 4,
+                        "name": "Haus & Heim",
+                        "icon": "https://s3-eu-west-1.amazonaws.com/dealini-assets/img/redesign/icons/home.png",
+                        "rank": 4,
+                    },
+                    {
+                        "id": 5,
+                        "name": "Auto & Moto",
+                        "icon": "https://s3-eu-west-1.amazonaws.com/dealini-assets/img/redesign/icons/automoto.png",
+                        "rank": 5,
+                    },
+                    {
+                        "id": 6,
+                        "name": "Freizeit & Sport",
+                        "icon": "https://s3-eu-west-1.amazonaws.com/dealini-assets/img/redesign/icons/fun.png",
+                        "rank": 6,
+                    },
+                    {
+                        "id": 7,
+                        "name": "Essen & Genuss",
+                        "icon": "https://s3-eu-west-1.amazonaws.com/dealini-assets/img/redesign/icons/food.png",
+                        "rank": 7,
+                    },
+                    {
+                        "id": 8,
+                        "name": "Beauty & Wellness",
+                        "icon": "https://s3-eu-west-1.amazonaws.com/dealini-assets/img/redesign/icons/beauty.png",
+                        "rank": 8,
+                    },
+                    {
+                        "id": 9,
+                        "name": "Luxus",
+                        "icon": "https://s3-eu-west-1.amazonaws.com/dealini-assets/img/redesign/icons/kiss.png",
+                        "rank": 9,
+                    },
                 ]
             }
 
