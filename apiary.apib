@@ -660,7 +660,7 @@ Attributes of a trade:
 ### Get trades for a user for the different views [GET]
 
 + Parameters
-    + state (string, required, `suggested`) ... Can be any of the states described as possible trade states
+    + state (string, required, `suggested`) ... Can be any of the states described as possible trade states. Parameter can also be named `state[]`
     + from_user_id = `current` (int, optional) ... The ID of the user who started the trade. *current* for the logged-in user.
     + to_user_id (int, optional) ... The ID of the user recieving the trade. *current* for the logged-in user.
 
