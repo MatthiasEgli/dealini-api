@@ -849,6 +849,21 @@ The following parameters are available:
                 ]
             }
 
+## Roles_Perms [/dashboard/roles_perms]
+
+### Get all permissions [GET]
+
++ Response 200
+
+    + Body
+    
+            {
+                "roles_perms": [
+                    {"id": 1, "name": "admin", perms: []},
+                    {"id": 2, "name": "investor", perms: [1,2]},
+                    {"id": 3, "name": "bp",  perms: [2,3]}
+                ]
+            }
 
 
 
