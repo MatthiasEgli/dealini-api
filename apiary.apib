@@ -607,8 +607,14 @@ Attributes of a trade:
             {
                 "trade": {
                     "id": 123,
-                    "from_user_id": 4801,
-                    "to_user_id": 631,
+                    "from_user": {
+                        "id": 4801
+                    },
+                    "to_user": {
+                        "id": 631,
+                        "username": "Matthias",
+                        "image: "https://s3-eu-west-1.amazonaws.com/dealini-assets/userpics/default_medium.jpg"
+                    },
                     "state": "sent",
                     "time_updated": "2013-12-31T23:59:59",
                     "cards": [
@@ -672,8 +678,14 @@ Attributes of a trade:
                 "trades": [
                     {
                         "id": 123,
-                        "from_user_id": 4801,
-                        "to_user_id": 631,
+                        "from_user": {
+                            "id": 4801
+                        },
+                        "to_user": {
+                            "id": 631,
+                            "username": "Matthias",
+                            "image: "https://s3-eu-west-1.amazonaws.com/dealini-assets/userpics/default_medium.jpg"
+                        },
                         "state": "suggested",
                         "time_updated": "2013-12-31T23:59:59",
                         "cards": [
@@ -718,7 +730,9 @@ trade (parent_trade_id is set), in which case the old trade will automatically b
                         "quantity": 1
                     }
                 ],
-                "to_user_id": 631,
+                "to_user": {
+                    "id": 631
+                }
             }
 
 + Response 200
