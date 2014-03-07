@@ -619,12 +619,14 @@ Attributes of a trade:
                     "time_updated": "2013-12-31T23:59:59",
                     "cards": [
                         {
+                            "trade_id": 123,
                             "user_id": 4809,
                             "deal_id": 1012,
                             "number": 1,
                             "quantity": 1
                         },
                         {
+                            "trade_id": 123,
                             "user_id": 631,
                             "deal_id": 1013,
                             "number": 1,
@@ -690,12 +692,14 @@ Attributes of a trade:
                         "time_updated": "2013-12-31T23:59:59",
                         "cards": [
                             {
+                                "trade_id": 123,
                                 "user_id": 4809,
                                 "deal_id": 1012,
                                 "number": 1,
                                 "quantity": 1
                             },
                             {
+                                "trade_id": 123,
                                 "user_id": 631,
                                 "deal_id": 1013,
                                 "number": 1,
@@ -732,7 +736,8 @@ trade (parent_trade_id is set), in which case the old trade will automatically b
                 ],
                 "to_user": {
                     "id": 631
-                }
+                },
+                "parent_trade_id": 123
             }
 
 + Response 200
@@ -813,9 +818,7 @@ The following parameters are available:
             {
                 "dashboarduser": {
                     "id": 288,
-                    "roles": ["bp", "admin"],
-                    "permissions": ["main", "register", "settings", "permissions"]
-                    
+                    "roles": ["bp", "investor", "admin"]
                 }
             }
 
