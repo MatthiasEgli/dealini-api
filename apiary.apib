@@ -938,8 +938,47 @@ Attributes of a product:
     [Product][]
 
 
+# Group Order
 
+## Order [/orders/{id}]
 
+An order corresponds to a user buying a product.
+
+Attributes:
+
+* id: (int) ID of the order
+* product: (Product) The product which got ordered
+* user_id: (int) ID of the user who ordered this product
+* status: (string) Descriptive status of the orders state. The states have to be defined yet.
+* time_ordered: (isodatetime) The time when the order was made (e.g. after successful payment / redemtion)
+
++ Model (application/json)
+
+    + Body
+
+            {
+                "order": {
+                    "id": 1,
+                    "product": {
+                        "id": 1,
+                        "name": "Gutschein für eine Mahlzeit",
+                        "price": 10000,
+                        "image": "http://lorempixel.com/80/80/food/7/"
+                    },
+                    "user_id": 82887,
+                    "status": "Abgeschlossen",
+                    "time_ordered": "2014-03-10T23:59:59"
+                }
+            }
+
+### Get a single order [GET]
+
++ Parameters
+    + id (int, required, `1`) ... ID of the oder to fetch
+
++ Response 200
+
+    [Order][]
 
 
 
