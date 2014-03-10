@@ -1017,7 +1017,26 @@ Attributes:
                 ]
             }
 
+### Create a new order [POST]
 
+This should happen after a successful payment (if necessary) was done.
+The cards of the user will be redeemed (e.g. removed from the user) during this step.
+
+* product_id: (int) ID of the product which should be ordered / redeemed
+* user_id: (int) ID of the user who is ordering.
+* payment_id: (int) ID of the payment. Can be null if no payment was necessary.
+
++ Request (application/json)
+
+        {
+            "product_id": 1,
+            "user_id": 82887,
+            "payment_id": null
+        }
+
++ Response 200
+
+    [Order][]
 
 
 
