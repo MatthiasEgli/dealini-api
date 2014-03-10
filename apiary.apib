@@ -902,8 +902,40 @@ The following parameters are available:
                 ]
             }
 
+# Group Product
 
+## Product [/products/{id}]
 
+A product describes something which can be bought / redeemed
+
+Attributes of a product:
+
+* id: (int) ID of the product
+* name: (string) Short descriptive name of the product
+* price: (int) The products price in cents (Rappen)
+* image: (string, url) URL to the image of the product
+
++ Model (application/json)
+
+    + Body
+
+            {
+                "product": {
+                    "id": 1,
+                    "name": "Gutschein für eine Mahlzeit",
+                    "price": 10000,
+                    "image": "http://lorempixel.com/80/80/food/7/"
+                }
+            }
+
+### Get a single product [GET]
+
++ Parameters
+    + id (int, required, `1`) ... ID of the product to fetch
+
++ Response 200
+
+    [Product][]
 
 
 
