@@ -980,6 +980,43 @@ Attributes:
 
     [Order][]
 
+## Order Collection [/orders]
+
+### Show all orders for the logged-in user [GET]
+
++ Response 200
+
+    + Body
+    
+            {
+                "orders": [
+                    {
+                        "id": 1,
+                        "product": {
+                            "id": 1,
+                            "name": "Gutschein für eine Mahlzeit",
+                            "price": 10000,
+                            "image": "http://lorempixel.com/80/80/food/7/"
+                        },
+                        "user_id": 82887,
+                        "status": "Abgeschlossen",
+                        "time_ordered": "2014-03-10T23:59:59"
+                    },
+                    {
+                        "id": 2,
+                        "product": {
+                            "id": 2,
+                            "name": "Gutschein für ein Festmahl",
+                            "price": 20000,
+                            "image": "http://lorempixel.com/80/80/food/8/"
+                        },
+                        "user_id": 82887,
+                        "status": "Offen",
+                        "time_ordered": "2014-03-09T23:59:59"
+                    }
+                ]
+            }
+
 
 
 
