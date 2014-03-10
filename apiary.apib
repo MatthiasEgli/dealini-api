@@ -922,6 +922,7 @@ Attributes of a product:
             {
                 "product": {
                     "id": 1,
+                    "deal_id": 1012,
                     "name": "Gutschein für eine Mahlzeit",
                     "price": 10000,
                     "image": "http://lorempixel.com/80/80/food/7/"
@@ -936,6 +937,29 @@ Attributes of a product:
 + Response 200
 
     [Product][]
+
+## Products of a deal [/deals/{id}/produtcs]
+
+### Get the products of a deal [GET]
+
++ Parameters
+    + id (int, required, `1012`) ... ID of the deal for which the products should be fetched
+
++ Response 200
+
+    + Body
+
+            {
+                "products": [
+                    {
+                        "id": 1,
+                        "deal_id": 1012,
+                        "name": "Gutschein für eine Mahlzeit",
+                        "price": 10000,
+                        "image": "http://lorempixel.com/80/80/food/7/"
+                    }
+                ]
+            }
 
 
 # Group Order
@@ -961,6 +985,7 @@ Attributes:
                     "id": 1,
                     "product": {
                         "id": 1,
+                        "deal_id": 1012,
                         "name": "Gutschein für eine Mahlzeit",
                         "price": 10000,
                         "image": "http://lorempixel.com/80/80/food/7/"
@@ -995,6 +1020,7 @@ Attributes:
                         "id": 1,
                         "product": {
                             "id": 1,
+                            "deal_id": 1012,
                             "name": "Gutschein für eine Mahlzeit",
                             "price": 10000,
                             "image": "http://lorempixel.com/80/80/food/7/"
@@ -1008,6 +1034,7 @@ Attributes:
                         "id": 2,
                         "product": {
                             "id": 2,
+                            "deal_id": 1013,
                             "name": "Gutschein für ein Festmahl",
                             "price": 20000,
                             "image": "http://lorempixel.com/80/80/food/8/"
