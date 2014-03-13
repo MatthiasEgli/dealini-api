@@ -1121,16 +1121,16 @@ Special cases:
 
 * Reservation times out, but order is still possible: The order is re-opened and used as if it never expired
 
-Attributes only available for creating the offer:
+The following attributes have to be set when creating the order (other attributes will be ignored, use PUT instead):
 
 * product_id: (int) ID of the product which should be ordered / redeemed
+* user_id: (int) ID of the user who ordered this product
 
 + Request (application/json)
 
         {
             "product_id": 1,
-            "user_id": 82887,
-            "payment_id": null
+            "user_id": 82887
         }
 
 + Response 200
