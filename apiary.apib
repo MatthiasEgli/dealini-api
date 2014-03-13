@@ -834,26 +834,7 @@ The following parameters are available:
                     {"id": 113, "email": "marc.waber@swissonline.ch", "last_login": "16.07.2013 16:23", "status": "activ"},
                     {"id": 114, "email": "eavdyli@hispeed.ch", "last_login": "5.03.2014 09:41", "status": "activ"},
                     {"id": 115, "email": "cisco@jent.ch", "last_login": "5.03.2014 09:41", "status": "verified"},
-                    {"id": 116, "email": "james@prodigi.ch", "last_login": "16.07.2013 16:23", "status": "activ"},
-                    {"id": 117, "email": "michael.wirth@dealini.ch", "last_login": "5.03.2014 09:41", "status": "activ"},
-                    {"id": 118, "email": "pascal.fierz@dealini.ch", "last_login": "5.03.2014 09:41", "status": "activ"},
-                    {"id": 119, "email": "rene@thebeach.ch", "last_login": "5.03.2014 09:41", "status": "verified"},
-                    {"id": 120, "email": "tamara.ambrosini@dealini.ch", "last_login": "5.03.2014 09:41", "status": "activ"},
-                    {"id": 121, "email": "mw@monotone.ch", "last_login": "5.03.2014 09:41", "status": "activ"},
-                    {"id": 122, "email": "jean-paul.saija@dealini.ch", "last_login": "01.10.2013 17:57", "status": "activ"},
-                    {"id": 123, "email": "fabian.brun@dealini.ch", "last_login": "5.03.2014 09:41", "status": "activ"},
-                    {"id": 124, "email": "taotao@hotmail.de", "last_login": "5.03.2014 09:41", "status": "activ"},
-                    {"id": 125, "email": "donymeca@gmail.com", "last_login": "01.10.2013 17:57", "status": "activ"},
-                    {"id": 126, "email": "unpluggd@gmail.com", "last_login": "5.03.2014 09:41", "status": "verified"},
-                    {"id": 127, "email": "beat.merkli@six-group.com", "last_login": "5.03.2014 09:41", "status": "activ"},
-                    {"id": 128, "email": "boostup@gmx.ch", "last_login": "5.03.2014 09:41", "status": "activ"},
-                    {"id": 129, "email": "francisco@jent.ch", "last_login": "5.03.2014 09:41", "status": "activ"},
-                    {"id": 130, "email": "wiseveri@student.ethz.ch", "last_login": "16.07.2013 16:23", "status": "activ"},
-                    {"id": 131, "email": "daniela.paris@hosg.ch", "last_login": "5.03.2014 09:41", "status": "verified"},
-                    {"id": 132, "email": "marc.waber@swissonline.ch", "last_login": "16.07.2013 16:23", "status": "activ"},
-                    {"id": 133, "email": "eavdyli@hispeed.ch", "last_login": "5.03.2014 09:41", "status": "activ"},
-                    {"id": 134, "email": "cisco@jent.ch", "last_login": "5.03.2014 09:41", "status": "verified"},
-                    {"id": 135, "email": "james@prodigi.ch", "last_login": "16.07.2013 16:23", "status": "activ"}
+                    {"id": 116, "email": "james@prodigi.ch", "last_login": "16.07.2013 16:23", "status": "activ"}
                 ]
             }
 
@@ -992,8 +973,14 @@ Attributes:
 * id: (int) ID of the order
 * product: (Product) The product which got ordered
 * user_id: (int) ID of the user who ordered this product
-* status: (string) Descriptive status of the orders state. The states have to be defined yet.
-* time_ordered: (isodatetime) The time when the order was made (e.g. after successful payment / redemtion)
+* status: (string) Descriptive status of the orders state. Possible states:
+
+    > reserved: The order is not yet completed, but the product is reserved for the user. Reservations time out after 15 minutes.
+    > payed: The order was completed successfully, e.g. the payment was received and the cards were redeemed.
+    > more states will be defined to tell the user about the orders progress (e.g. shipping date & progress)
+    
+* status_formatted: (string) The status of the order as it can be displayed to the user (e.g. "Ausgeliefert").
+* time_ordered: (isodatetime) The time when the order was made (e.g. after successful payment / redemption)
 
 + Model (application/json)
 
@@ -1011,7 +998,17 @@ Attributes:
                     },
                     "user_id": 82887,
                     "payment": null,
-                    "status": "Abgeschlossen",
+                    "address": {
+                        "title": "Herr",
+                        "firstname": "Max",
+                        "lastname": "Mustermann",
+                        "street": "Strasse 1",
+                        "postal_code": "1234",
+                        "city": "Stadt",
+                        "country": "Schweiz"
+                    },
+                    "status": "payed",
+                    "status_formatted": "Bezahlt",
                     "time_ordered": "2014-03-10T23:59:59"
                 }
             }
@@ -1020,6 +1017,30 @@ Attributes:
 
 + Parameters
     + id (int, required, `1`) ... ID of the oder to fetch
+
++ Response 200
+
+    [Order][]
+
+### Update an order [PUT]
+
++ Parameters
+    + id (int, required, `1`) ... ID of the oder to update
+
++ Request (application/json)
+
+        {
+            "address": {
+                "title": "Herr",
+                "firstname": "Max",
+                "lastname": "Mustermann",
+                "street": "Strasse 1",
+                "postal_code": "1234",
+                "city": "Stadt",
+                "country": "Schweiz"
+            },
+            "status": "payed"
+        }
 
 + Response 200
 
@@ -1046,9 +1067,19 @@ Attributes:
                         },
                         "user_id": 82887,
                         "payment": null,
-                        "status": "Abgeschlossen",
+                        "address": {
+                            "title": "Herr",
+                            "firstname": "Max",
+                            "lastname": "Mustermann",
+                            "street": "Strasse 1",
+                            "postal_code": "1234",
+                            "city": "Stadt",
+                            "country": "Schweiz"
+                        },
+                        "status": "payed",
+                        "status_formatted": "Bezahlt",
                         "time_ordered": "2014-03-10T23:59:59"
-                    },
+                    }
                     {
                         "id": 2,
                         "product": {
@@ -1060,20 +1091,39 @@ Attributes:
                         },
                         "user_id": 82887,
                         "payment": null,
-                        "status": "Offen",
-                        "time_ordered": "2014-03-09T23:59:59"
+                        "address": {
+                            "title": "Herr",
+                            "firstname": "Max",
+                            "lastname": "Mustermann",
+                            "street": "Strasse 1",
+                            "postal_code": "1234",
+                            "city": "Stadt",
+                            "country": "Schweiz"
+                        },
+                        "status": "reserved",
+                        "status_formatted": "Reserviert (15min)",
+                        "time_ordered": "2014-03-10T23:59:59"
                     }
                 ]
             }
 
 ### Create a new order [POST]
 
-This should happen after a successful payment (if necessary) was done.
-The cards of the user will be redeemed (e.g. removed from the user) during this step.
+Creating an order should be done in the following steps:
+
+1. Reserve the product for the user, then ask the user for the shipping details.
+2. Update (PUT) the necessary shipping information. This will automatically extend the orders reservation time once
+3. Use the `payment` object which is included in the `order` object with the datatrans SDK (see _Payment_)
+4. Update the order with the payment object returned by the Datatrans SDK and set the status to _completed_.
+If this call succeeds, the order workd out as planned and the user can be informed.
+
+Special cases:
+
+* Reservation times out, but order is still possible: The order is re-opened and used as if it never expired
+
+Attributes only available for creating the offer:
 
 * product_id: (int) ID of the product which should be ordered / redeemed
-* user_id: (int) ID of the user who is ordering.
-* payment_id: (int) ID of the payment. Can be null if no payment was necessary.
 
 + Request (application/json)
 
@@ -1086,8 +1136,6 @@ The cards of the user will be redeemed (e.g. removed from the user) during this 
 + Response 200
 
     [Order][]
-
-
 
 
 
