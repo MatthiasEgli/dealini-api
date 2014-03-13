@@ -964,6 +964,10 @@ Attributes of a product:
 
 # Group Order
 
+#### Error-Codes:
+* 100: (HTTP 403 - Forbidden) "Product out of stock" - There are no more products available to be ordered
+* 101: (HTTP 403 - Forbidden) "User doesn't own enough cards" - To redeem, the user must have all numbers of the products deal.
+
 ## Order [/orders/{id}]
 
 An order corresponds to a user buying a product.
