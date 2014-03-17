@@ -838,25 +838,6 @@ The following parameters are available:
                 ]
             }
 
-## Users [/dashboard/users/{id}]
-
-### Get user info [GET]
-
-+ Response 200
-
-    + Body
-    
-            {
-                "dashboarduser": {
-                    "id": 288,
-                    "email": "james@prodigi.ch", 
-                    "last_login": "16.07.2013 16:23", 
-                    "status": "activ",
-                    "roles": ["bp", "admin"],
-                    "permissions": ["main", "register", "settings", "permissions"]
-                }
-            }
-
 ## Users [/dashboard/users/current]
 
 ### Get user info [GET]
@@ -989,6 +970,9 @@ Attributes of a product:
 #### Error-Codes:
 * 100: (HTTP 403 - Forbidden) "Product out of stock" - There are no more products available to be ordered
 * 101: (HTTP 403 - Forbidden) "User doesn't own enough cards" - To redeem, the user must have all numbers of the products deal.
+* 102: (HTTP 403 - Forbidden) "Cannot access order of another player" - Only the orders of the logged-in user may be retrieved.
+* 103: (HTTP 404 - NotFound) "No order found" - Order does not exist.
+* 104: (HTTP 403 - Forbidden) "Invalid update, order is read-only" - Once the order is payed, no updates can be issued by the player
 
 ## Order [/orders/{id}]
 
