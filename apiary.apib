@@ -838,6 +838,25 @@ The following parameters are available:
                 ]
             }
 
+## Users [/dashboard/users/{id}]
+
+### Get user info [GET]
+
++ Response 200
+
+    + Body
+    
+            {
+                "dashboarduser": {
+                    "id": 288,
+                    "email": "james@prodigi.ch", 
+                    "last_login": "16.07.2013 16:23", 
+                    "status": "activ",
+                    "roles": ["bp", "admin"],
+                    "permissions": ["main", "register", "settings", "permissions"]
+                }
+            }
+
 ## Users [/dashboard/users/current]
 
 ### Get user info [GET]
