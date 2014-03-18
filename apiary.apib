@@ -851,7 +851,7 @@ The following parameters are available:
                     "id": 288,
                     "email": "james@prodigi.ch", 
                     "last_login": "16.07.2013 16:23", 
-                    "activ": true,
+                    "status": "activ",
                     "roles": ["bp", "admin"],
                     "permissions": ["main", "register", "settings", "permissions"]
                 }
@@ -992,6 +992,9 @@ Attributes of a product:
 * 102: (HTTP 403 - Forbidden) "Cannot access order of another player" - Only the orders of the logged-in user may be retrieved.
 * 103: (HTTP 404 - NotFound) "No order found" - Order does not exist.
 * 104: (HTTP 403 - Forbidden) "Invalid update, order is read-only" - Once the order is payed, no updates can be issued by the player
+* 105: (HTTP 403 - Forbidden) "Invalid update, invalid status change from old_status to new_status" - Only some order status changes are allowed:
+
+    > reserved -> payed: Mark an order as payed. The server will check if the address and payment are complete.
 
 ## Order [/orders/{id}]
 
