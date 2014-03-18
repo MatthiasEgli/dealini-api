@@ -996,6 +996,9 @@ Attributes of a product:
 
     > reserved -> payed: Mark an order as payed. The server will check if the address and payment are complete.
 
+* 106: (HTTP 403 - Forbidden) "Invalid order, cannot be payed" - The order got invalid during the reservation (out of stock or cards traded).
+
+
 ## Order [/orders/{id}]
 
 An order corresponds to a user buying a product.
