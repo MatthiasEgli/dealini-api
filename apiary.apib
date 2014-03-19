@@ -1173,6 +1173,74 @@ The following attributes have to be set when creating the order (other attribute
     [Order][]
 
 
+# Group Notifications
+
+## Notification
+
+### Notification
+
++ Model (application/json)
+
+    + Body
+
+            {
+                "notification": {
+                    "id": 1,
+                    "code": 1,
+                    "consumed": false,
+                    "seen": true,
+                    "text": "Neues Tauschangebot erhalten"
+                }
+            }
+
+## Notification collection [/notifications]
+
+### Get all notifications for current user [GET]
+
++ Response 200
+
+    + Body
+    
+            {
+                "notifications": [
+                    {
+                        "id": 1,
+                        "code": 0,
+                        "consumed": false,
+                        "seen": false,
+                        "text": "Neues Tauschangebot erhalten"
+                    },
+                    {
+                        "id": 2,
+                        "code": 1,
+                        "consumed": false,
+                        "seen": false,
+                        "text": "Tauschangebot akzeptiert"
+                    },
+                    {
+                        "id": 3,
+                        "code": 2,
+                        "consumed": false,
+                        "seen": false,
+                        "text": "Tauschangebot abgelehnt"
+                    },
+                    {
+                        "id": 3,
+                        "code": 0,
+                        "consumed": true,
+                        "seen": true,
+                        "text": "Neues Tauschangebot erhalten"
+                    },
+                    {
+                        "id": 3,
+                        "code": 1,
+                        "consumed": true,
+                        "seen": true,
+                        "text": "Tauschangebot akzeptiert"
+                    }
+                ]
+            }
+
 
 # Group old documentation
 
