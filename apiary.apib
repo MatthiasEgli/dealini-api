@@ -748,7 +748,7 @@ trade (parent_trade_id is set), in which case the old trade will automatically b
 
 # Group Dashboard
 
-## Sessions [/dashboard/sessions]
+## Session collection [/dashboard/sessions]
 
 ### Create a new Session with Email and Password [POST]
 The following parameters are available:
@@ -787,7 +787,7 @@ The following parameters are available:
     
             Access-Control-Allow-Credentials: true
 
-## Sessions/Current [/dashboard/sessions/current]
+## Session [/dashboard/sessions/current]
 
 ### Return permissions of setting sessions [OPTIONS]
 
@@ -806,7 +806,7 @@ The following parameters are available:
             Access-Control-Allow-Credentials: true
             Set-Cookie: dealinidev_auth=5b068891ae586391d30c4aeed158ce5a6829af58b5bb9280f22c46689c9314b61482edf8; expires=Mon, 18-Feb-2013 12:17:57 GMT; httponly; Path=/
 
-## Users [/dashboard/users]
+## Dashboarduser collection [/dashboard/users]
 
 ### Get user info [GET]
 
@@ -838,9 +838,12 @@ The following parameters are available:
                 ]
             }
 
-## Users [/dashboard/users/{id}]
+## Dashboarduser [/dashboard/users/{id}]
 
 ### Get user info [GET]
+
++ Parameters
+    + id (int, required, `288`) ... ID of the user to fetch. Use `current` for the logged-in user.
 
 + Response 200
 
@@ -857,23 +860,7 @@ The following parameters are available:
                 }
             }
 
-## Users [/dashboard/users/current]
-
-### Get user info [GET]
-
-+ Response 200
-
-    + Body
-    
-            {
-                "dashboarduser": {
-                    "id": 288,
-                    "roles": ["bp", "admin"],
-                    "permissions": ["main", "register", "settings", "permissions"]
-                }
-            }
-
-## Roles [/dashboard/roles]
+## Role collection [/dashboard/roles]
 
 ### Get all roles [GET]
 
@@ -889,7 +876,7 @@ The following parameters are available:
                 ]
             }
 
-## Permissions [/dashboard/permissions]
+## Permission collection [/dashboard/permissions]
 
 ### Get all permissions [GET]
 
@@ -905,9 +892,9 @@ The following parameters are available:
                 ]
             }
 
-## Roles_Perms [/dashboard/roles_perms]
+## Role Permission Link Collection [/dashboard/roles_perms]
 
-### Get all permissions [GET]
+### Get all role permission connections [GET]
 
 + Response 200
 
