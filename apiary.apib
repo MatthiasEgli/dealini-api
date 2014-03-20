@@ -860,22 +860,6 @@ The following parameters are available:
                 }
             }
 
-## Role collection [/dashboard/roles]
-
-### Get all roles [GET]
-
-+ Response 200
-
-    + Body
-    
-            {
-                "roles": [
-                    {"id": 1, "name": "admin"},
-                    {"id": 2, "name": "investor"},
-                    {"id": 3, "name": "bp"}
-                ]
-            }
-
 ## Permission collection [/dashboard/permissions]
 
 ### Get all permissions [GET]
@@ -892,7 +876,7 @@ The following parameters are available:
                 ]
             }
 
-## Role Permission Link Collection [/dashboard/roles_perms]
+## Role Permission Link Collection [/dashboard/roles]
 
 ### Get all role permission connections [GET]
 
@@ -901,10 +885,10 @@ The following parameters are available:
     + Body
     
             {
-                "roles_perms": [
-                    {"id": 1, "name": "admin", "perms": []},
-                    {"id": 2, "name": "investor", "perms": [1,2]},
-                    {"id": 3, "name": "bp",  "perms": [2,3]}
+                "roles": [
+                    {"id": 1, "name": "admin", "permissions": []},
+                    {"id": 2, "name": "investor", "permissions": [{"id": 1}, {"id": 2}]},
+                    {"id": 3, "name": "bp",  "permissions": [{"id": 2}, {"id": 3}]}
                 ]
             }
 
