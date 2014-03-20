@@ -1146,6 +1146,11 @@ The following attributes have to be set when creating the order (other attribute
 
 # Group Notifications
 
+#### Error-Codes:
+* 110: (HTTP 404 - NotFound) "Could not find notification" - The requested notification does not exist.
+* 111: (HTTP 404 - NotFound) "Cannot access notification of another player" - Only notifications of the logged-in user may be accessed.
+* 112: (HTTP 404 - NotFound) "Invalid notification change" - Cannot un-see or un-consume notification.
+
 ## Notification
 
 ### Notification
