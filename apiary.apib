@@ -880,7 +880,7 @@ The following parameters are available:
                 ]
             }
 
-## Role Permission Link Collection [/dashboard/roles]
+## Roles Collection [/dashboard/roles]
 
 ### Get all role permission connections [GET]
 
@@ -895,6 +895,30 @@ The following parameters are available:
                     {"id": 3, "name": "bp",  "permissions": [{"id": 2}, {"id": 3}]}
                 ]
             }
+
+## Role [/dashboard/roles/{id}]
+
+### Update role [PUT]
+
++ Parameters
+    + id (int, required, `3`) ... ID of the role
+    
++ Request (application/json)
+
+    + Body
+    
+            {
+                "permissions": [{"id": 1}, {"id": 3}]
+            }
+            
++ Response 200
+    
+    + Body
+    
+            {
+                "role": {"id": 3, "name": "bp",  "permissions": [{"id": 1}, {"id": 3}]}
+            }
+ 
 
 # Group Product
 
