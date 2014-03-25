@@ -3,10 +3,15 @@ HOST: https://apitest.dealini.ch
 
 
 # Dealini API
-Welcome to the Dealini API documentation. We are constantly adding and improving features of this API. Please add your comments and feedback to the API as comments!
+Welcome to the Dealini API documentation. We are constantly adding and improving features of this API.
+Please add your comments and feedback to the API as comments!
 
 Requests with data (POST / PUT) will be JSON encoded. The Content-Type will be application/json
 All responses will to be JSON encoded. The Content-Type will always be application/json
+
+Most API calls are only available after authorization (login). For these calls it is necessary to send the
+auth-cookie which is set in the Response of POST /sessions along with the Request. Cookies will also be used
+for load balancing, so the consumer of the API should handle cookies the same way a browser would handle cookies.
 
 ## General fields always available
 * suppress_response_codes: (bool) If this is provided and set to "true", the Error Codes will always return as a HTTP OK (200). The correct HTTP Error Code is stored in the JSOn encoded Error response
