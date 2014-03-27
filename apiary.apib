@@ -261,6 +261,8 @@ Attributes:
 * likes: (int) Number of peoples who favourited this deal
 * number: (int) The identifier for this deal in numeric form for display purposes.
 * featured: (bool) If the deal should be featured (highlighted) in the album overview
+* options: (list of dicts) The possible choices for products for this deal
+
 
 + Model (application/json)
 
@@ -269,7 +271,7 @@ Attributes:
             {
                 "deal": {
                     "id": 1012,
-                    "name": "Tolle Visitenkarten",
+                    "name": "Mein Essen",
                     "image320x130": "http://lorempixel.com/320/130/food/5/",
                     "image320x180": "http://lorempixel.com/320/180/food/3/",
                     "logo": "http://s3-eu-west-1.amazonaws.com/dealini-assets/content/1009/logo.png",
@@ -277,7 +279,8 @@ Attributes:
                     "likes": 896,
                     "number": 35,
                     "category_id": 1,
-                    "featured": false
+                    "featured": false,
+                    "options": [{"values": [{"id": "1", "name": "Indisch"}, {"id": "3", "name": "Schweiz"}, {"id": "2", "name": "Tessin"}]
                 }
             }
 
@@ -310,7 +313,8 @@ Attributes:
                         "likes": 0,
                         "number": 4,
                         "category_id": 7,
-                        "featured": true
+                        "featured": true,
+                        "options": [{"values": [{"id": "1", "name": "Indisch"}, {"id": "3", "name": "Schweiz"}, {"id": "2", "name": "Tessin"}]
                     },
                     {
                         "id": 1013,
@@ -322,7 +326,8 @@ Attributes:
                         "likes": 5,
                         "number": 10,
                         "category_id": 7,
-                        "featured": false
+                        "featured": false,
+                        "options": []
                     },
                     {
                         "id": 1014,
@@ -334,7 +339,8 @@ Attributes:
                         "likes": 10,
                         "number": 35,
                         "category_id": 7,
-                        "featured": false
+                        "featured": false,
+                        "options": []
                     },
                     {
                         "id": 1015,
@@ -346,7 +352,8 @@ Attributes:
                         "likes": 345,
                         "number": 45,
                         "category_id": 7,
-                        "featured": false
+                        "featured": false,
+                        "options": []
                     },
                     {
                         "id": 1016,
@@ -358,7 +365,8 @@ Attributes:
                         "likes": 1234,
                         "number": 80,
                         "category_id": 6,
-                        "featured": false
+                        "featured": false,
+                        "options": []
                     },
                     {
                         "id": 1017,
@@ -370,7 +378,8 @@ Attributes:
                         "likes": 9654,
                         "number": 90,
                         "category_id": 6,
-                        "featured": false
+                        "featured": false,
+                        "options": []
                     }
                 ]
             }
