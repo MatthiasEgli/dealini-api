@@ -763,6 +763,10 @@ trade (parent_trade_id is set), in which case the old trade will automatically b
 
 ## Session collection [/dashboard/sessions]
 
+## Error-Codes
+* 120: (HTTP 401 - Unauthorized) "Email or password did not match" 
+* 121: (HTTP 401 - Unauthorized) "Session does not exist"
+
 ### Create a new Session with Email and Password [POST]
 The following parameters are available:
 
@@ -820,6 +824,10 @@ The following parameters are available:
             Set-Cookie: dealinidev_auth=5b068891ae586391d30c4aeed158ce5a6829af58b5bb9280f22c46689c9314b61482edf8; expires=Mon, 18-Feb-2013 12:17:57 GMT; httponly; Path=/
 
 ## Dashboarduser collection [/dashboard/dashboardusers]
+
+## Error-Codes
+* 130: (HTTP 404 - NotFound) "No User found" - There is no user with the provided ID
+* 131: (HTTP 403 - Forbidden) "Email already exists" - A user with the same email address already registered.
 
 ### Get user info [GET]
 
@@ -890,6 +898,8 @@ The following parameters are available:
             }
 
 ## Roles Collection [/dashboard/roles]
+
+* 140: (HTTP 403 - Forbidden) "Rolename already exists" - A role with the same name already registered.
 
 ### Get all role permission connections [GET]
 
