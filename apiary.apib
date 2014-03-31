@@ -1222,6 +1222,77 @@ The following attributes have to be set when creating the order (other attribute
 
 
 
+# Group PaymentMeans
+
+A payment mean holds a credit card or similar ways to pay online (e.g. a Postcard).
+
+#### Error-Codes
+
+## PaymentMean [/paymentMeans/{id}]
+
++ Model (application/json)
+
+    + Body
+
+            {
+                "paymentMean": {
+                    "id": 1,
+                    "type": "visa",
+                    "alias": 12345678901234567,
+                    "cardno": 1234,
+                    "exp": "09/14",
+                }
+            }
+
+### Remove a payment mean [DELETE]
+
++ Response 204
+
+## PaymentMean Collection [/paymentMeans]
+
+### Get all PaymentMeans of the logged-in user [GET]
+
++ Response 200
+
+    + Body
+    
+            {
+                "paymentMeans": [
+                    {
+                        "id": 1,
+                        "type": "visa",
+                        "alias": 12345678901234567,
+                        "cardno": 1234,
+                        "exp": "09/14",
+                    },
+                    {
+                        "id": 2,
+                        "type": "mastercard",
+                        "alias": 76543210987654321,
+                        "cardno": 4321,
+                        "exp": "09/14",
+                    },
+                ]
+            }
+
+### Register a new PaymentMean [POST]
+
+A payment mean should only be registered if it is checked and valid, e.g. after it was used in a payment for the first time.
+
++ Request (application/json)
+
+        {
+            "type": "visa",
+            "alias": 12345678901234567,
+            "cardno": 1234,
+            "exp": "09/14"
+        }
+
++ Response 200
+
+    [PaymentMean][]
+
+
 # Group Notifications
 
 #### Error-Codes:
