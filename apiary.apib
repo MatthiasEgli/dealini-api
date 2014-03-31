@@ -1176,10 +1176,14 @@ Attributes:
                         },
                         "user_id": 82887,
                         "payment": {
-                            "card_type": "visa",
-                            "card_no": 1234,
                             "id": 1,
-                            "card_exp": "9/14",
+                            "payment_mean": {
+                                "id": 1,
+                                "type": "visa",
+                                "alias": 12345678901234567,
+                                "card_no": 1234,
+                                "exp": "09/20"
+                            }
                         },
                         "address": {
                             "title": "Herr",
@@ -1205,10 +1209,14 @@ Attributes:
                         },
                         "user_id": 82887,
                         "payment": {
-                            "card_type": "visa",
-                            "card_no": 1234,
-                            "id": 1,
-                            "card_exp": "9/14",
+                            "id": 2,
+                            "payment_mean": {
+                                "id": 1,
+                                "type": "visa",
+                                "alias": 12345678901234567,
+                                "card_no": 1234,
+                                "exp": "09/20"
+                            }
                         },
                         "address": {
                             "title": "Herr",
@@ -1282,7 +1290,7 @@ Attributes:
     + Body
 
             {
-                "paymentMean": {
+                "payment_mean": {
                     "id": 1,
                     "type": "visa",
                     "alias": 12345678901234567,
@@ -1304,7 +1312,7 @@ Attributes:
     + Body
     
             {
-                "paymentMeans": [
+                "payment_means": [
                     {
                         "id": 1,
                         "type": "visa",
