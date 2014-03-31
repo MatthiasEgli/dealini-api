@@ -1237,7 +1237,7 @@ Attributes:
 * type: (string) Can be `visa` / `mastercard` or `postcard`.
 * alias: (int) A unique identifier of this card used by DataTrans.
   Can be used to identify the card without having to provide the full data again
-* cardno: (int) The last 4 digits of the card. Usefull to show the user which card he has stored.
+* card_no: (int) The last 4 digits of the card. Usefull to show the user which card he has stored.
 * exp: (string) The month and year in which the card will expire. Format: mm/yy
 
 + Model (application/json)
@@ -1249,7 +1249,7 @@ Attributes:
                     "id": 1,
                     "type": "visa",
                     "alias": 12345678901234567,
-                    "cardno": 1234,
+                    "card_no": 1234,
                     "exp": "09/14",
                 }
             }
@@ -1294,7 +1294,7 @@ A payment mean should only be registered if it is checked and valid, e.g. after 
         {
             "type": "visa",
             "alias": 12345678901234567,
-            "cardno": 1234,
+            "card_no": 1234,
             "exp": "09/14"
         }
 
