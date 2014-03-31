@@ -1227,6 +1227,8 @@ The following attributes have to be set when creating the order (other attribute
 A payment mean holds a credit card or similar ways to pay online (e.g. a Postcard).
 
 #### Error-Codes
+* 150: (HTTP 403 - NotFound) "PaymentMean not found" - This payment mean does not exist in our database (anymore)
+* 151: (HTTP 403 - Forbidden) "Cannot access payment mean of another user" - Only payment means owned by the logged-in user can be delete
 
 ## PaymentMean [/paymentMeans/{id}]
 
