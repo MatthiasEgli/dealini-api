@@ -1074,6 +1074,19 @@ Attributes of a product:
 
 An order corresponds to a user buying a product.
 
+Ordering a product usually involves the following steps:
+
+1. Prepare an order by creating a new empty order. It will expire after 15min (POST /orders)
+2. Update (PUT) the product chosen by the user. This will automatically extend the orders reservation time.
+2. Update (PUT) the necessary shipping information. This will automatically extend the orders reservation time.
+3a. Process the payment using Datatrans. The payments refid and signature are provided in the `payment` object ("id" and "sign").
+3b. If no payment is necessary (e.g. if the price is 0), the order is payed by setting the status to "payed" (PUT)
+4. Refresh the order if necessary, e.g. after processing the payment from datatrans. The status should be "payed" now.
+
+Special cases:
+
+* Reservation times out, but order is still possible: The order is re-opened and used as if it never expired
+
 Attributes:
 
 * id: (int) ID of the order
@@ -1236,34 +1249,38 @@ Attributes:
 
 ### Create a new order [POST]
 
-Creating an order should be done in the following steps:
-
-1. Reserve the product for the user, then ask the user for the shipping details.
-2. Update (PUT) the necessary shipping information. This will automatically extend the orders reservation time once
-3. Use the `payment` object which is included in the `order` object with the datatrans SDK (see _Payment_)
-4. Update the order with the payment object returned by the Datatrans SDK and set the status to _completed_.
-If this call succeeds, the order workd out as planned and the user can be informed.
-
-Special cases:
-
-* Reservation times out, but order is still possible: The order is re-opened and used as if it never expired
-
-The following attributes have to be set when creating the order (other attributes will be ignored, use PUT instead):
-
-* product_id: (int) ID of the product which should be ordered / redeemed
-* user_id: (int) ID of the user who ordered this product
+It is possible to provide a productid when creating a new order.
+This results in the same model as if an order is first created empty and
+then updated with the product (using PUT)
 
 + Request (application/json)
 
-        {
-            "product_id": 1,
-            "user_id": 82887
-        }
+        {}
 
-+ Response 200
++ Response 200 (application/json)
 
-    [Order][]
+    + Body
 
+            {
+                "order": {
+                    "id": 1,
+                    "product": null,
+                    "user_id": 82887,
+                    "payment": null,
+                    "address": {
+                        "title": "",
+                        "firstname": "",
+                        "lastname": "",
+                        "street": "",
+                        "postal_code": "",
+                        "city": "",
+                        "country": ""
+                    },
+                    "status": "reserved",
+                    "status_formatted": "Reserviert",
+                    "time_ordered": "2014-03-10T23:59:59"
+                }
+            }
 
 
 
