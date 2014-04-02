@@ -1146,12 +1146,21 @@ Attributes:
 
 ### Update an order [PUT]
 
+The following fields can be changed:
+
+* address: (Address) The billing address. Used as shipping address if no shipping address is defined.
+* status: (string) Can be set to "payed" for orders where no payment is necessary (e.g. where the product is free)
+* product: (Product) The product which should be ordered. Can be changed until the payment is processed.
+
 + Parameters
     + id (int, required, `1`) ... ID of the oder to update
 
 + Request (application/json)
 
         {
+            "product": {
+                "id": 1
+            },
             "address": {
                 "title": "Herr",
                 "firstname": "Max",
