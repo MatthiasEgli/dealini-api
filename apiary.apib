@@ -1094,9 +1094,9 @@ Attributes:
 * user_id: (int) ID of the user who ordered this product
 * status: (string) Descriptive status of the orders state. Possible states:
 
-    > reserved: The order is not yet completed, but the product is reserved for the user. Reservations time out after 15 minutes.
-    > payed: The order was completed successfully, e.g. the payment was received and the cards were redeemed.
-    > more states will be defined to tell the user about the orders progress (e.g. shipping date & progress)
+    > * reserved: The order is not yet completed, but the product is reserved for the user. Reservations time out after 15 minutes.
+    > * payed: The order was completed successfully, e.g. the payment was received and the cards were redeemed.
+    > * more states will be defined to tell the user about the orders progress (e.g. shipping date & progress)
     
 * status_formatted: (string) The status of the order as it can be displayed to the user (e.g. "Ausgeliefert").
 * time_ordered: (isodatetime) The time when the order was made (e.g. after successful payment / redemption)
