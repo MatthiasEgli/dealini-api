@@ -234,6 +234,89 @@ A user has cards which can be traded with other users.
                 ]
             }
 
+## Settings of a user [/users/{user_id}/settings]
+
+### Get all his settings [GET]
+
+If the settings of another than the logged-in user are checked, only the public settings are returned
+
++ Parameters
+    + user_id (int, required, `4809`) ... The user for which we want to fetch the settings. *current* for the logged-in user.
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "settings": {
+                    "billing_address": {
+                        "city": null,
+                        "first_name": null,
+                        "last_name": null,
+                        "country_isocode": null,
+                        "title": null,
+                        "street": null,
+                        "postal_code": null
+                    },
+                    "use_billing_address_as_shipping_address": true,
+                    "shipping_address": {
+                        "city": null,
+                        "first_name": null,
+                        "last_name": null,
+                        "country_isocode": null,
+                        "title": null,
+                        "street": null,
+                        "postal_code": null
+                    }
+                }
+            }
+
+### Update a setting [PUT]
+
++ Parameters
+    + user_id (int, required, `4809`) ... The user for which we want to fetch the settings. *current* for the logged-in user.
+
++ Request (application/json)
+
+        {
+            "billing_address": {
+                "city": "Stadt",
+                "first_name": "Max",
+                "last_name": "Mustermann",
+                "country_isocode": "CHE",
+                "title": "Mr",
+                "street": "Strasse 1",
+                "postal_code": 1234
+            }
+        }
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "settings": {
+                    "billing_address": {
+                        "city": "Stadt",
+                        "first_name": "Max",
+                        "last_name": "Mustermann",
+                        "country_isocode": "CHE",
+                        "title": "Mr",
+                        "street": "Strasse 1",
+                        "postal_code": 1234
+                    },
+                    "use_billing_address_as_shipping_address": true,
+                    "shipping_address": {
+                        "city": null,
+                        "first_name": null,
+                        "last_name": null,
+                        "country_isocode": null,
+                        "title": null,
+                        "street": null,
+                        "postal_code": null
+                    }
+                }
+            }
 
 
 # Group Deals
