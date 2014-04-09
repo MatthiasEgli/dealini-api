@@ -1288,8 +1288,8 @@ The following fields can be changed:
                                 "id": 1,
                                 "type": "visa",
                                 "alias": 12345678901234567,
-                                "card_no": 1234,
-                                "exp": "09/20"
+                                "card_number_suffix": 1234,
+                                "expiry_date": "2016-09-01"
                             }
                         },
                         "billing_address": {
@@ -1321,8 +1321,8 @@ The following fields can be changed:
                                 "id": 1,
                                 "type": "visa",
                                 "alias": 12345678901234567,
-                                "card_no": 1234,
-                                "exp": "09/20"
+                                "card_number_suffix": 1234,
+                                "expiry_date": "2016-09-01"
                             }
                         },
                         "billing_address": {
@@ -1393,8 +1393,8 @@ Attributes:
 * type: (string) Can be `visa` / `mastercard` or `postcard`.
 * alias: (int) A unique identifier of this card used by DataTrans.
   Can be used to identify the card without having to provide the full data again
-* card_no: (int) The last 4 digits of the card. Usefull to show the user which card he has stored.
-* exp: (string) The month and year in which the card will expire. Format: mm/yy
+* card_number_suffix: (int) The last 4 digits of the card. Usefull to show the user which card he has stored.
+* expiry_date: (string) Isodate of the first day of the month where the card expires
 
 + Model (application/json)
 
@@ -1405,8 +1405,8 @@ Attributes:
                     "id": 1,
                     "type": "visa",
                     "alias": 12345678901234567,
-                    "card_no": 1234,
-                    "exp": "09/14",
+                    "card_number_suffix": 1234,
+                    "expiry_date": "2014-09-01",
                 }
             }
 
@@ -1428,15 +1428,15 @@ Attributes:
                         "id": 1,
                         "type": "visa",
                         "alias": 12345678901234567,
-                        "card_no": 1234,
-                        "exp": "09/14",
+                        "card_number_suffix": 1234,
+                        "expiry_date": "2014-09-01",
                     },
                     {
                         "id": 2,
                         "type": "mastercard",
                         "alias": 76543210987654321,
-                        "card_no": 4321,
-                        "exp": "09/14",
+                        "card_number_suffix": 4321,
+                        "expiry_date": "2014-09-01",
                     },
                 ]
             }
@@ -1450,8 +1450,8 @@ A payment mean should only be registered if it is checked and valid, e.g. after 
         {
             "type": "visa",
             "alias": 12345678901234567,
-            "card_no": 1234,
-            "exp": "09/14"
+            "card_number_suffix": 1234,
+            "expiry_date": "2014-09-01"
         }
 
 + Response 200
