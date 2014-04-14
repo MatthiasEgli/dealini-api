@@ -1289,7 +1289,7 @@ The following fields can be changed:
                                 "holder": "Max Mustermann",
                                 "type": "visa",
                                 "alias": 12345678901234567,
-                                "card_number_suffix": 1234,
+                                "card_number_suffix": "1234",
                                 "expiry_date": "2016-09-01"
                             }
                         },
@@ -1323,7 +1323,7 @@ The following fields can be changed:
                                 "holder": "Max Mustermann",
                                 "type": "visa",
                                 "alias": 12345678901234567,
-                                "card_number_suffix": 1234,
+                                "card_number_suffix": "1234",
                                 "expiry_date": "2016-09-01"
                             }
                         },
@@ -1396,7 +1396,7 @@ Attributes:
 * holder: (string) Name of the holder of the card
 * alias: (int) A unique identifier of this card used by DataTrans.
   Can be used to identify the card without having to provide the full data again
-* card_number_suffix: (int) The last 4 digits of the card. Usefull to show the user which card he has stored.
+* card_number_suffix: (string) The last 4 digits of the card. Usefull to show the user which card he has stored.
 * expiry_date: (string) Isodate of the first day of the month where the card expires
 
 + Model (application/json)
@@ -1409,7 +1409,7 @@ Attributes:
                     "holder": "Max Mustermann",
                     "type": "visa",
                     "alias": 12345678901234567,
-                    "card_number_suffix": 1234,
+                    "card_number_suffix": "1234",
                     "expiry_date": "2014-09-01",
                 }
             }
@@ -1433,7 +1433,7 @@ Attributes:
                         "holder": "Max Mustermann",
                         "type": "visa",
                         "alias": 12345678901234567,
-                        "card_number_suffix": 1234,
+                        "card_number_suffix": "1234",
                         "expiry_date": "2014-09-01",
                     },
                     {
@@ -1441,7 +1441,7 @@ Attributes:
                         "holder": "Max Mustermann",
                         "type": "mastercard",
                         "alias": 76543210987654321,
-                        "card_number_suffix": 4321,
+                        "card_number_suffix": "4321",
                         "expiry_date": "2014-09-01",
                     },
                 ]
@@ -1457,7 +1457,7 @@ A payment mean should only be registered if it is checked and valid, e.g. after 
             "type": "visa",
             "holder": "Max Mustermann",
             "alias": 12345678901234567,
-            "card_number_suffix": 1234,
+            "card_number_suffix": "1234",
             "expiry_date": "2014-09-01"
         }
 
