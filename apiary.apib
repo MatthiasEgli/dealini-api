@@ -327,7 +327,7 @@ If the settings of another than the logged-in user are checked, only the public 
 * 40: (HTTP 404 - NotFound) "Card not found" - The card does not exist in the database (anymore).
     When a deal cannot be collected anymore, the unsold cards are removed.
 * 41: (HTTP 404 - NotFound) "Code does not exist" -The provided code never existed in our database
-* 42: (HTTP 404 - NotFound) "Code already used" -The provided code was used by a player (might even be the logged-in player) before.
+* 42: (HTTP 403 - Forbidden) "Code already used" -The provided code was used by a player (might even be the logged-in player) before.
 
 ## Cards collection [/cards]
 
