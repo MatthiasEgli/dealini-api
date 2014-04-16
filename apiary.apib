@@ -321,6 +321,39 @@ If the settings of another than the logged-in user are checked, only the public 
             }
 
 
+# Group Cards
+
+## Error-Codes:
+* 40: (HTTP 404 - NotFound) "Card not found" - The card does not exist in the database (anymore).
+    When a deal cannot be collected anymore, the unsold cards are removed.
+* 41: (HTTP 404 - NotFound) "Code does not exist" -The provided code never existed in our database
+* 42: (HTTP 404 - NotFound) "Code already used" -The provided code was used by a player (might even be the logged-in player) before.
+
+## Cards collection [/cards]
+
+### Use a code to get a card [POST]
+
++ Request (application/json)
+
+    + Body
+    
+            {
+                "code": "aaaa-bbbb-cccc"
+            }
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "card": {
+                    "user_id": 4809,
+                    "deal_id": 1012,
+                    "number": 1,
+                    "quantity": 3
+                }
+            }
+
 # Group Deals
 A deal is an offer which can be redeemed if a certain amount of distinct cards have been collected.
 
