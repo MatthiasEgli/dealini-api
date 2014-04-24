@@ -35,7 +35,7 @@ Creation & removal of sessions. Login and Logout are handled here
 * 11: (HTTP 401 - Unauthorized) "Email or password did not match."
 * 12: (HTTP 401 - Unauthorized) "Session does not exist" - The session either never existed or it was already terminated
 * 13: (HTTP 400 - Bad Request) "Invalid Facebook access token" - The access token could not be used, either because it is malformatted or expired.
-* 14: (HTTP 404 - NotFound) "Could not find user based on Facebook access_token" - The user never connected his account with dealini
+* 14: (HTTP 404 - NotFound) "Could not find user" - The user could not be found based on the provided identification
 * 15: (HTTP 401 - Unauthorized) "The user is banned" - The user is marked as banned. Normally the user is informed by email about the reasons.
 
 ## Session [/sessions/current]
@@ -74,6 +74,7 @@ The following parameters are available:
 * email: (unicode string) login of user
 * password: (unicode string) password of user
 * fb_access_token: (string) A valid FB access token. If this is given, email&password are ignored
+* device_identifier: (string) A unique identifier for the device used for anonymous users
 
 + Request (application/json)
 
@@ -86,6 +87,12 @@ The following parameters are available:
 
         {
             "fb_access_token": "AAACukElzvo0BALBn7XKCA6ZAnJ5MZCaDV6JJK4f0XDVUENgqGyRRWLXAUV4yL8MnHaw4JUCzFvBZC7if9ZAsIoVhIuv3TljWxNKVY83eJR6sTX6pOZBqs"
+        }
+
++ Request with device_identifier (application/json)
+
+        {
+            "device_identifier": "anystringwhichisunique"
         }
 
 + Response 200
@@ -150,6 +157,8 @@ Available parameters:
 * password: (string) The new password of the user
 or
 * access_token: (string, fb access token) an authorized Facebook access token for the user
+or
+* device_identifier: (string) A unique device identifing token, useful to create an limited anonymous user
 
 
 + Request (application/json)
@@ -167,9 +176,27 @@ or
             "username": "Dealini Test"
         }
 
++ Request with device_identifier (application/json)
+
+        {
+            "device_identifier": "anystringwhichisunique"
+        }
+
 + Response 200
 
-    [User][]
+    + Headers
+
+            Set-Cookie: dealinidev_auth=5b068891ae586391d30c4aeed158ce5a6829af58b5bb9280f22c46689c9314b61482edf8; httponly; Path=/
+
+    + Body
+    
+            {
+                "user": {
+                    "username": "dealinitest1",
+                    "image": "https://d2bus1b529rui1.cloudfront.net/userpics/default_medium.jpg",
+                    "id": 4809,
+                }
+            }
 
 
 ## Cards of a user [/users/{user_id}/cards]
