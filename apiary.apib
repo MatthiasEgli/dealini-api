@@ -13,6 +13,12 @@ Most API calls are only available after authorization (login). For these calls i
 auth-cookie which is set in the Response of POST /sessions along with the Request. Cookies will also be used
 for load balancing, so the consumer of the API should handle cookies the same way a browser would handle cookies.
 
+Some resources can be accessed by an anonymous user, but most resources need a registered user (e.g. with a valid email).
+If an anonymous user tries to access a resource available only to registered users, a HTTPForbidden error will be returned.
+As over time the resources available to anonymous users might change, a consumer of the API should implement a generic handler
+for these cases promting the anonymous user to register only after trying to access the protected route. For this reason the
+protected routes are not explicitly mentioned in the documentation.
+
 ## General fields always available
 * suppress_response_codes: (bool) If this is provided and set to "true", the Error Codes will always return as a HTTP OK (200). The correct HTTP Error Code is stored in the JSOn encoded Error response
 * rollback: (bool) If this is set to "true", no changes will be saved in the database. Useful for testing.
@@ -25,6 +31,7 @@ Error codes specific for the resources are described at the corresponding resour
 * 1: (HTTP 400 - Bad Request) Generally malformatted input. A detailed description of the error is given in the error description
 * 2: (HTTP 401 - Unauthorized) A resource which is only available to logged-in user is requested by an unauthorized user. Either the user is not logged in or his session timed out.
 * 3: (HTTP 404 - NotFound) The resource does not exist
+* 4: (HTTP 403 - Forbidden) This resource is only available to non-anonymous users
 
 
 # Group Sessions
@@ -101,7 +108,7 @@ The following parameters are available:
 
 
 # Group Users
-All requests belonging to a user, e.g.. creating, changing and fetching.
+All requests belonging to a user, e.g. creating, changing and fetching.
 
 ## Error-Codes
 * 20: (HTTP 403 - Forbidden) "Invalid email address" - The provided email is not considered a valid email based on some basic regex
@@ -158,7 +165,7 @@ Available parameters:
 or
 * access_token: (string, fb access token) an authorized Facebook access token for the user
 or
-* device_identifier: (string) A unique device identifing token, useful to create an limited anonymous user
+* device_identifier: (string) A unique device identifing token, used to create an limited anonymous user
 
 
 + Request (application/json)
