@@ -149,6 +149,41 @@ One player of dealini.ch.
 
     [User][]
 
+### Update a user [PUT]
+
++ Parameters
+    + id (int, required, `3`) ... ID of the user
+    
++ Request (application/json)
+
+    + Body
+    
+            {
+                "username": "dealinitest1"
+                "firstname": "Marcel"
+                "lastname": "Gustavson"
+                "birthday": "1978-02-04"
+                "email": "dealinitest1@dealini.ch"
+                "phone": "+41771234567"
+                "status_message": "I can update my profile! =D"
+                "image": "https://dealini-userupload.s3.amazonaws.com/userpics/275_1398850601"
+            }
+            
++ Response 200
+    
+    + Body
+    
+            {
+                "username": "dealinitest1"
+                "firstname": "Marcel"
+                "lastname": "Gustavson"
+                "birthday": "1978-02-04"
+                "email": "dealinitest1@dealini.ch"
+                "phone": "+41771234567"
+                "status_message": "I can update my profile! =D"
+                "image": "https://dealini-userupload.s3.amazonaws.com/userpics/275_1398850601"
+            }
+
 
 ## User collection [/users]
 
