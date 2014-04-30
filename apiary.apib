@@ -1011,6 +1011,9 @@ Attributes of a trade:
 A new trade which is offered to another player. Special case is when the new trade gets created based on an existing
 trade (parent_trade_id is set), in which case the old trade will automatically be declinded or cancelled.
 
+Special case: sending cards to another user (without receiving any cards in return)
+In this case, the state of the trade can be set to "accepted" directly, causing the trade to be finished in one call.
+
 + Request (application/json)
 
     + Body
@@ -1038,6 +1041,7 @@ trade (parent_trade_id is set), in which case the old trade will automatically b
 + Response 200
 
     [Trade][]
+
 
 
 
