@@ -240,6 +240,52 @@ or
                 }
             }
 
+## User collection search [/users/{q}]
+
+### Get multiple users [GET]
+
++ Parameters
+    + q (string, optional, `@dealini.ch`) ... search users which have the search keyword 'q' containing in their fields 'id', 'email', 'firstname ' and 'lastname'
+
++ Response 200 (application/json)
+
+    + Body
+
+    
+            {
+                "users": [
+                    {
+                        "first_name": "Marcel", 
+                        "last_name": "Gustavson", 
+                        "email": "dealinitest1@dealini.ch", 
+                        "id": 4809
+                    }, 
+                    {
+                        "first_name": null, 
+                        "last_name": null, 
+                        "email": "dealinitest621@dealini.ch", 
+                        "id": 32536
+                    }, 
+                    {
+                        "first_name": null, 
+                        "last_name": null, 
+                        "email": "dealinitest681@dealini.ch", 
+                        "id": 27161
+                    }, 
+                    {
+                        "first_name": null, 
+                        "last_name": null, 
+                        "email": "dealinitest91@dealini.ch", 
+                        "id": 27143
+                    }, 
+                    {
+                        "first_name": null, 
+                        "last_name": null, 
+                        "email": "demo1@dealini.ch", 
+                        "id": 1594
+                    }
+                ]
+            }
 
 ## Cards of a user [/users/{user_id}/cards]
 A user has cards which can be traded with other users.
