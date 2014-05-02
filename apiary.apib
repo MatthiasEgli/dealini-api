@@ -22,7 +22,8 @@ protected routes are not explicitly mentioned in the documentation.
 ## General fields always available
 * suppress_response_codes: (bool) If this is provided and set to "true", the Error Codes will always return as a HTTP OK (200). The correct HTTP Error Code is stored in the JSOn encoded Error response
 * rollback: (bool) If this is set to "true", no changes will be saved in the database. Useful for testing.
-* fields (alt: fields[]): (string) Only return these fields/attributes. Must be provided to get optional fields/attributes. "id" is always returend.
+* fields (alt: fields[]): (string) Only return these fields/attributes. Must be provided to get optional fields/attributes. "id" is always returned.
+    To specify fields from embedded objects (e.g. products inside a deal), the dot-notation can be used (e.g. "product.name" to get only the name attribute)
 
 ## Error Codes
 Error codes specific for the resources are described at the corresponding resource
