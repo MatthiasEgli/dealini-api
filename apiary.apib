@@ -531,7 +531,8 @@ Optional Attributes (Returned by default if a single deal is requested):
                                 "1": 1
                             },
                             "id": 1,
-                            "name": "Gutschein für eine Mahlzeit"
+                            "name": "Gutschein für eine Mahlzeit",
+                            "requires_shipping_address": true
                         },
                         {
                             "price_in_cents": 10000,
@@ -540,7 +541,8 @@ Optional Attributes (Returned by default if a single deal is requested):
                                 "1": 2
                             },
                             "id": 3,
-                            "name": "Gutschein für eine Mahlzeit"
+                            "name": "Gutschein für eine Mahlzeit",
+                            "requires_shipping_address": true
                         },
                         {
                             "price_in_cents": 10000,
@@ -549,7 +551,8 @@ Optional Attributes (Returned by default if a single deal is requested):
                                 "1": 3
                             },
                             "id": 4,
-                            "name": "Gutschein für eine Mahlzeit"
+                            "name": "Gutschein für eine Mahlzeit",
+                            "requires_shipping_address": true
                         }
                     ]
                 }
@@ -1242,6 +1245,7 @@ Attributes of a product:
 * price_in_cents: (int) The products price in cents (Rappen)
 * image: (string, url) URL to the image of the product
 * configuration: (dict) The option for this product. Options are configured on the deal.
+* requires_shipping_address: (boolean) If a shipping address must be asked from the buyer.
 
 + Model (application/json)
 
@@ -1254,7 +1258,8 @@ Attributes of a product:
                     "name": "Gutschein für eine Mahlzeit",
                     "price_in_cents": 10000,
                     "image": "http://lorempixel.com/80/80/food/7/",
-                    "configuration": {"1": 1}
+                    "configuration": {"1": 1},
+                    "requires_shipping_address": true
                 }
             }
 
@@ -1286,7 +1291,8 @@ Attributes of a product:
                         "name": "Gutschein für eine Mahlzeit",
                         "price_in_cents": 10000,
                         "image": "http://lorempixel.com/80/80/food/7/",
-                        "configuration": {"1": 1}
+                        "configuration": {"1": 1},
+                        "requires_shipping_address": true
                     },
                     {
                         "id": 2,
@@ -1294,7 +1300,8 @@ Attributes of a product:
                         "name": "Gutschein für eine Mahlzeit",
                         "price_in_cents": 10000,
                         "image": "http://lorempixel.com/80/80/food/7/",
-                        "configuration": {"1": 2}
+                        "configuration": {"1": 2},
+                        "requires_shipping_address": true
                     },
                     {
                         "id": 3,
@@ -1302,7 +1309,8 @@ Attributes of a product:
                         "name": "Gutschein für eine Mahlzeit",
                         "price_in_cents": 10000,
                         "image": "http://lorempixel.com/80/80/food/7/",
-                        "configuration": {"1": 3}
+                        "configuration": {"1": 3},
+                        "requires_shipping_address": true
                     }
                 ]
             }
@@ -1366,7 +1374,9 @@ Attributes:
                         "deal_id": 1012,
                         "name": "Gutschein für eine Mahlzeit",
                         "price_in_cents": 10000,
-                        "image": "http://lorempixel.com/80/80/food/7/"
+                        "image": "http://lorempixel.com/80/80/food/7/",
+                        "configuration": {"1": 1},
+                        "requires_shipping_address": true
                     },
                     "user_id": 82887,
                     "payment": {
@@ -1447,7 +1457,9 @@ The following fields can be changed:
                             "deal_id": 1012,
                             "name": "Gutschein für eine Mahlzeit",
                             "price_in_cents": 10000,
-                            "image": "http://lorempixel.com/80/80/food/7/"
+                            "image": "http://lorempixel.com/80/80/food/7/",
+                            "configuration": {"1": 1},
+                            "requires_shipping_address": true
                         },
                         "user_id": 82887,
                         "payment": {
@@ -1481,7 +1493,9 @@ The following fields can be changed:
                             "deal_id": 1013,
                             "name": "Gutschein für ein Festmahl",
                             "price_in_cents": 12323,
-                            "image": "http://lorempixel.com/80/80/food/8/"
+                            "image": "http://lorempixel.com/80/80/food/8/",
+                            "configuration": {"1": 1},
+                            "requires_shipping_address": true
                         },
                         "user_id": 82887,
                         "payment": {
