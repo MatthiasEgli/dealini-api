@@ -1247,6 +1247,7 @@ Attributes of a product:
 * configuration: (dict) The option for this product. Options are configured on the deal.
 * requires_shipping_address: (boolean) If a shipping address must be asked from the buyer.
 * requires_payment: (boolean) If a payment must be done for this product before a successful redemption
+* shipping_costs_in_cents: (int) The price for the shipping costs in cents (Rappen)
 
 
 + Model (application/json)
@@ -1262,7 +1263,8 @@ Attributes of a product:
                     "image": "http://lorempixel.com/80/80/food/7/",
                     "configuration": {"1": 1},
                     "requires_shipping_address": true,
-                    "requires_payment": true
+                    "requires_payment": true,
+                    "shipping_costs_in_cents": 0
                 }
             }
 
@@ -1296,7 +1298,8 @@ Attributes of a product:
                         "image": "http://lorempixel.com/80/80/food/7/",
                         "configuration": {"1": 1},
                         "requires_shipping_address": true,
-                        "requires_payment": true
+                        "requires_payment": true,
+                        "shipping_costs_in_cents": 0
                     },
                     {
                         "id": 2,
@@ -1306,7 +1309,8 @@ Attributes of a product:
                         "image": "http://lorempixel.com/80/80/food/7/",
                         "configuration": {"1": 2},
                         "requires_shipping_address": true,
-                        "requires_payment": true
+                        "requires_payment": true,
+                        "shipping_costs_in_cents": 0
                     },
                     {
                         "id": 3,
@@ -1316,7 +1320,8 @@ Attributes of a product:
                         "image": "http://lorempixel.com/80/80/food/7/",
                         "configuration": {"1": 3},
                         "requires_shipping_address": true,
-                        "requires_payment": true
+                        "requires_payment": true,
+                        "shipping_costs_in_cents": 0
                     }
                 ]
             }
@@ -1383,7 +1388,8 @@ Attributes:
                         "image": "http://lorempixel.com/80/80/food/7/",
                         "configuration": {"1": 1},
                         "requires_shipping_address": true,
-                        "requires_payment": true
+                        "requires_payment": true,
+                        "shipping_costs_in_cents": 0
                     },
                     "user_id": 82887,
                     "payment": {
@@ -1467,7 +1473,8 @@ The following fields can be changed:
                             "image": "http://lorempixel.com/80/80/food/7/",
                             "configuration": {"1": 1},
                             "requires_shipping_address": true,
-                            "requires_payment": true
+                            "requires_payment": true,
+                            "shipping_costs_in_cents": 0
                         },
                         "user_id": 82887,
                         "payment": {
@@ -1504,7 +1511,8 @@ The following fields can be changed:
                             "image": "http://lorempixel.com/80/80/food/8/",
                             "configuration": {"1": 1},
                             "requires_shipping_address": true,
-                            "requires_payment": true
+                            "requires_payment": true,
+                            "shipping_costs_in_cents": 0
                         },
                         "user_id": 82887,
                         "payment": {
