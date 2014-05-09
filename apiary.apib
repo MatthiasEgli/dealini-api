@@ -512,11 +512,24 @@ The instant prize itself is included by default
                     "redemption_info": {
                         "code": "abc123def"
                     },
+                    "delivery_details": {
+                        "email": "test@example.com"
+                    }
                     "code": "abcd1234efgh",
                 }
             }
 
 ### Get a single instant prize card [GET]
+
++ Parameters
+    + cardid (int, required, `1`) ... The ID of the instant prize card
+            
++ Response 200 (application/json)
+
+    [InstantPrizeCard][]
+
+
+### Update the delivery_details [PUT]
 
 + Parameters
     + cardid (int, required, `1`) ... The ID of the instant prize card
@@ -526,20 +539,10 @@ The instant prize itself is included by default
     + Body
     
             {
-                "redemption_info": {
-                    "code": "abc123def"
+                "delivery_details": {
+                    "email": "test@example.com"
                 }
             }
-            
-+ Response 200 (application/json)
-
-    [InstantPrizeCard][]
-
-
-### Update the redemption_info [PUT]
-
-+ Parameters
-    + cardid (int, required, `1`) ... The ID of the instant prize card
 
 + Response 200 (application/json)
 
