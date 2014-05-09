@@ -521,6 +521,26 @@ The instant prize itself is included by default
 + Parameters
     + cardid (int, required, `1`) ... The ID of the instant prize card
 
++ Request (application/json)
+
+    + Body
+    
+            {
+                "redemption_info": {
+                    "code": "abc123def"
+                }
+            }
+            
++ Response 200 (application/json)
+
+    [InstantPrizeCard][]
+
+
+### Update the redemption_info [PUT]
+
++ Parameters
+    + cardid (int, required, `1`) ... The ID of the instant prize card
+
 + Response 200 (application/json)
 
     [InstantPrizeCard][]
