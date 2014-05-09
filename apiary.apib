@@ -467,6 +467,59 @@ Alternatively also the /users/current/cards route can be used
                 }
             }
 
+
+# Group InstantPrizeCards
+
+## Error-Codes:
+None so far
+
+## InstantPrizeCard [/instantPrizeCards/{cardid}]
+
+The instant prize itself is included by default
+
++ Model (application/json)
+
+    + Body
+    
+            {
+                "instantPrizeCard": {
+                    "id": 1,
+                    "instant_prize": {
+                        "id": 1,
+                        "name": "Eat.ch 5 CHF Gutschein",
+                        "image_product": "http://lorempixel.com/100/100/food/1/",
+                        "image_card": "https://s3-eu-west-1.amazonaws.com/dealini-assets/content/1012/card_1.png",
+                        "description": "Hol dir jetzt dein Essen nach Hause und spare dabei 5 CHF!",
+                        "terms_html": "<ul><li>Nicht kummulierbar</li><li>Gültig bis 31.12.2014</li><ul>",
+                        "how_to_html": "<h1>So funktionierts</h1><p>Du musst einfach auf eat.ch gehen, bestellen und den Gutscheincode eingeben.</p>",
+                        "company_address": null,
+                        "redemption_type": "code",
+                        "redemption_infos": {
+                            "shop_url": "http://www.eat.ch"
+                        },
+                    },
+                    "user": {
+                        "username": "dealinitest1",
+                        "image": "https://d2bus1b529rui1.cloudfront.net/userpics/default_medium.jpg",
+                        "id": 4809,
+                    }
+                    "redemption_info": {
+                        "code": "abc123def"
+                    },
+                    "code": "abcd1234efgh",
+                }
+            }
+
+### Get a single instant prize card [GET]
+
++ Parameters
+    + cardid (int, required, `1`) ... The ID of the instant prize card
+
++ Response 200 (application/json)
+
+    [InstantPrizeCard][]
+
+
 # Group Deals
 A deal is an offer which can be redeemed if a certain amount of distinct cards have been collected.
 
