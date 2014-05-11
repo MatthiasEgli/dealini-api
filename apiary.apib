@@ -469,6 +469,19 @@ If the settings of another than the logged-in user are checked, only the public 
 * 161: (HTTP 403 - Forbidden) "No pending friend request from other player" To accept a friend request,
     there must be a pending friend request from the other player.
 
+## FriendRequest [/friendRequest/{id}]
+
++ Model (application/json)
+
+    + Body
+    
+            {
+                "friendRequest": {
+                    "addressee_id": 631,
+                    "requester_id": 4809,
+                }
+            }
+
 ## FriendRequest collection [/friendRequests]
 
 + Model (application/json)
@@ -495,6 +508,19 @@ If the settings of another than the logged-in user are checked, only the public 
 
     [FriendRequest collection][]
 
+### Create a new friend request [POST]
+
++ Request (application/json)
+
+    + Body
+    
+            {
+                "addressee_id": 631
+            }
+
++ Response 200 (application/json)
+
+    [FriendRequest][]
 
 
 # Group Cards
