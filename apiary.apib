@@ -345,6 +345,35 @@ A user has cards which can be traded with other users.
                 ]
             }
 
+### Add a friend - accept a friend request [POST]
+
+Only works if a pending friend request is waiting
+
++ Parameters
+    + user_id (int, required, `current`) ... The user who is accepting the friend request. *current* for the logged-in user.
+
++ Request (application/json)
+
+        {
+            "friend_id": 631
+        }
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "friendship": {
+                    "friend_id": 631,
+                    "user_id": 4809,
+                    "friend": {
+                        "username": "Matthias©",
+                        "image": "https://s3-eu-west-1.amazonaws.com/dealini-temp/userpics/medium/631_1347348157.jpg",
+                        "id": 631
+                    }
+                }
+            }
+
 ## Settings of a user [/users/{user_id}/settings]
 
 ### Get all his settings [GET]
