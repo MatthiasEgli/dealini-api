@@ -461,6 +461,42 @@ If the settings of another than the logged-in user are checked, only the public 
             }
 
 
+
+# Group FriendRequests
+
+## Error-Codes:
+* 160: (HTTP 403 - Forbidden) "The players are already friends" - A friend request can only be made to players who are not friends yet
+* 161: (HTTP 403 - Forbidden) "No pending friend request from other player" To accept a friend request,
+    there must be a pending friend request from the other player.
+
+## FriendRequest collection [/friendRequests]
+
++ Model (application/json)
+
+    + Body
+    
+            {
+                "friendRequests": [
+                    {
+                        "addressee_id": 4809,
+                        "requester_id": 631,
+                        "requester": {
+                            "id": 631,
+                            "username": "Matthias",
+                            "image": "https://d2bus1b529rui1.cloudfront.net/userpics/default_medium.jpg"
+                        }
+                    }
+                ]
+            }
+
+### Get pending friend requests which can be accepted by the player [GET]
+
++ Response 200 (application/json)
+
+    [FriendRequest collection][]
+
+
+
 # Group Cards
 
 ## Error-Codes:
