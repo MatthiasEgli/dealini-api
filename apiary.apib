@@ -347,7 +347,7 @@ A user has cards which can be traded with other users.
 
 ### Add a friend - accept a friend request [POST]
 
-Only works if a pending friend request is waiting
+Only works if a pending friend request is waiting. Will issue a push notification (code=4) to the user.
 
 + Parameters
     + user_id (int, required, `current`) ... The user who is accepting the friend request. *current* for the logged-in user.
@@ -509,6 +509,8 @@ If the settings of another than the logged-in user are checked, only the public 
     [FriendRequest collection][]
 
 ### Create a new friend request [POST]
+
+Will issue a push notification to the addressee (code=3)
 
 + Request (application/json)
 
