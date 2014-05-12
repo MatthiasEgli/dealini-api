@@ -693,6 +693,16 @@ Optional Attributes (Returned by default if a single deal is requested):
 
 * options: (list of dicts) The possible choices for products for this deal
 * products: (list of dicts) All valid products for this deal
+* show_in_album: (bool) If the deal should be visible in the overview of deals ("album")
+* amount_of_distinct_cards: (int) How many cards have to be collected.
+* image_background: (string, url) The file which can be used as a background image when showing the deal details
+* product_images: (list of strings (urls)) Different shots of the product or the brand
+* tint_color: (string, "#FFFFFF") Hex-coded color of the deal
+
+Admin attributes:
+* time_start: (isodatetime) Starting time of the deal
+* time_end: (isodatetime) End of the deal - can still be redeemed
+* time_redeem_end: (isodatetime) Real end - no redemption anymore
 
 
 + Model (application/json)
@@ -724,6 +734,7 @@ Optional Attributes (Returned by default if a single deal is requested):
                         "http://s3-eu-west-1.amazonaws.com/dealini-assets/content/1009/card_1.png",
                         "http://s3-eu-west-1.amazonaws.com/dealini-assets/content/1009/card_2.png"
                     ],
+                    "tint_color": "#d9ac7c",
                     "options": [
                         {
                             "id": 1,
