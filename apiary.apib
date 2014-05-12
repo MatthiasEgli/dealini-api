@@ -313,7 +313,7 @@ A user has cards which can be traded with other users.
             }
 
 
-## Friendships of a user [/users/{user_id}/friendships]
+## Friendships of a user [/users/{user_id}/friendships{/friend_id}]
 
 ### Get all friends of this user [GET]
 
@@ -338,6 +338,16 @@ A user has cards which can be traded with other users.
                     }
                 ]
             }
+
+### Delete a friend [DELETE]
+
+Always "works", even if they were no friends
+
++ Parameters
+    + user_id (int, required, `current`) ... The user who is deleting the friend request. *current* for the logged-in user.
+    + friend_id (int, required, `631`) ... The user who is being removed from the friends.
+
++ Response 204
 
 ### Add a friend - accept a friend request [POST]
 
