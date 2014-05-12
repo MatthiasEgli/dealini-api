@@ -488,7 +488,9 @@ If the settings of another than the logged-in user are checked, only the public 
                 }
             }
 
-## FriendRequest collection [/friendRequests]
+## FriendRequest collection [/users/{user_id}/friendRequests{/friend_id}]
+
+Alternative URL for /users/current/friendRequests: /friendRequests
 
 + Model (application/json)
 
@@ -512,6 +514,9 @@ If the settings of another than the logged-in user are checked, only the public 
 
 ### Get pending friend requests which can be accepted by the player [GET]
 
++ Parameters
+    + user_id (int, required, `current`) ... The user for which we want to fetch the settings. *current* for the logged-in user.
+    
 + Response 200 (application/json)
 
     [FriendRequest collection][]
@@ -519,6 +524,9 @@ If the settings of another than the logged-in user are checked, only the public 
 ### Create a new friend request [POST]
 
 Will issue a push notification to the addressee (code=3)
+
++ Parameters
+    + user_id (int, required, `current`) ... The user for which we want to fetch the settings. *current* for the logged-in user.
 
 + Request (application/json)
 
@@ -532,7 +540,15 @@ Will issue a push notification to the addressee (code=3)
 
     [FriendRequest][]
 
+### Reject a friend request [DELETE]
 
++ Parameters
+    + user_id (int, required, `current`) ... The user who wants to reject the friend request. *current* for the logged-in user.
+    + friend_id (int, required, `631`) ... The user who is being rejected.
+
++ Response 204
+    
+    
 # Group Cards
 
 ## Error-Codes:
