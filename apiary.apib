@@ -125,9 +125,27 @@ All requests belonging to a user, e.g. creating, changing and fetching.
 * 29: (HTTP 403 - Forbidden) "Invalid change of a user attribute" - Most fields of the user cannot be changed.
   Some fields like "state" or "mobile" can only be changed once.
 
+Default attributes:
+ * id: (int) ID of the user
+ * username: (string) Freely chosen username of the player
+ * image: (string, url) Location of the users image
+ * status_message: (string) Freely setable status message
+
+Optional Attributes:
+ * push_notification_channel: (string) Unique name of the player-specific PARSE channel name for push notifications
+ * email: (string) Valid email of the user. This is "null" for anonymous users
+ * first_name: (string, optional)
+ * last_name: (string, optional)
+ * phone: (string, optional) 
+ * birthday: (isodatetime, optional) 
+ * settings: (Settings object) The individual settings of the user, described in "Settings of a user" 
+ * number_of_common_friends: (int, optional) Relative to the logged-in user, gives the number of common friends (null: User is a friend).
+    This is only set when searching for users (/users?q=...).
+
 ## User [/users/{id}]
 
-One player of dealini.ch. 
+One player of dealini.ch.
+When fetching a single user, the default and the optional attributes are returned.
 
 + Model (application/json)
 
@@ -135,9 +153,18 @@ One player of dealini.ch.
     
             {
                 "user": {
+                    "status_message": "Hello World",
                     "username": "dealinitest1",
                     "image": "https://d2bus1b529rui1.cloudfront.net/userpics/default_medium.jpg",
                     "id": 4809,
+                    "email": "dealinitest1@dealini.ch",
+                    "first_name": "Dealini",
+                    "last_name": "Testuser",
+                    "phone": "+41445201122",
+                    "birthday": "2011-11-21T00:00:00",
+                    "settings": null,
+                    "number_of_common_friends": null,
+                    "push_notification_channel": "56171a345483545d823bf3fab4a6ac2b453f0b3f822386360b0561f7748bd967"
                 }
             }
 
@@ -152,17 +179,15 @@ One player of dealini.ch.
 
 ### Update a user [PUT]
 
-The following fields can be updated for the currectly logged-in user:
-* email
-* password
-* fb_access_token
-* username
-* title
-* first_name
-* last_name
-* phone
-* status_message
-* image
+Read-only fields are:
+* id
+* number_of_common_friends (changed by adding/deleting friends)
+* push_notification_channel
+* settings (can be changed, see below)
+
+Write-only fields are:
+* password: (string) New user-chosen password
+* fb_access_token: (string) Valid facebook access token, account will be connected.
 
 + Parameters
     + id (int, required, `3`) ... ID of the user
@@ -183,9 +208,24 @@ The following fields can be updated for the currectly logged-in user:
 
 ## User collection [/users]
 
++ Model (application/json)
+
+    + Body
+
+            {
+                "users": [
+                    {
+                        "status_message": "Hello World",
+                        "username": "dealinitest1",
+                        "image": "https://d2bus1b529rui1.cloudfront.net/userpics/default_medium.jpg",
+                        "id": 4809
+                    },
+                ]
+            }
+
 ### Create a User [POST]
 
-Create a new user.
+Create a new user. Will also return a valid new session.
 
 Available parameters:
 
@@ -222,66 +262,19 @@ or
 
 + Response 200
 
-    + Headers
+    [User][]
 
-            Set-Cookie: dealinidev_auth=5b068891ae586391d30c4aeed158ce5a6829af58b5bb9280f22c46689c9314b61482edf8; httponly; Path=/
-
-    + Body
-    
-            {
-                "user": {
-                    "username": "dealinitest1",
-                    "image": "https://d2bus1b529rui1.cloudfront.net/userpics/default_medium.jpg",
-                    "id": 4809,
-                }
-            }
-
-## User collection search [/users/{q}]
+## User collection search [/users{?q}]
 
 ### Get multiple users [GET]
 
 + Parameters
-    + q (string, optional, `@dealini.ch`) ... search users which have the search keyword 'q' containing in their fields 'id', 'email', 'firstname ' and 'lastname'
+    + q (string, required, `dealinitest1`) ... Searches for exact matches of email and fuzzy matches of username and first+lastname.
+        When called as a admin (fromt he dashboard), all fields are searchy fuzzy and additional fields are searched.
 
 + Response 200 (application/json)
 
-    + Body
-
-    
-            {
-                "users": [
-                    {
-                        "first_name": "Marcel", 
-                        "last_name": "Gustavson", 
-                        "email": "dealinitest1@dealini.ch", 
-                        "id": 4809
-                    }, 
-                    {
-                        "first_name": null, 
-                        "last_name": null, 
-                        "email": "dealinitest621@dealini.ch", 
-                        "id": 32536
-                    }, 
-                    {
-                        "first_name": null, 
-                        "last_name": null, 
-                        "email": "dealinitest681@dealini.ch", 
-                        "id": 27161
-                    }, 
-                    {
-                        "first_name": null, 
-                        "last_name": null, 
-                        "email": "dealinitest91@dealini.ch", 
-                        "id": 27143
-                    }, 
-                    {
-                        "first_name": null, 
-                        "last_name": null, 
-                        "email": "demo1@dealini.ch", 
-                        "id": 1594
-                    }
-                ]
-            }
+    [User collection][]
 
 ## Cards of a user [/users/{user_id}/cards]
 A user has cards which can be traded with other users.
@@ -339,7 +332,8 @@ A user has cards which can be traded with other users.
                         "friend": {
                             "username": "Matthias©",
                             "image": "https://s3-eu-west-1.amazonaws.com/dealini-temp/userpics/medium/631_1347348157.jpg",
-                            "id": 631
+                            "id": 631,
+                            "status_message": "Hello World"
                         }
                     }
                 ]
@@ -369,7 +363,8 @@ Only works if a pending friend request is waiting. Will issue a push notificatio
                     "friend": {
                         "username": "Matthias©",
                         "image": "https://s3-eu-west-1.amazonaws.com/dealini-temp/userpics/medium/631_1347348157.jpg",
-                        "id": 631
+                        "id": 631,
+                        "status_message": "Hello World"
                     }
                 }
             }
@@ -498,7 +493,8 @@ If the settings of another than the logged-in user are checked, only the public 
                         "requester": {
                             "id": 631,
                             "username": "Matthias",
-                            "image": "https://d2bus1b529rui1.cloudfront.net/userpics/default_medium.jpg"
+                            "image": "https://d2bus1b529rui1.cloudfront.net/userpics/default_medium.jpg",
+                            "status_message": "Hello World"
                         }
                     }
                 ]
