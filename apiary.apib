@@ -276,13 +276,14 @@ or
 
     [User collection][]
 
-## Cards of a user [/users/{user_id}/cards]
+## Cards of a user [/users/{user_id}/cards{?deal_id}]
 A user has cards which can be traded with other users.
 
 ### Get all tradeable cards [GET]
 
 + Parameters
     + user_id (int, required, `4809`) ... The user for which we want to fetch the cards. *current* for the logged-in user.
+    + deal_id (int, optional) ... Filter cards by this dealid
 
 + Response 200 (application/json)
 
