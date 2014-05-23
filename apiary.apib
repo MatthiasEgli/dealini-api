@@ -550,36 +550,35 @@ Will issue a push notification to the addressee (code=3)
 + Response 204
     
     
-# Group Cards
+# Group Codes
 
 ## Error-Codes:
-* 40: (HTTP 404 - NotFound) "Card not found" - The card does not exist in the database (anymore).
-    When a deal cannot be collected anymore, the unsold cards are removed.
+* 170: (HTTP 403 - Forbidden) "Code already used by you" - The provided code was used by the logged-in player, go and check cards or instant prizes.
+* 171: (HTTP 403 - Forbidden) "Code already used by another player" - The provided code was used by someone other then the logged-in player.
+* 172: (HTTP 404 - NotFound) "Code does not exist" -The provided code never existed in our database
 
-## Cards collection [/cards]
+## Code [/codes/{code}]
 
-### Use a code to get a card [POST]
+### Use a code to get a card [DELETE]
 
-Alternatively also the /users/current/cards route can be used
-
-+ Request (application/json)
-
-    + Body
-    
-            {
-                "code": "AAAABBBBCCCC"
-            }
++ Parameters
+    + code (string, required, `AAAABBBBCCCC`) ... The code which should be converted into the card or isntant prize
 
 + Response 200 (application/json)
 
     + Body
 
             {
-                "card": {
-                    "user_id": 4809,
-                    "deal_id": 1012,
-                    "number": 1,
-                    "quantity": 3
+                "code": {
+                    "type": "card",
+                    "code": "AAAABBBBCCCC",
+                    "card_unit": {
+                        "deal_id": 1012,
+                        "number": 1,
+                        "image": "https://s3-eu-west-1.amazonaws.com/dealini-assets/content/1012/card_1.png",
+                        "name": "04.1"
+                    }
+                    "instant_prize_card": null
                 }
             }
 
