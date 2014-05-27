@@ -1930,7 +1930,7 @@ For this reason, we are sending a subset of fields with shorter names as part of
 * 111: (HTTP 404 - NotFound) "Cannot access notification of another player" - Only notifications of the logged-in user may be accessed.
 * 112: (HTTP 404 - NotFound) "Invalid notification change" - Cannot un-see or un-consume notification.
 
-## Notification
+## Notification [/notifications/{id}]
 
 ### Notification
 
@@ -1949,6 +1949,23 @@ For this reason, we are sending a subset of fields with shorter names as part of
                     "time_created": "2014-05-26T08:32:22"
                 }
             }
+
+### Mark notification as consumed or seen [PUT]
+
++ Response 200 (application/json)
+
++ Parameters
+    + id (int, required, `1`) ... ID of the notification to update
+
++ Request (application/json)
+
+        {
+            "consumed": true
+        }
+
++ Response 200 (application/json)
+
+    [Notification][]
 
 ## Notification collection [/notifications]
 
@@ -2001,6 +2018,43 @@ For this reason, we are sending a subset of fields with shorter names as part of
                         "code": 1,
                         "consumed": true,
                         "seen": true,
+                        "text": "Tauschangebot akzeptiert",
+                        "image": "https://s3-eu-west-1.amazonaws.com/dealini-temp/userpics/default_small.jpg",
+                        "time_created": "2014-05-26T08:32:22"
+                    }
+                ]
+            }
+
+### Update all notifications of the logged-in user [PUT]
+
+Return the newest 10 notifications, independent if they were changed or not
+
++ Request (application/json)
+
+        {
+            "consumed": true
+        }
+
++ Response 200 (application/json)
+
+    + Body
+    
+            {
+                "notifications": [
+                    {
+                        "id": 1,
+                        "code": 0,
+                        "consumed": true,
+                        "seen": false,
+                        "text": "Neues Tauschangebot erhalten",
+                        "image": "https://s3-eu-west-1.amazonaws.com/dealini-temp/userpics/default_small.jpg",
+                        "time_created": "2014-05-26T08:32:22"
+                    },
+                    {
+                        "id": 2,
+                        "code": 1,
+                        "consumed": true,
+                        "seen": false,
                         "text": "Tauschangebot akzeptiert",
                         "image": "https://s3-eu-west-1.amazonaws.com/dealini-temp/userpics/default_small.jpg",
                         "time_created": "2014-05-26T08:32:22"
