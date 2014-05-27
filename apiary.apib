@@ -643,7 +643,6 @@ The instant prize itself is included by default
 
     [InstantPrizeCard][]
 
-
 ### Update the delivery_details [PUT]
 
 + Parameters
@@ -662,6 +661,28 @@ The instant prize itself is included by default
 + Response 200 (application/json)
 
     [InstantPrizeCard][]
+
+## InstantPrizeCards collection [/instantPrizeCards]
+
+### All instant prize cards of a user [GET]
+
++ Response 200 (application/json)
+
+    + Body
+    
+            {
+                "instantPrizeCards": [
+                    {
+                        "id": 1,
+                        "instant_prize": {
+                            "id": 1,
+                            "name": "Eat.ch 5 CHF Gutschein",
+                            "image_card": "https://s3-eu-west-1.amazonaws.com/dealini-assets/content/1012/card_1.png"
+                        },
+                        "webview_url": "http://sticker.dealini.ch/#1"
+                    }
+                ]
+            }
 
 
 # Group Deals
