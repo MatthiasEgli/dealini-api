@@ -1811,7 +1811,19 @@ The following fields can be changed:
 Fields which can be set during creation (all optional):
 * product_id: (int) ID of the product for this order
 * user_id: (int) ID of the user who orders
-* payment: (object {"apple_receipt": "base64 encoded string"}) For an inapp-purchase the order can directly be payed
+* payment: (PaymentRequestObject) For an inapp-purchase the order can directly be payed
+
+#### PaymentRequestObject
+When creating an order, it can be directly payed using an inapp payment from apple or google.
+* apple_receipt: (base64 encoded string) The receipt received from apple after the inapp payment by the app
+* google_token: (string) Token received from the google play store after the inapp payment
+* google_product_id: (string) The product which was ordered as stored inside the google play store.
+
+#### Google Payment process
+During the payment process, it is necessary to create a "developerPayload" which is used as the unique transaction ID.
+The app must create a random unsigned integer up to 8 bytes long (0-18'446'744'073'709'551'615) to make the transaction unique.
+This unique transaction ID must be sent to google when doing the payment
+and is later given to the API server (by the Google Developer API) during payment validation.
 
 + Request (application/json)
 
