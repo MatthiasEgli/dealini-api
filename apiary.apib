@@ -1683,10 +1683,10 @@ Ordering a product usually involves the following steps:
 
 1. Prepare an order by creating a new empty order. It will expire after 15min (POST /orders)
 2. Update (PUT) the product chosen by the user. This will automatically extend the orders reservation time.
-2. Update (PUT) the necessary shipping information. This will automatically extend the orders reservation time.
-3a. Process the payment using Datatrans. The payments refid and signature are provided in the `payment` object ("id" and "sign").
-3b. If no payment is necessary (e.g. if the price is 0), the order is payed by setting the status to "payed" (PUT)
-4. Refresh the order if necessary, e.g. after processing the payment from datatrans. The status should be "payed" now.
+3. Update (PUT) the necessary shipping information. This will automatically extend the orders reservation time.
+4. Process the payment using Datatrans. The payments refid and signature are provided in the `payment` object ("id" and "sign").
+5. If no payment is necessary (e.g. if the price is 0), the order is payed by setting the status to "payed" (PUT).
+6. Refresh the order if necessary, e.g. after processing the payment from datatrans. The status should be "payed" now.
 
 Special cases:
 
