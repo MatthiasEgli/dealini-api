@@ -1328,7 +1328,121 @@ A deal can have a category.
 A cardunit describes the different cards collectable. A user can have multiple identical cards, but to redeem a deal it
 is necessary to have at least one card belonging to each of the cardunits of the deal.
 
-## CardUnits [/cardUnits]
+## CardUnit [/cardUnits/{dealid}]
+
+### Cardunits of a deal[GET]
+
++ Parameters
+    + dealid (int, required, `1012`) ... ID of the deal
+    
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "cardUnits": [
+                    {
+                        "image": <Image(66, 88)>,
+                        "deal_id": 1012,
+                        "number": 1,
+                        "name": "04.1"
+                    },
+                    {
+                        "image": <Image(66, 88)>,
+                        "deal_id": 1012,
+                        "number": 2,
+                        "name": "04.2"
+                    },
+                    {
+                        "image": <Image(66, 88)>,
+                        "deal_id": 1012,
+                        "number": 3,
+                        "name": "04.3"
+                    },
+                    {
+                        "image": <Image(66, 88)>,
+                        "deal_id": 1012,
+                        "number": 4,
+                        "name": "04.4"
+                    }
+                ]
+            }
+
+## single CardUnit [/cardUnits/{dealid}/{number}]
+
+### Update a single cardunit [PUT]
+
++ Parameters
+    + dealid (int, required, `1012`) ... ID of the deal
+    + number (int, required, `2`) ... number of the cardunit
+
++ Request (application/json)
+
+    + Body
+
+            {
+                "cardUnits": [
+                    {
+                        "image": "https://s3-eu-west-1.amazonaws.com/dealini-assets/img/redesign/icons/fun.png",
+                        "deal_id": 1012,
+                        "number": 1,
+                        "name": "04.1"
+                    },
+                    {
+                        "image": "https://s3-eu-west-1.amazonaws.com/dealini-assets/img/redesign/icons/fun.png",
+                        "deal_id": 1012,
+                        "number": 2,
+                        "name": "04.2"
+                    },
+                    {
+                        "image": "https://s3-eu-west-1.amazonaws.com/dealini-assets/img/redesign/icons/fun.png",
+                        "deal_id": 1012,
+                        "number": 3,
+                        "name": "04.3"
+                    },
+                    {
+                        "image": "https://s3-eu-west-1.amazonaws.com/dealini-assets/img/redesign/icons/fun.png",
+                        "deal_id": 1012,
+                        "number": 4,
+                        "name": "04.4"
+                    }
+                ]
+            }
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "cardUnits": [
+                    {
+                        "image": <Image(66, 88)>,
+                        "deal_id": 1012,
+                        "number": 1,
+                        "name": "04.1"
+                    },
+                    {
+                        "image": <Image(66, 88)>,
+                        "deal_id": 1012,
+                        "number": 2,
+                        "name": "04.2"
+                    },
+                    {
+                        "image": <Image(66, 88)>,
+                        "deal_id": 1012,
+                        "number": 3,
+                        "name": "04.3"
+                    },
+                    {
+                        "image": <Image(66, 88)>,
+                        "deal_id": 1012,
+                        "number": 4,
+                        "name": "04.4"
+                    }
+                ]
+            }
+
+## CardUnits Collection [/cardUnits]
 Enumerates the different kind of cards available for all active deals.
 
 Attributes:
@@ -1338,7 +1452,7 @@ Attributes:
 * number: (int) The identifier of the specific card inside a deal
 * name: (string) The name of the card that is displayed to the players. Format and content may change
 
-### GET
+### All CardUnits of active Deals [GET]
 
 + Response 200 (application/json)
 
