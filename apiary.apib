@@ -906,6 +906,157 @@ Admin attributes:
     
     [Deal][]
 
+### update a single deal [PUT]
+
++ Parameters
+    + id (int, required, `1012`) ... ID of the deal
+
++ Request (application/json)
+
+    + Body
+
+            {
+                "deal": {
+                    "name": "Mein Essen",
+                    "title": "ist immer das beste Essen",
+                    "longdesc": "Gekocht mit viel Liebe und Leidenschaft zum Essen",
+                    "terms": "Niederlassung in der Schweiz, Vorkasse",
+                    "image_logo": "https://s3-eu-west-1.amazonaws.com/dealini-assets/img/redesign/icons/food.png",
+                    "image_overview": "https://s3-eu-west-1.amazonaws.com/dealini-assets/img/redesign/icons/food.png",
+                    "rank": 1,
+                    "number": 35,
+                    "category_id": 1,
+                    "featured": false,
+                    "show_in_album": true,
+                    "amount_of_distinct_cards": 4,
+                    "time_start": "2050-12-31T23:59:59",
+                    "time_end": "2051-12-31T23:59:59",
+                    "time_redeem_end": "2051-11-31T23:59:59",
+                    "image_background": "https://s3-eu-west-1.amazonaws.com/dealini-assets/img/redesign/icons/food.png",
+                    "image_featured": "https://s3-eu-west-1.amazonaws.com/dealini-assets/img/redesign/icons/food.png",
+                    "product_images": [
+                        "https://s3-eu-west-1.amazonaws.com/dealini-assets/img/redesign/icons/food.png",
+                        "https://s3-eu-west-1.amazonaws.com/dealini-assets/img/redesign/icons/food.png"
+                    ],
+                    "tint_color": "#d9ac7c",
+                    "attributes": [
+                        {
+                            "id": 1,
+                            "name": "Art",
+                            "values": [
+                                {"id": "1", "name": "Indisch"},
+                                {"id": "3", "name": "Schweiz"},
+                                {"id": "2", "name": "Tessin"}
+                            ]
+                        }
+                    ],
+                    "products": [
+                        {
+                            "price_in_cents": 10000,
+                            "image": "https://s3-eu-west-1.amazonaws.com/dealini-assets/img/redesign/icons/food.png",
+                            "configuration": {
+                                "1": 1
+                            },
+                            "id": 1,
+                            "name": "Gutschein für eine Mahlzeit",
+                            "requires_shipping_address": true
+                        },
+                        {
+                            "price_in_cents": 10000,
+                            "image": "https://s3-eu-west-1.amazonaws.com/dealini-assets/img/redesign/icons/food.png",
+                            "configuration": {
+                                "1": 2
+                            },
+                            "id": 3,
+                            "name": "Gutschein für eine Mahlzeit",
+                            "requires_shipping_address": true
+                        },
+                        {
+                            "price_in_cents": 10000,
+                            "image": "https://s3-eu-west-1.amazonaws.com/dealini-assets/img/redesign/icons/food.png",
+                            "configuration": {
+                                "1": 3
+                            },
+                            "id": 4,
+                            "name": "Gutschein für eine Mahlzeit",
+                            "requires_shipping_address": true
+                        }
+                    ]
+                }
+            }
+            
++ Response 200
+    
+            {
+                "deal": {
+                    "name": "Mein Essen",
+                    "title": "ist immer das beste Essen",
+                    "longdesc": "Gekocht mit viel Liebe und Leidenschaft zum Essen",
+                    "terms": "Niederlassung in der Schweiz, Vorkasse",
+                    "image_logo": <Image(100, 35, fit)>,
+                    "image_overview": <Image(320, 130)>,
+                    "rank": 1,
+                    "number": 35,
+                    "category_id": 1,
+                    "featured": false,
+                    "show_in_album": true,
+                    "amount_of_distinct_cards": 4,
+                    "time_start": "2050-12-31T23:59:59",
+                    "time_end": "2051-12-31T23:59:59",
+                    "time_redeem_end": "2051-11-31T23:59:59",
+                    "image_background": <Image(320, 480)>,
+                    "image_featured": <Image(320, 180)>,
+                    "product_images": [
+                        <Image(320, 200)>,
+                        <Image(320, 200)>
+                    ],
+                    "tint_color": "#d9ac7c",
+                    "attributes": [
+                        {
+                            "id": 1,
+                            "name": "Art",
+                            "values": [
+                                {"id": "1", "name": "Indisch"},
+                                {"id": "3", "name": "Schweiz"},
+                                {"id": "2", "name": "Tessin"}
+                            ]
+                        }
+                    ],
+                    "products": [
+                        {
+                            "price_in_cents": 10000,
+                            "image": <Image(75, 75)>,
+                            "configuration": {
+                                "1": 1
+                            },
+                            "id": 1,
+                            "name": "Gutschein für eine Mahlzeit",
+                            "requires_shipping_address": true
+                        },
+                        {
+                            "price_in_cents": 10000,
+                            "image": <Image(75, 75)>,
+                            "configuration": {
+                                "1": 2
+                            },
+                            "id": 3,
+                            "name": "Gutschein für eine Mahlzeit",
+                            "requires_shipping_address": true
+                        },
+                        {
+                            "price_in_cents": 10000,
+                            "image": <Image(75, 75)>,
+                            "configuration": {
+                                "1": 3
+                            },
+                            "id": 4,
+                            "name": "Gutschein für eine Mahlzeit",
+                            "requires_shipping_address": true
+                        }
+                    ]
+                }
+            }
+
 ## Deal collection [/deals]
 
 ### All active deals [GET]
@@ -940,6 +1091,155 @@ Admin attributes:
                 ]
             }
 
+### create a single deal [POST]
+
++ Request (application/json)
+
+    + Body
+
+            {
+                "deal": {
+                    "name": "Mein Essen",
+                    "title": "ist immer das beste Essen",
+                    "longdesc": "Gekocht mit viel Liebe und Leidenschaft zum Essen",
+                    "terms": "Niederlassung in der Schweiz, Vorkasse",
+                    "image_logo": "https://s3-eu-west-1.amazonaws.com/dealini-assets/img/redesign/icons/food.png",
+                    "image_overview": "https://s3-eu-west-1.amazonaws.com/dealini-assets/img/redesign/icons/food.png",
+                    "rank": 1,
+                    "number": 35,
+                    "category_id": 1,
+                    "featured": false,
+                    "show_in_album": true,
+                    "amount_of_distinct_cards": 4,
+                    "time_start": "2050-12-31T23:59:59",
+                    "time_end": "2051-12-31T23:59:59",
+                    "time_redeem_end": "2051-11-31T23:59:59",
+                    "image_background": "https://s3-eu-west-1.amazonaws.com/dealini-assets/img/redesign/icons/food.png",
+                    "image_featured": "https://s3-eu-west-1.amazonaws.com/dealini-assets/img/redesign/icons/food.png",
+                    "product_images": [
+                        "https://s3-eu-west-1.amazonaws.com/dealini-assets/img/redesign/icons/food.png",
+                        "https://s3-eu-west-1.amazonaws.com/dealini-assets/img/redesign/icons/food.png"
+                    ],
+                    "tint_color": "#d9ac7c",
+                    "attributes": [
+                        {
+                            "id": 1,
+                            "name": "Art",
+                            "values": [
+                                {"id": "1", "name": "Indisch"},
+                                {"id": "3", "name": "Schweiz"},
+                                {"id": "2", "name": "Tessin"}
+                            ]
+                        }
+                    ],
+                    "products": [
+                        {
+                            "price_in_cents": 10000,
+                            "image": "https://s3-eu-west-1.amazonaws.com/dealini-assets/img/redesign/icons/food.png",
+                            "configuration": {
+                                "1": 1
+                            },
+                            "id": 1,
+                            "name": "Gutschein für eine Mahlzeit",
+                            "requires_shipping_address": true
+                        },
+                        {
+                            "price_in_cents": 10000,
+                            "image": "https://s3-eu-west-1.amazonaws.com/dealini-assets/img/redesign/icons/food.png",
+                            "configuration": {
+                                "1": 2
+                            },
+                            "id": 3,
+                            "name": "Gutschein für eine Mahlzeit",
+                            "requires_shipping_address": true
+                        },
+                        {
+                            "price_in_cents": 10000,
+                            "image": "https://s3-eu-west-1.amazonaws.com/dealini-assets/img/redesign/icons/food.png",
+                            "configuration": {
+                                "1": 3
+                            },
+                            "id": 4,
+                            "name": "Gutschein für eine Mahlzeit",
+                            "requires_shipping_address": true
+                        }
+                    ]
+                }
+            }
+            
++ Response 200
+    
+            {
+                "deal": {
+                    "id": 1012,
+                    "name": "Mein Essen",
+                    "title": "ist immer das beste Essen",
+                    "longdesc": "Gekocht mit viel Liebe und Leidenschaft zum Essen",
+                    "terms": "Niederlassung in der Schweiz, Vorkasse",
+                    "image_logo": <Image(100, 35, fit)>,
+                    "image_overview": <Image(320, 130)>,
+                    "rank": 1,
+                    "likes": 896,
+                    "number": 35,
+                    "category_id": 1,
+                    "featured": false,
+                    "show_in_album": true,
+                    "amount_of_distinct_cards": 4,
+                    "time_start": "2050-12-31T23:59:59",
+                    "time_end": "2051-12-31T23:59:59",
+                    "time_redeem_end": "2051-11-31T23:59:59",
+                    "image_background": <Image(320, 480)>,
+                    "image_featured": <Image(320, 180)>,
+                    "product_images": [
+                        <Image(320, 200)>,
+                        <Image(320, 200)>
+                    ],
+                    "tint_color": "#d9ac7c",
+                    "attributes": [
+                        {
+                            "id": 1,
+                            "name": "Art",
+                            "values": [
+                                {"id": "1", "name": "Indisch"},
+                                {"id": "3", "name": "Schweiz"},
+                                {"id": "2", "name": "Tessin"}
+                            ]
+                        }
+                    ],
+                    "products": [
+                        {
+                            "price_in_cents": 10000,
+                            "image": <Image(75, 75)>,
+                            "configuration": {
+                                "1": 1
+                            },
+                            "id": 1,
+                            "name": "Gutschein für eine Mahlzeit",
+                            "requires_shipping_address": true
+                        },
+                        {
+                            "price_in_cents": 10000,
+                            "image": <Image(75, 75)>,
+                            "configuration": {
+                                "1": 2
+                            },
+                            "id": 3,
+                            "name": "Gutschein für eine Mahlzeit",
+                            "requires_shipping_address": true
+                        },
+                        {
+                            "price_in_cents": 10000,
+                            "image": <Image(75, 75)>,
+                            "configuration": {
+                                "1": 3
+                            },
+                            "id": 4,
+                            "name": "Gutschein für eine Mahlzeit",
+                            "requires_shipping_address": true
+                        }
+                    ]
+                }
+            }
 
 # Group Categories
 A deal can have a category.
