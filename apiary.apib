@@ -2039,12 +2039,12 @@ Attributes of a product:
 * 101: (HTTP 403 - Forbidden) "User doesn't own enough cards" - To redeem, the user must have all numbers of the products deal.
 * 102: (HTTP 403 - Forbidden) "Cannot access order of another player" - Only the orders of the logged-in user may be retrieved.
 * 103: (HTTP 404 - NotFound) "No order found" - Order does not exist.
-* 104: (HTTP 403 - Forbidden) "Invalid update, order is read-only" - Once the order is payed, no updates can be issued by the player
+* 104: (HTTP 403 - Forbidden) "Invalid update, order is read-only" - Once the order is paid, no updates can be issued by the player
 * 105: (HTTP 403 - Forbidden) "Invalid update, invalid status change from old_status to new_status" - Only some order status changes are allowed:
 
-    > reserved -> payed: Mark an order as payed. The server will check if the address and payment are complete.
+    > reserved -> paid: Mark an order as paid. The server will check if the address and payment are complete.
 
-* 106: (HTTP 403 - Forbidden) "Invalid order, cannot be payed" - The order got invalid during the reservation (out of stock or cards traded).
+* 106: (HTTP 403 - Forbidden) "Invalid order, cannot be paid" - The order got invalid during the reservation (out of stock or cards traded).
 * 107: (HTTP 403 - Forbidden) "Transaction already recorded" - The transaction ID is already used. Most likely the receipt was accidentially sent twice.
 
 
@@ -2058,8 +2058,8 @@ Ordering a product usually involves the following steps:
 2. Update (PUT) the product chosen by the user. This will automatically extend the orders reservation time.
 3. Update (PUT) the necessary shipping information. This will automatically extend the orders reservation time.
 4. Process the payment using Datatrans. The payments refid and signature are provided in the `payment` object ("id" and "sign").
-5. If no payment is necessary (e.g. if the price is 0), the order is payed by setting the status to "payed" (PUT).
-6. Refresh the order if necessary, e.g. after processing the payment from datatrans. The status should be "payed" now.
+5. If no payment is necessary (e.g. if the price is 0), the order is paid by setting the status to "paid" (PUT).
+6. Refresh the order if necessary, e.g. after processing the payment from datatrans. The status should be "paid" now.
 
 Special cases:
 
@@ -2073,7 +2073,7 @@ Attributes:
 * status: (string) Descriptive status of the orders state. Possible states:
 
     > * reserved: The order is not yet completed, but the product is reserved for the user. Reservations time out after 15 minutes.
-    > * payed: The order was completed successfully, e.g. the payment was received and the cards were redeemed.
+    > * paid: The order was completed successfully, e.g. the payment was received and the cards were redeemed.
     > * more states will be defined to tell the user about the orders progress (e.g. shipping date & progress)
     
 * status_formatted: (string) The status of the order as it can be displayed to the user (e.g. "Ausgeliefert").
@@ -2111,7 +2111,7 @@ Attributes:
                         "city": "Stadt",
                         "country_iso_code": "CH"
                     },
-                    "status": "payed",
+                    "status": "paid",
                     "status_formatted": "Bezahlt",
                     "time_ordered": "2014-03-10T23:59:59"
                 }
@@ -2131,7 +2131,7 @@ Attributes:
 The following fields can be changed:
 
 * address: (Address) The billing address. Used as shipping address if no shipping address is defined.
-* status: (string) Can be set to "payed" for orders where no payment is necessary (e.g. where the product is free)
+* status: (string) Can be set to "paid" for orders where no payment is necessary (e.g. where the product is free)
 * product: (Product) The product which should be ordered. Can be changed until the payment is processed.
 
 + Parameters
@@ -2152,7 +2152,7 @@ The following fields can be changed:
                 "city": "Stadt",
                 "country_iso_code": "CH"
             },
-            "status": "payed"
+            "status": "paid"
         }
 
 + Response 200
@@ -2203,7 +2203,7 @@ The following fields can be changed:
                             "city": "Stadt",
                             "country_iso_code": "CH"
                         },
-                        "status": "payed",
+                        "status": "paid",
                         "status_formatted": "Bezahlt",
                         "time_ordered": "2014-03-10T23:59:59"
                     }
@@ -2253,10 +2253,10 @@ The following fields can be changed:
 Fields which can be set during creation (all optional):
 * product_id: (int) ID of the product for this order
 * user_id: (int) ID of the user who orders
-* payment: (PaymentRequestObject) For an inapp-purchase the order can directly be payed
+* payment: (PaymentRequestObject) For an inapp-purchase the order can directly be paid
 
 #### PaymentRequestObject
-When creating an order, it can be directly payed using an inapp payment from apple or google.
+When creating an order, it can be directly paid using an inapp payment from apple or google.
 * apple_receipt: (base64 encoded string) The receipt received from apple after the inapp payment by the app
 * google_token: (string) Token received from the google play store after the inapp payment
 * google_product_id: (string) The product which was ordered as stored inside the google play store.
