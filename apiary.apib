@@ -53,8 +53,12 @@ Example:
         {
             "url": "https://res.cloudinary.com/dealini/image/upload/sample.jpg",
             "versions": {
-                "1x": "https://res.cloudinary.com/dealini/image/upload/c_fill,w_100,h_100/sample.jpg",
-                "2x": "https://res.cloudinary.com/dealini/image/upload/c_fill,w_200,h_200/sample.jpg"
+                '1x': u'https://res.cloudinary.com/dealini/image/upload/c_fill,h_50,w_50/sample.jpg',
+                '2x': u'https://res.cloudinary.com/dealini/image/upload/c_fill,dpr_2.0,h_50,w_50/sample.jpg', 
+                'mdpi': u'https://res.cloudinary.com/dealini/image/upload/c_fill,dpr_1.0,h_50,w_50/sample.jpg',
+                'hdpi': u'https://res.cloudinary.com/dealini/image/upload/c_fill,dpr_1.5,h_50,w_50/sample.jpg',
+                'xhdpi': u'https://res.cloudinary.com/dealini/image/upload/c_fill,dpr_2.0,h_50,w_50/sample.jpg',
+                'xxhdpi': u'https://res.cloudinary.com/dealini/image/upload/c_fill,dpr_3.0,h_50,w_50/sample.jpg'
             },
         }
 
@@ -844,7 +848,7 @@ Admin attributes:
                     "time_start": "2050-12-31T23:59:59",
                     "time_end": "2051-12-31T23:59:59",
                     "time_redeem_end": "2051-11-31T23:59:59",
-                    "image_background": <Image(320, 480)>,
+                    "image_background": <Image(320, 568)>,
                     "image_featured": <Image(320, 180)>,
                     "product_images": [
                         <Image(320, 200)>,
@@ -1004,7 +1008,7 @@ Admin attributes:
                     "time_start": "2050-12-31T23:59:59",
                     "time_end": "2051-12-31T23:59:59",
                     "time_redeem_end": "2051-11-31T23:59:59",
-                    "image_background": <Image(320, 480)>,
+                    "image_background": <Image(320, 568)>,
                     "image_featured": <Image(320, 180)>,
                     "product_images": [
                         <Image(320, 200)>,
@@ -1188,7 +1192,7 @@ Admin attributes:
                     "time_start": "2050-12-31T23:59:59",
                     "time_end": "2051-12-31T23:59:59",
                     "time_redeem_end": "2051-11-31T23:59:59",
-                    "image_background": <Image(320, 480)>,
+                    "image_background": <Image(320, 568)>,
                     "image_featured": <Image(320, 180)>,
                     "product_images": [
                         <Image(320, 200)>,
