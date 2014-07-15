@@ -2544,3 +2544,32 @@ Return the newest 10 notifications, independent if they were changed or not
                 ]
             }
 
+## Reset Password [/ResetPassword]
+
+Send a 'Reset Password' mail and reset password
+
+### Send reset password mail [POST]
+
++ Request (application/json)
+
+    + Body
+    
+            {
+                "email": "dealinitest1@dealini.ch",
+            }
+            
++ Response 204
+
+### Reset password[PUT]
+    
++ Request (application/json)
+
+    + Body
+    
+            {
+                "email": "dealinitest1@dealini.ch",
+                "password": "bla123",
+                "reset_token": "q7H6kw25Fd",
+            }
+            
++ Response 204
