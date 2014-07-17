@@ -1713,11 +1713,11 @@ In this case, the state of the trade can be set to "accepted" directly, causing 
 
 # Group AWS S3 Upload
 
-To upload content (e.g. user pictures), it is necessary to get the credentials for the upload to S3.
+To upload content (e.g. user pictures), it is necessary to get the credentials for the upload to S3. Our AWS Access Key ID is "AKIAI3YXKI54O575Y6WA".
 
 The process of uploading a user picture is:
 1. Get policy, key and signature by Posting an empty dict to /awsS3Uploads
-2. Use a POST with enctype "multipart/form-data" and policy, key and signature as fields to upload the image
+2. Use a POST with enctype "multipart/form-data" and policy, key, success_action_status (must be "201") and signature as fields to upload the image
     (http://docs.aws.amazon.com/AmazonS3/latest/dev/HTTPPOSTForms.html)
 3. After successful upload, update the image (PUT /users/{id} with {"image": key})
 
@@ -1726,6 +1726,18 @@ Limitations for userpic upload:
 * Max size is 4 MB
 * The filename cannot be chosen, a random key will be generated
 * The userpic can only be retrieved by using the name returned in the PUT response, as special URLs with formatted userpics will be generated
+
+If the formular would be sent by a Browser, the minimal HTML code would have to look like this:
+
+        <form action="https://dealini-userupload.s3.amazonaws.com/" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="key" value="userpics/akrwk45uksh3" />
+            <input type="hidden" name="AWSAccessKeyId " value="AKIAI3YXKI54O575Y6WA" />
+            <input type="hidden" name="Policy" value="eyAiZXhwaXJhdGlvbiI6ICIyMDA3LTEyLTAxVDEyOjAwOjAwLjAwMFoiLAogICJjb25kaXRpb25zIjogWwogICAgeyJidWNrZXQiOiAiam9obnNtaXRoIiB9LAogICAgWyJzdGFydHMtd2l0aCIsICIka2V5IiwgInVzZXIvZXJpYy8iXSwKICAgIHsiYWNsIjogInB1YmxpYy1yZWFkIiB9LAogICAgeyJyZWRpcmVjdCI6ICJodHRwOi8vam9obnNtaXRoLnMzLmFtYXpvbmF3cy5jb20vc3VjY2Vzc2Z1bF91cGxvYWQuaHRtbCIgfSwKICAgIFsic3RhcnRzLXdpdGgiLCAiJENvbnRlbnQtVHlwZSIsICJpbWFnZS8iXSwKICAgIHsieC1hbXotbWV0YS11dWlkIjogIjE0MzY1MTIzNjUxMjc0In0sCiAgICBbInN0YXJ0cy13aXRoIiwgIiR4LWFtei1tZXRhLXRhZyIsICIiXSwKICBdCn0K" />
+            <input type="hidden" name="Signature" value="2qCp0odXe7A9IYyUVqn0w2adtCA=" />
+            <input type="hidden" name="success_action_status" value="201" />
+            File: <input type="file" name="file" />
+            <input type="submit" name="submit" value="Upload to Amazon S3" />
+        </form>
 
 ## Error Codes
 * 190: (HTTP 403 - Forbidden) "Uploading with this resource type is forbidden"
