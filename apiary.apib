@@ -2423,9 +2423,21 @@ For this reason, we are sending a subset of fields with shorter names as part of
 * 112: (HTTP 404 - NotFound) "Invalid notification change" - Cannot un-see or un-consume notification.
 
 ## Possible Notifications
-* code: 0; message: "Neues Tauschangebot erhalten" - issued after trade creation (POST /trades), not used right now
-* code: 3; message: "%s möchte dich als Freund hinzufügen." - created after friendship request (POST /users/{user_id}/friendRequests)
-* code: 4; message: "%s hat dich als Freund hinzugefügt." - created after successful friendship (POST /users/{user_id}/friendship)
+General:
+
+* Code 1: - Not used in Code, can be used for manual messages
+
+Trades:
+
+* Code 11: "Neues Tauschangebot erhalten" - when a suggested trade is sent to a user
+* Code 12: "%s hat dein Angebot akzeptiert" - when a trade is accepted
+* Code 13: "%s hat dein Angebot abgelehnt" - when a trade is declined by the receiving player
+* Code 14: "%s hat dir einen Sticker geschickt" - when a card is sent (gifted) to a friend
+
+Friend requests:
+
+* Code 21: "%s möchte dich als Freund hinzufügen" - on friend request
+* Code 22: "%s hat dich als Freund hinzugefügt" - on friend accept. Can also happen on friend request if the other player already requested the friendship.
 
 ## Notification [/notifications/{id}]
 
