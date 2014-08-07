@@ -423,7 +423,8 @@ If the settings of another than the logged-in user are checked, only the public 
                         "country_iso_code": "CH",
                         "title": "Mr",
                         "street": null,
-                        "postal_code": null
+                        "postal_code": null,
+                        "birthday": "1984-12-31"
                     },
                     "use_billing_address_as_shipping_address": true,
                     "shipping_address": {
@@ -433,7 +434,8 @@ If the settings of another than the logged-in user are checked, only the public 
                         "country_iso_code": "CH",
                         "title": "Mr",
                         "street": null,
-                        "postal_code": null
+                        "postal_code": null,
+                        "birthday": null
                     }
                 }
             }
@@ -471,7 +473,8 @@ If the settings of another than the logged-in user are checked, only the public 
                         "country_iso_code": "CH",
                         "title": "Mr",
                         "street": "Strasse 1",
-                        "postal_code": "1234"
+                        "postal_code": "1234",
+                        "birthday": "1984-12-31"
                     },
                     "use_billing_address_as_shipping_address": true,
                     "shipping_address": {
@@ -481,7 +484,8 @@ If the settings of another than the logged-in user are checked, only the public 
                         "country_iso_code": "CH",
                         "title": "Mr",
                         "street": null,
-                        "postal_code": null
+                        "postal_code": null,
+                        "birthday": null
                     }
                 }
             }
@@ -2068,6 +2072,7 @@ Ordering a product usually involves the following steps:
 Special cases:
 
 * Reservation times out, but order is still possible: The order is re-opened and used as if it never expired
+* The age of the user must be checked if product.min_age is given. In these cases, the birthday must be sent with the billing_address, otherwise the order will fail during payment.
 
 Attributes:
 
@@ -2113,7 +2118,8 @@ Attributes:
                         "street": "Strasse 1",
                         "postal_code": "1234",
                         "city": "Stadt",
-                        "country_iso_code": "CH"
+                        "country_iso_code": "CH",
+                        "birthday": "1984-12-31"
                     },
                     "status": "paid",
                     "status_formatted": "Bezahlt",
@@ -2205,7 +2211,8 @@ The following fields can be changed:
                             "street": "Strasse 1",
                             "postal_code": "1234",
                             "city": "Stadt",
-                            "country_iso_code": "CH"
+                            "country_iso_code": "CH",
+                            "birthday": "1984-12-31"
                         },
                         "status": "paid",
                         "status_formatted": "Bezahlt",
@@ -2243,7 +2250,8 @@ The following fields can be changed:
                             "street": "Strasse 1",
                             "postal_code": "1234",
                             "city": "Stadt",
-                            "country_iso_code": "CH"
+                            "country_iso_code": "CH",
+                            "birthday": "1984-12-31"
                         },
                         "status": "reserved",
                         "status_formatted": "Reserviert (15min)",
@@ -2292,7 +2300,8 @@ and is later given to the API server (by the Google Developer API) during paymen
                         "street": "",
                         "postal_code": "",
                         "city": "",
-                        "country_iso_code": "CH"
+                        "country_iso_code": "CH",
+                        "birthday": null
                     },
                     "status": "reserved",
                     "status_formatted": "Reserviert",
