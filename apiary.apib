@@ -141,9 +141,7 @@ All requests belonging to a user, e.g. creating, changing and fetching.
     or not having provided the necessary permissions (only email permission is required)
 * 26: (HTTP 403 - Forbidden) "Username too short" - The username must have at least one non-blank character
 * 27: (HTTP 403 - Forbidden) "Invalid confirmation code" - The user tried to verify with an invalid verification code
-* 28: (HTTP 403 - Forbidden) "Invalid or already used mobile number" - The user tried to verify with an invalid or already used mobile number
-* 29: (HTTP 403 - Forbidden) "Invalid change of a user attribute" - Most fields of the user cannot be changed.
-  Some fields like "state" or "mobile" can only be changed once.
+* 28: (HTTP 403 - Forbidden) "This facebook account is already connected with another account." - When trying to connect a user with a facebook account, but the facebook account is already connected to a user, this error will happen.
 
 Default attributes:
  * id: (int) ID of the user
