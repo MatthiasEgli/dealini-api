@@ -2537,3 +2537,161 @@ Send a 'Reset Password' mail and reset password
             }
             
 + Response 204
+
+# Group Game
+
+## Gamecredits of a user [/users/{user_id}/gamecredits]
+
+### Get all usable gamecredits of a user[GET]
+
++ Parameters
+    + user_id (int, required, `4809`) ... The user for which we want to fetch the friendships. *current* for the logged-in user.
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "gamecredits": [
+                    {
+                        "id": 145
+                    },
+                    {
+                        "id": 146
+                    },
+                    {
+                        "id": 147
+                    },
+                    {
+                        "id": 148
+                    },
+                    {
+                        "id": 149
+                    },
+                    {
+                        "id": 150
+                    },
+                    {
+                        "id": 151
+                    },
+                    {
+                        "id": 152
+                    },
+                    {
+                        "id": 153
+                    },
+                    {
+                        "id": 154
+                    }
+                ]
+            }
+
+### Create gamecredits with dollarinis [POST]
+
++ Request (application/json)
+
+        {
+            "dollarinis": 4
+        }
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "gamecredits": [
+                    {
+                        "id": 155
+                    },
+                    {
+                        "id": 156
+                    }
+                ]
+            }
+            
+### Add to a highscore[PUT]
+
++ Request (application/json)
+
+        {
+            "score": "3f23z43h"
+        }
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "highscore": {
+                    "user_id": 631,
+                    "score": 95,
+                    "time_created": "2014-05-26T08:32:22"
+                }
+            }
+            
+## Highscore of the game [/game/{game_id}/highscores]
+
+### Get get daily top ten of the game[GET]
+
++ Parameters
+    + game_id (int, required, `1`)
+    
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "highscores": [
+                   {
+                        "user_id": 631,
+                        "score": 95,
+                        "time_created": "2014-05-26T08:32:22"
+                    },
+                    {
+                        "user_id": 1551,
+                        "score": 93,
+                        "time_created": "2014-05-26T08:32:22"
+                    },
+                    {
+                        "user_id": 748,
+                        "score": 90,
+                        "time_created": "2014-05-26T08:32:22"
+                    },
+                    {
+                        "user_id": 5389,
+                        "score": 87,
+                        "time_created": "2014-05-26T08:32:22"
+                    },
+                    {
+                        "user_id": 2462,
+                        "score": 86,
+                        "time_created": "2014-05-26T08:32:22"
+                    },
+                    {
+                        "user_id": 6382,
+                        "score": 85,
+                        "time_created": "2014-05-26T08:32:22"
+                    },
+                    {
+                        "user_id": 9535,
+                        "score": 83,
+                        "time_created": "2014-05-26T08:32:22"
+                    },
+                    {
+                        "user_id": 266,
+                        "score": 80,
+                        "time_created": "2014-05-26T08:32:22"
+                    },
+                    {
+                        "user_id": 2316,
+                        "score": 79,
+                        "time_created": "2014-05-26T08:32:22"
+                    },
+                    {
+                        "user_id": 6584,
+                        "score": 78,
+                        "time_created": "2014-05-26T08:32:22"
+                    },
+                ]
+            }
+
