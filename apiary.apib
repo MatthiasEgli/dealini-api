@@ -74,6 +74,11 @@ Creation & removal of sessions. Login and Logout are handled here
 * 13: (HTTP 400 - Bad Request) "Invalid Facebook access token" - The access token could not be used, either because it is malformatted or expired.
 * 14: (HTTP 404 - NotFound) "Could not find user" - The user could not be found based on the provided identification
 * 15: (HTTP 401 - Unauthorized) "The user is banned" - The user is marked as banned. Normally the user is informed by email about the reasons.
+* 16: (HTTP 403 - Forbidden) "Your facebook password changed. Please update your password in the Facebook settings." - for iOS Apps, it is necessary to update the password in the native facebook app
+* 17: (HTTP 403 - Forbidden) "There was a problem with your facebook credentials. Please try again later." - The provided access token is likely expired.
+    Is usually handled by the facebook native app (so a new facebook access token should be requested), but it might also happen if the facebook server is not (yet) up to date.
+* 18: (HTTP 403 - Forbidden) "Unknown problem when communicating with facebook. Please try again later." - Facebook servers are down
+* 19: (HTTP 403 - Forbidden) "You need a valid verified email address to signup." - If the user has no validated email inside facebook, he cannot login with dealini
 
 ## Session [/sessions/current]
 
