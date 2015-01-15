@@ -510,7 +510,7 @@ If the settings of another than the logged-in user are checked, only the public 
 * 161: (HTTP 403 - Forbidden) "No pending friend request from other player" To accept a friend request,
     there must be a pending friend request from the other player.
 
-## FriendRequest [/friendRequest/{id}]
+## FriendRequest [/users/{user_id}/friendRequests/{friend_id}]
 
 + Model (application/json)
 
@@ -523,8 +523,17 @@ If the settings of another than the logged-in user are checked, only the public 
                     "time_created": "2014-04-04T23:59:59",
                 }
             }
+            
+### Reject a friend request [DELETE]
 
-## FriendRequest collection [/users/{user_id}/friendRequests/{friend_id}]
++ Parameters
+    + user_id (int, required, `current`) ... The user who wants to reject the friend request. *current* for the logged-in user.
+    + friend_id (int, required, `631`) ... The user who is being rejected.
+
++ Response 204
+    
+
+## FriendRequest collection [/users/{user_id}/friendRequests]
 
 Alternative URL for /users/current/friendRequests: /friendRequests
 
@@ -575,15 +584,6 @@ Will issue a push notification to the addressee (code=3)
 + Response 200
 
     [FriendRequest][]
-
-### Reject a friend request [DELETE]
-
-+ Parameters
-    + user_id (int, required, `current`) ... The user who wants to reject the friend request. *current* for the logged-in user.
-    + friend_id (int, required, `631`) ... The user who is being rejected.
-
-+ Response 204
-    
     
 # Group Codes
 
