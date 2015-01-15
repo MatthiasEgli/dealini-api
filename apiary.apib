@@ -630,6 +630,7 @@ Credits represent flowpacks or special offers which the player can use to get mo
 ## Error-Codes:
 * 30: (HTTP 403 - Forbidden) "Access denied to credits of another user" - The logged-in user does not own the queried credit
 * 31: (HTTP 403 - Forbidden) "Credit already used" - A credit can only be used once.
+* 237: (HTTP 403 - Forbidden) "Not enough dollarini" - A specific amount of dollarinis has to be own be the user to buy atleast one credit
 
 
 ## Credit [/users/{user_id}/credits/{credit_id}]
@@ -705,11 +706,10 @@ These credits are usually given to the user when he buys one or multiple flowpac
     
 + Request (application/json)
     
-    + Body
 
-            {
-                "dollarinis": 4
-            }
+        {
+            "dollarinis": 4
+        }
 
 + Response 200 (application/json)
 
