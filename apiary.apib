@@ -2723,4 +2723,30 @@ Send a 'Reset Password' mail and reset password
 + Response 200 (image/jpg)
 
         <Imagedata>
-        
+
+
+## Campaign Statistic HDM14 [/campaignStats/HDM14{?access_key}]
+
+### Get statistics [GET]
+
++ Parameters
+    + access_key (string, required, `n5i43b531b34`) ... key for access
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "campaign_stats": {
+                    "user_count": 994725,
+                    "order_count": 756856,
+                    "register_count": 632463,
+                    "example_deal_stats": "http://www.dealini.ch/#/deal/1088/stats/e4d3338e5e",
+                    "total_amount_of_completed_cardsets": 2346366,
+                    "flowpack_count_app": 2343725,
+                    "scan_rate": 100,
+                    "average_scans__per_user": 100,
+                    "flowpack_count": 52352636,
+                    "album_count": 513561
+                }
+            }
