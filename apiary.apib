@@ -298,7 +298,7 @@ or
     + q (string, required, `dealinitest1`) ... Searches for exact matches of email and fuzzy matches of username and first+lastname.
         When called as a admin (fromt he dashboard), all fields are searchy fuzzy and additional fields are searched.
 
-+ Response 200 (application/json)
++ Response 200
 
     [User collection][]
 
@@ -549,7 +549,7 @@ Alternative URL for /users/current/friendRequests: /friendRequests
 + Parameters
     + user_id (int, required, `current`) ... The user for which we want to fetch the settings. *current* for the logged-in user.
     
-+ Response 200 (application/json)
++ Response 200
 
     [FriendRequest collection][]
 
@@ -568,7 +568,7 @@ Will issue a push notification to the addressee (code=3)
                 "addressee_id": 631
             }
 
-+ Response 200 (application/json)
++ Response 200
 
     [FriendRequest][]
 
@@ -744,7 +744,7 @@ The instant prize itself is included by default
 + Parameters
     + cardid (int, required, `1`) ... The ID of the instant prize card
             
-+ Response 200 (application/json)
++ Response 200
 
     [InstantPrizeCard][]
 
@@ -763,7 +763,7 @@ The instant prize itself is included by default
                 }
             }
 
-+ Response 200 (application/json)
++ Response 200
 
     [InstantPrizeCard][]
 
@@ -2416,7 +2416,7 @@ Credits / Flowpacks:
             "consumed": true
         }
 
-+ Response 200 (application/json)
++ Response 200
 
     [Notification][]
 
