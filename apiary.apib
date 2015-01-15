@@ -696,6 +696,33 @@ These credits are usually given to the user when he buys one or multiple flowpac
                     }
                 ]
             }
+            
+            
+### Buy credits for dollarinis[POST]
+
++ Parameters
+    + user_id (int, required, `4809`) ... The logged-in user
+    
++ Request (application/json)
+    
+    + Body
+
+            {
+                "dollarinis": 4
+            }
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "credits": [
+                    {
+                        "id": 1,
+                        "user_id": 4809
+                    }
+                ]
+            }
 
 # Group InstantPrizeCards
 
