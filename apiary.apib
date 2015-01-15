@@ -137,6 +137,11 @@ The following parameters are available:
 All requests belonging to a user, e.g. creating, changing and fetching.
 
 ## Error-Codes
+* 16: (HTTP 403 - Forbidden) "Your facebook password changed. Please update your password in the Facebook settings." - for iOS Apps, it is necessary to update the password in the native facebook app
+* 17: (HTTP 403 - Forbidden) "There was a problem with your facebook credentials. Please try again later." - The provided access token is likely expired.
+    Is usually handled by the facebook native app (so a new facebook access token should be requested), but it might also happen if the facebook server is not (yet) up to date.
+* 18: (HTTP 403 - Forbidden) "Unknown problem when communicating with facebook. Please try again later." - Facebook servers are down
+* 19: (HTTP 403 - Forbidden) "You need a valid verified email address to signup." - If the user has no validated email inside facebook, he cannot login with dealini
 * 20: (HTTP 403 - Forbidden) "Invalid email address" - The provided email is not considered a valid email based on some basic regex
 * 21: (HTTP 403 - Forbidden) "Email address forbidden" - The provided email domain is on a blacklist (mostly one-time trash email providers), the user must use another email address
 * 22: (HTTP 403 - Forbidden) "Password too short" - The password must have at least 6 characters
