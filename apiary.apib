@@ -2760,6 +2760,7 @@ Send a 'Reset Password' mail and reset password
 
 #### Error-Codes
 * 250: (HTTP 403 - Forbidden) "No Access" - No Access by wrong access key
+* 210: (HTTP 403 - Forbidden) "No Access" - No Access by wrong access key
 
 ## Campaign Statistic HDM14 [/campaignStats/HDM14{?access_key}]
 
@@ -2784,5 +2785,33 @@ Send a 'Reset Password' mail and reset password
                     "average_scans__per_user": 100,
                     "flowpack_count": 52352636,
                     "album_count": 513561
+                }
+            }
+
+## Deal Statistics [/deals/{deal_id}/statistics{?access_key}]
+
+### Get statistics of a deal[GET]
+
++ Parameters
+    + deal_id (string, required, `n5i43b531b34`) ... key for access
+    + access_key (string, required, `n5i43b531b34`) ... key for access
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "statistic": {
+                    "distinct_order_count": 4371,
+                    "order_count": 4428,
+                    "trade_count": 152869,
+                    "likes_rank": 9,
+                    "like_count": 2743,
+                    "likes_progress": 12,
+                    "scan_rate": 0.34183333333333334,
+                    "completed_cardsets": 4052,
+                    "card_count": 94825,
+                    "distinct_card_count": 22087,
+                    "orders_rank": 10
                 }
             }
