@@ -852,21 +852,36 @@ Attributes:
 * likes: (int) Number of peoples who favourited this deal
 * number: (int) The identifier for this deal in numeric form for display purposes.
 * featured: (bool) If the deal should be featured (highlighted) in the album overview
+* brand: (string) name of the brand which the deal belongs to.
+* category_id: (int) ID of the category the deal belongs to.
 
 Optional Attributes (Except for products, returned by default if a single deal is requested):
 
-* options: (list of dicts) The possible choices for products for this deal
+* attributes: (list of dicts) The possible choices for products for this deal
 * products: (list of dicts) All valid products for this deal
 * show_in_album: (bool) If the deal should be visible in the overview of deals ("album")
 * amount_of_distinct_cards: (int) How many cards have to be collected.
-* image_background: (Image) The file which can be used as a background image when showing the deal details
-* product_images: (list of Image) Different shots of the product or the brand
-* tint_color: (string, "#FFFFFF") Hex-coded color of the deal
-
-Admin attributes:
 * time_start: (isodatetime) Starting time of the deal
 * time_end: (isodatetime) End of the deal - can still be redeemed
 * time_redeem_end: (isodatetime) Real end - no redemption anymore
+* image_background: (Image) The file which can be used as a background image when showing the deal details
+* image_background_web: (Image) Similar to image_background with better resolution
+* product_images: (list of Image) Different shots of the product or the brand
+* tint_color: (string, "#FFFFFF") Hex-coded color of the deal
+* longdesc: (string) Description of the deal
+* title: (string) Title of the deal
+* desc: (string) Description of the deal
+* terms: (string) Terms of the deal
+* plain_link_url: (string) Link to the brandpartner page
+* link_url: (string) Link to the brandpartner page with tracking
+* link_name: (string) Display text for link to the brandpartner page
+* total_amount_of_cards: (int) Amount of physical cards which are circulating
+* subject_id: (int) ID for card printing
+* sticker_text: (string) Text on the virtual cards
+* redeeminfo: (string) How to complete an order text
+* redeemhelpinfo: (string) Help to complete to the order
+
+Admin attributes:
 
 
 + Model (application/json)
