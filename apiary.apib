@@ -43,6 +43,8 @@ An image can have multiple versions (resolutions) to look good on all devices (e
 
 * desc: (string) Description of the image
 * thumb: (bool) if True there is a thumbnail version
+* dimensions: (dict with width and height) The device independent pixel size of the image.
+    The pixel size of the image at the "1x" resoultion or the "mdpi" resolution equals the device independent pixel size.
 
 Possible fill_modes are:
 
@@ -65,6 +67,10 @@ Example:
                 'xxhdpi': u'https://res.cloudinary.com/dealini/image/upload/c_fill,dpr_3.0,h_50,w_50/sample.jpg',
                 'thumb': u'https://res.cloudinary.com/dealini/image/upload/c_thumb,h_50,w_50/sample.jpg'
             },
+            "dimensions": {
+                "width": 100,
+                "height: 200
+            }
         }
 
 
