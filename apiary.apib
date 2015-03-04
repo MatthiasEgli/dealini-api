@@ -325,7 +325,7 @@ or
 
     [User collection][]
 
-## Cards of a user [/users/{user_id}/cards{?deal_id}]
+## Cards of a user [/users/{user_id}/cards{?deal_id,include_redeemed_cards}]
 A user has cards which can be traded with other users.
 
 ### Get all tradeable cards [GET]
@@ -333,6 +333,7 @@ A user has cards which can be traded with other users.
 + Parameters
     + user_id (int, required, `4809`) ... The user for which we want to fetch the cards. *current* for the logged-in user.
     + deal_id (int, optional) ... Filter cards by this dealid
+    + include_redeemed_cards (bool, optional, `false`) ... Returns also the redeemed cards, adding the field `quantity_redeemed`
 
 + Response 200 (application/json)
 
