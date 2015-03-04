@@ -188,6 +188,7 @@ Optional Attributes:
  * number_of_common_friends: (int, optional) Relative to the logged-in user, gives the number of common friends (null: User is a friend).
     This is only set when searching for users (/users?q=...).
  * facebook_connect: (bool) If the user is already conneted to a facebook account
+ * number_of_trades: (int) All trades where the user is part of (including suggested, cancelled and closed trades)
 
 ## User [/users/{id}]
 
@@ -212,7 +213,8 @@ When fetching a single user, the default and the optional attributes are returne
                     "settings": null,
                     "number_of_common_friends": null,
                     "push_notification_channel": "56171a345483545d823bf3fab4a6ac2b453f0b3f822386360b0561f7748bd967",
-                    "facebook_connect": false
+                    "facebook_connect": false,
+                    "number_of_trades": 55
                 }
             }
 
