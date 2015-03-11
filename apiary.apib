@@ -316,13 +316,15 @@ or
 
     [User][]
 
-## User collection search [/users{?q}]
+## User collection search [/users{?q,type}]
 
 ### Get multiple users [GET]
 
 + Parameters
     + q (string, required, `dealinitest1`) ... Searches for exact matches of email and fuzzy matches of username and first+lastname.
         When called as a admin (fromt he dashboard), all fields are searchy fuzzy and additional fields are searched.
+    + type (string, optional) ... When trying to find "suggested friends", this must be set to `suggested_friends`.
+        Will return up to 10 suggested friends based on the count of common friends (dealini and facebook friends).
 
 + Response 200
 
