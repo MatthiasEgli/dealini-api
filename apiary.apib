@@ -168,12 +168,12 @@ All requests belonging to a user, e.g. creating, changing and fetching.
 
 Default attributes:
  * id: (int) ID of the user
- * username: (string) Freely chosen username of the player
+ * username: (string) Freely chosen username of the user
  * image: (Image) Location of the users image
  * status_message: (string, 80 chars) Freely setable status message
 
 Optional Attributes:
- * push_notification_channel: (string) Unique name of the player-specific PARSE channel name for push notifications
+ * push_notification_channel: (string) Unique name of the user-specific PARSE channel name for push notifications
  * email: (string) Valid email of the user. This is "null" for anonymous users
  * first_name: (string, optional)
  * last_name: (string, optional)
@@ -187,7 +187,7 @@ Optional Attributes:
 
 ## User [/users/{id}]
 
-One player of dealini.ch.
+One user of dealini.ch.
 When fetching a single user, the default and the optional attributes are returned.
 
 + Model (application/json)
@@ -530,9 +530,9 @@ If the settings of another than the logged-in user are checked, only the public 
 # Group FriendRequests
 
 ## Error-Codes:
-* 160: (HTTP 403 - Forbidden) "The players are already friends" - A friend request can only be made to players who are not friends yet
-* 161: (HTTP 403 - Forbidden) "No pending friend request from other player" To accept a friend request,
-    there must be a pending friend request from the other player.
+* 160: (HTTP 403 - Forbidden) "The users are already friends" - A friend request can only be made to users who are not friends yet
+* 161: (HTTP 403 - Forbidden) "No pending friend request from other user" To accept a friend request,
+    there must be a pending friend request from the other user.
 
 ## FriendRequest [/users/{user_id}/friendRequests/{friend_id}]
 
@@ -581,7 +581,7 @@ Alternative URL for /users/current/friendRequests: /friendRequests
                 ]
             }
 
-### Get pending friend requests which can be accepted by the player [GET]
+### Get pending friend requests which can be accepted by the user [GET]
 
 + Parameters
     + user_id (int, required, `current`) ... The user for which we want to fetch the settings. *current* for the logged-in user.
@@ -612,8 +612,8 @@ Will issue a push notification to the addressee (code=3)
 # Group Codes
 
 ## Error-Codes:
-* 170: (HTTP 403 - Forbidden) "Code already used by you" - The provided code was used by the logged-in player, go and check cards or instant prizes.
-* 171: (HTTP 403 - Forbidden) "Code already used by another player" - The provided code was used by someone other then the logged-in player.
+* 170: (HTTP 403 - Forbidden) "Code already used by you" - The provided code was used by the logged-in user, go and check cards or instant prizes.
+* 171: (HTTP 403 - Forbidden) "Code already used by another user" - The provided code was used by someone other then the logged-in user.
 * 172: (HTTP 404 - NotFound) "Code does not exist" -The provided code never existed in our database
 
 ## Code [/codes/{code}]
@@ -644,7 +644,7 @@ Will issue a push notification to the addressee (code=3)
 
 # Group Credits
 
-Credits represent flowpacks or special offers which the player can use to get more cards.
+Credits represent flowpacks or special offers which the user can use to get more cards.
 
 ## Error-Codes:
 * 30: (HTTP 403 - Forbidden) "Access denied to credits of another user" - The logged-in user does not own the queried credit
@@ -858,7 +858,7 @@ A deal is an offer which can be redeemed if a certain amount of distinct cards h
 * 51: (HTTP 403 - Forbidden) "Cannot access deal" - This deal is not yet active
 
 ## Deal [/deals/{id}]
-Deals are products for which the player can collect cards and, by doing that, earn a discount on the product.
+Deals are products for which the user can collect cards and, by doing that, earn a discount on the product.
 
 Attributes:
 
@@ -1406,7 +1406,7 @@ Attributes:
 * image: (Image) The image of the card.
 * deal_id: (int) ID of the deal this cardunit belongs to
 * number: (int) The identifier of the specific card inside a deal
-* name: (string) The name of the card that is displayed to the players. Format and content may change
+* name: (string) The name of the card that is displayed to the users. Format and content may change
 
 ### All CardUnits of active Deals [GET]
 
@@ -1475,7 +1475,7 @@ Attributes:
 
 
 # Group DealLikes
-A player can show that he wants to collect a deal by liking it.
+A user can show that he wants to collect a deal by liking it.
 
 ## DealLikes [/users/{user_id}/dealLikes/{deal_id}]
 
@@ -1540,7 +1540,7 @@ A player can show that he wants to collect a deal by liking it.
 #### Error-Codes:
 * 70: (HTTP 404 - NotFound) "Trade not found" - The requested trade could not be found
 * 71: (HTTP 403 - Forbidden) "Not allowed to request a foreign trade" - The currently logged-in user tried to access a trade in which he is not part of
-* 72: (HTTP 403 - Forbidden) "Cannot create trade, illegal participants or added cards" - You can only create trades where you are the from_user and where all cards belong to the players in the trade.
+* 72: (HTTP 403 - Forbidden) "Cannot create trade, illegal participants or added cards" - You can only create trades where you are the from_user and where all cards belong to the users in the trade.
 * 73: (HTTP 403 - Forbidden) "Cannot update trade state, invalid state transition" - Only some trade state changes are allowed.
 
 ## Trade [/trades/{id}]
@@ -1673,7 +1673,7 @@ Attributes of a trade:
 
 ### Create a new trade [POST]
 
-A new trade which is offered to another player. Special case is when the new trade gets created based on an existing
+A new trade which is offered to another user. Special case is when the new trade gets created based on an existing
 trade (parent_trade_id is set), in which case the old trade will automatically be declinded or cancelled.
 
 Special case: sending cards to another user (without receiving any cards in return)
@@ -2083,9 +2083,9 @@ Available parameters:
 #### Error-Codes:
 * 100: (HTTP 403 - Forbidden) "Product out of stock" - There are no more products available to be ordered
 * 101: (HTTP 403 - Forbidden) "User doesn't own enough cards" - To redeem, the user must have all numbers of the products deal.
-* 102: (HTTP 403 - Forbidden) "Cannot access order of another player" - Only the orders of the logged-in user may be retrieved.
+* 102: (HTTP 403 - Forbidden) "Cannot access order of another user" - Only the orders of the logged-in user may be retrieved.
 * 103: (HTTP 404 - NotFound) "No order found" - Order does not exist.
-* 104: (HTTP 403 - Forbidden) "Invalid update, order is read-only" - Once the order is paid, no updates can be issued by the player
+* 104: (HTTP 403 - Forbidden) "Invalid update, order is read-only" - Once the order is paid, no updates can be issued by the user
 * 105: (HTTP 403 - Forbidden) "Invalid update, invalid status change from old_status to new_status" - Only some order status changes are allowed:
 
     > reserved -> paid: Mark an order as paid. The server will check if the address and payment are complete.
@@ -2481,7 +2481,7 @@ For this reason, we are sending a subset of fields with shorter names as part of
 
 #### Error-Codes:
 * 110: (HTTP 404 - NotFound) "Could not find notification" - The requested notification does not exist.
-* 111: (HTTP 404 - NotFound) "Cannot access notification of another player" - Only notifications of the logged-in user may be accessed.
+* 111: (HTTP 404 - NotFound) "Cannot access notification of another user" - Only notifications of the logged-in user may be accessed.
 * 112: (HTTP 404 - NotFound) "Invalid notification change" - Cannot un-see or un-consume notification.
 
 ## Possible Notifications
@@ -2493,17 +2493,17 @@ Trades:
 
 * Code 11: "Neues Tauschangebot erhalten" - when a suggested trade is sent to a user
 * Code 12: "%s hat dein Angebot akzeptiert" - when a trade is accepted
-* Code 13: "%s hat dein Angebot abgelehnt" - when a trade is declined by the receiving player
+* Code 13: "%s hat dein Angebot abgelehnt" - when a trade is declined by the receiving user
 * Code 14: "%s hat dir einen Sticker geschickt" - when a card is sent (gifted) to a friend
 
 Friend requests:
 
 * Code 21: "%s möchte dich als Freund hinzufügen" - on friend request
-* Code 22: "%s hat deine Freundschaftanfrage akzeptiert" - on friend accept. Can also happen on friend request if the other player already requested the friendship.
+* Code 22: "%s hat deine Freundschaftanfrage akzeptiert" - on friend accept. Can also happen on friend request if the other user already requested the friendship.
 
 Credits / Flowpacks:
 
-* Code 31: "Du hast von %s ein Sticker-Päckchen gesponsert bekommen!" - when a flowpack is gifted to a player from a brand
+* Code 31: "Du hast von %s ein Sticker-Päckchen gesponsert bekommen!" - when a flowpack is gifted to a user from a brand
 
 
 ## Notification [/notifications/{id}]
