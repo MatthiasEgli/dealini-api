@@ -8,99 +8,199 @@ Welcome to the Dealini API documentation.
 We are constantly adding and improving features of this API.
 Please add your comments and feedback to the API as comments!
 
-Requests with data (POST / PUT) will be JSON encoded.
-The *Content-Type* will be `application/json`.
-All responses will to be JSON encoded.
-The *Content-Type* will always be `application/json`.
+Our API is JSON-only:
+The request body must be JSON-encoded, having the *Content-Type* header set to `application/json`.
+In return, non-empty responses will also have a *Content-Type* of `application/json`.
 
-Most API calls are only available after authorization (login).
-For these calls it is necessary to send the auth-cookie which is set in the Response of POST /sessions along with the Request.
-Cookies will also be used for load balancing, so the consumer of the API should handle cookies the same way a browser would handle cookies.
+## Errors
 
-Some resources can be accessed by an anonymous user, but most resources need a registered user (e.g. with a valid email).
-If an anonymous user tries to access a resource available only to registered users, a HTTPForbidden error will be returned.
-As over time the resources available to anonymous users might change, a consumer of the API should implement a generic handler for these cases promting the anonymous user to register only after trying to access the protected route.
-For this reason the protected routes are not explicitly mentioned in the documentation.
+This API uses standard [HTTP status codes] to inform the client about the outcome of a request.
+If the response status code is in the `4xx`/`5xx` range, the response body contains an error object like the following:
 
-## General Parameters
+    {
+        "response_code": 404,
+        "error": {
+            "code": 3,
+            "message": "The resource does not exist."
+        }
+    }
 
-The following parameters are generally available with every request:
+[HTTP status codes]: https://en.wikipedia.org/wiki/List_of_HTTP_status_codes
 
-*   `suppress_response_codes` *(bool)*:
-        If this is provided and set to "true", errors will always return as a HTTP OK (200).
-        The correct HTTP status code is stored in the JSON encoded Error response
-*   `rollback` *(bool)*:
-        If this is set to "true", no changes will be saved in the database.
-        Useful for testing.
-*   `fields` or `fields[]` *(string)*:
-        Only return these fields/attributes.
-        Must be provided to get optional fields/attributes.
-        `id` is always returned.
-        To specify fields from embedded objects (e.g. products inside a deal), the dot-notation can be used (e.g. `product.name` to get only the name attribute)
+*   `response_code` (type: *int*) is the original HTTP status code of the response.
+*   `code` (type: *int*) represents a more specific error code.
+    It can help clients to automatically recover from an error.
+*   `message` (type: *string*) is a human readable description of the error.
+    It can be shown to users and is localizable (see the **I18N** section below).
 
-## Error-Codes
+The additional error codes are usually specific to certain resources.
+They will be explained in the corresponding subsections of this documentation.
+However, there are a few generic error codes which can always happen:
 
-Error codes specific for the resources are described at the corresponding resource.
-
-*   0: (HTTP 500 - Internal Server Error)
-        *Something did not work out as expected.
-        An automatic E-Mail is sent to Dealini and we will look into the problem.*
-*   1: (HTTP 400 - Bad Request)
+<table>
+  <thead>
+    <tr>
+      <th align="center">Code</th>
+      <th>Message/Description</th>
+      <th align="right">HTTP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">0</td>
+      <td>
+        <q>Something did not work out as expected.
+        An automatic E-Mail is sent to Dealini and we will look into the problem.</q>
+      </td>
+      <td align="right">500</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">1</td>
+      <td>
         Generally malformatted input.
         A detailed description of the error is given in the error description.
-*   2: (HTTP 401 - Unauthorized)
-        *A resource which is only available to logged-in user is requested by an unauthorized user.
-        Either the user is not logged in or his session timed out.*
-*   3: (HTTP 404 - NotFound)
-        *The resource does not exist.*
-*   4: (HTTP 403 - Forbidden)
-        *This resource is only available to non-anonymous users.*
-*   5: (HTTP 403 - Forbidden)
-        Tried to change write-protected field without necessary permissions.
+      </td>
+      <td align="right">400</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">2</td>
+      <td>
+        <q>A resource which is only available to logged-in user is requested by an unauthorized user.
+        Either the user is not logged in or his session timed out.</q>
+      </td>
+      <td align="right">401</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">3</td>
+      <td>
+        <q>The resource does not exist.</q>
+      </td>
+      <td align="right">404</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">4</td>
+      <td>
+        <q>This resource is only available to non-anonymous users.</q>
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">5</td>
+      <td>
+        You tried to change a write-protected field without having the necessary permissions.
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">6</td>
+      <td>
+        The chosen request method is not allowed for this resource.
+      </td>
+      <td align="right">405</td>
+    </tr>
+  </tbody>
+</table>
 
+> *Note*:
+> If your client is not in control of the HTTP stack and can not properly handle `4xx`/`5xx` status codes, you can pass `suppress_response_codes=true` as a parameter to your request.
+> This tells the server to unconditionally return a **200 OK** response.
+> Your client is then responsible to distinguish between successful and errorneous answers.
+> The original status code is always available from the error object.
 
-# Templates
+## Authentication
 
-Often-used object templates are described here.
-Later, only the templates will be referred with the respective configuration.
+Most API calls require a valid *authentication token*.
+Such a token can be obtained from the **Sessions** resource.
+Our auth token is a standard [HTTP cookie], and should be handled by clients like browsers do (i.e. sending, receiving and expiration).
 
-## Image
+[HTTP cookie]: https://en.wikipedia.org/wiki/HTTP_cookie
 
-    <Image(width, height, optional:fill_mode, optional:thumb, optional:desc)>
+There are two types of user accounts:
 
-An image can have multiple versions (resolutions) to look good on all devices (e.g. retina display)
+*   *Registered* users are created with a valid email address (using a password or Facebook to log in).
+*   *Anonymous* users are created with a unique device identifier (using the this identifier alone to log in).
 
-*   `desc` *(string)*:
-        Description of the image
-*   `thumb` *(bool)*:
-        if True there is a thumbnail version
-*   `dimensions` *(dict with width and height)*:
-        The device independent pixel size of the image.
-        The pixel size of the image at the "1x" resoultion or the "mdpi" resolution equals the device independent pixel size.
+Some API resources only work for *registered* users.
+The API will return a **HTTP 403 Forbidden** with the error code 4 in case an *anonymous* user tries to access such a resource.
+A client can only get around this error by upgrading the user account type (see the **Users** resource for details how to do that).
+The resources which are only available for *registered* users may change over time and are therefore not explicitly mentioned in this documentation.
 
-Possible fill_modes are:
+> *Recommendation*:
+> Clients should implement a generic handler for this error and offer the user to upgrade ("register") his account.
 
-*   `fill`: (default)
-        Create an image with the exact given width and height while retaining original proportions.
-        Uses only a portion of the original image that fills the given dimensions.
-*   `fit`:
-        Change image size to fit in the given width & height while retaining original proportions.
-        All original image parts are visible.
-        Both width and height dimensions of the transformed image must not exceed the specified width & height.
+## Internationalization (i18n)
 
-Example:
+Document content and error messages can be localized to one of the following languages: `de`, `fr`, `it`.
+The preferred language can be chosen using the [HTTP *Accept-Language* header][HttpAcceptLanguage].
+If no suitable translation was found, the response uses a default language.
+For document content the default language is German, and for error messages it is English.
+
+[HttpAcceptLanguage]: http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.4
+
+## Request Parameters
+
+The API supports a few general parameters you can set when requesting documents.
+
+### Fields
+
+The `fields` (or `fields[]`) parameter can be used by clients to tailor the returned document to their needs.
+
+1.  Clients can request only a subset of the available resource attributes.
+    The `id` of the requested document is always included.
+    For example, the following request returns only the attributes `foo`, `bar` and `id`:
+    
+        GET /deals?fields=foo&fields=bar
+
+2.  Some resources also have additional *optional* attributes, which are only returned when requested by the client.
+
+3.  Embedded documents can also be targeted by this parameter using the dot notation.
+    For example, the following request returns only the `bar` attribute from the embedded `foo` document (and the `id` of course):
+    
+        GET /deals?fields=foo.bar
+
+> *Note*:
+> Remember that the response always only contains the requested attributes if the `fields` parameter is present.
+> If a client wants both the normal document as well as optional or embedded attributes, *all* these attributes have to be explicitly requested.
+
+### Testing
+
+It is sometimes undesirable to actually create data on the server while testing API calls.
+Adding the request parameter `rollback=true` prevents the server from persisting data created for a specific request.
+The response will still contain the data, as if everything worked normally.
+
+## Common Data Types
+
+There are a few generic data types used throughout the API.
+
+### Date Format
+
+JSON does not have a native datetime type.
+Instead the API always returns a JSON string containing an [ISO 8601] datetime (or date).
+To be precise, the only supported datetime format is `%Y-%m-%dT%H:%m:%SZ` (UTC, no microseconds).
+The date format is `%Y-%m-%d`.
+
+[ISO 8601]: https://en.wikipedia.org/wiki/ISO_8601
+
+The API not just responds with these formats, it also expects it on requests.
+Attributes which contain such a datetime (or date) value are marked as of type `isodatetime` (or `isodate`) throughout the documentation.
+
+### Images
+
+Images are not served by the API server itself, but rather a CDN.
+The CDN can serve the base image in different *version*, which correspond to the different screen resolutions on mobile devices.
+Resource attributes which point to images always return an embedded object like the following:
 
     {   
-        "desc": "ein Bild",
-        "url": "https://res.cloudinary.com/dealini/image/upload/sample.jpg",
+        "desc": "an image",
+        "url": "https://img.example.net/sample.jpg",
         "versions": {
-            '1x': u'https://res.cloudinary.com/dealini/image/upload/c_fill,h_50,w_50/sample.jpg',
-            '2x': u'https://res.cloudinary.com/dealini/image/upload/c_fill,dpr_2.0,h_50,w_50/sample.jpg', 
-            'mdpi': u'https://res.cloudinary.com/dealini/image/upload/c_fill,dpr_1.0,h_50,w_50/sample.jpg',
-            'hdpi': u'https://res.cloudinary.com/dealini/image/upload/c_fill,dpr_1.5,h_50,w_50/sample.jpg',
-            'xhdpi': u'https://res.cloudinary.com/dealini/image/upload/c_fill,dpr_2.0,h_50,w_50/sample.jpg',
-            'xxhdpi': u'https://res.cloudinary.com/dealini/image/upload/c_fill,dpr_3.0,h_50,w_50/sample.jpg',
-            'thumb': u'https://res.cloudinary.com/dealini/image/upload/c_thumb,h_50,w_50/sample.jpg'
+            "1x": u"https://img.example.net/c_fill,h_50,w_50/sample.jpg",
+            "2x": u"https://img.example.net/c_fill,dpr_2.0,h_50,w_50/sample.jpg", 
+            "mdpi": u"https://img.example.net/c_fill,dpr_1.0,h_50,w_50/sample.jpg",
+            "hdpi": u"https://img.example.net/c_fill,dpr_1.5,h_50,w_50/sample.jpg",
+            "xhdpi": u"https://img.example.net/c_fill,dpr_2.0,h_50,w_50/sample.jpg",
+            "xxhdpi": u"https://img.example.net/c_fill,dpr_3.0,h_50,w_50/sample.jpg",
+            "thumb": u"https://img.example.net/c_thumb,h_50,w_50/sample.jpg"
         },
         "dimensions": {
             "width": 100,
@@ -108,14 +208,17 @@ Example:
         }
     }
 
+*   `desc` (type: *string*) describes the image.
+*   `url` (type: *string*) is the base URL to the original image.
+*   `versions` (type: *object*) contains URLs for the original image transformed for different screen resolutions (.
+*   `dimensions` (type: *object*) describes the image size in *device independent pixels* (dip).
+    It contains the two keys `width` and `height`, both of type *int*.
+    
+    > *Note*:
+    > On Android, the device independent image size corresponds to the size of the image at the `mdpi` resolution.
+    > On iOS, it corresponds to the size of the image at the `1x` resolution.
 
-# Internationalization support (i18n)
-
-The content and the error messages can be localized to one of the following languages: de, fr, it.
-By default, error messages will be in english and content in german.
-The preferred language can be chosen using the [HTTP *Accept-Language* header][HttpAcceptLanguage].
-
-[HttpAcceptLanguage]: http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.4
+Attributes which point to an image are marked as of type `image(width, height)`, where `width` and `height` correspond to the `dimensions` value of the returned *Image* object.
 
 
 # Group Sessions
