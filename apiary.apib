@@ -228,36 +228,99 @@ Login and Logout are handled here
 
 ## Error-Codes
 
-*  10: (HTTP 400 - Bad Request)
-        *"Email and password or the Facebook access token must be provided"*
-        This happens if either the facebook access token, the email or the password were not provided at all.
-*  11: (HTTP 401 - Unauthorized)
-        *"Email or password did not match."*
-*  12: (HTTP 401 - Unauthorized)
-        *"Session does not exist"*
-        The session either never existed or it was already terminated
-*  13: (HTTP 400 - Bad Request)
-        *"Invalid Facebook access token"*
+<table>
+  <thead>
+    <tr>
+      <th align="center">Code</th>
+      <th>Message/Description</th>
+      <th align="right">HTTP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">10</td>
+      <td>
+        <q>Email and password or the Facebook access token must be provided</q><br>
+        This happens if either the Facebook access token, the email or the password were not provided at all.
+      </td>
+      <td align="right">400</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">11</td>
+      <td>
+        <q>Email or password did not match.</q>
+      </td>
+      <td align="right">401</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">12</td>
+      <td>
+        <q>Session does not exist</q><br>
+        The session either never existed or it was already terminated.
+      </td>
+      <td align="right">401</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">13</td>
+      <td>
+        <q>Invalid Facebook access token</q><br>
         The access token could not be used, either because it is malformatted or expired.
-*  14: (HTTP 404 - NotFound)
-        *"Could not find user"*
-        The user could not be found based on the provided identification
-*  15: (HTTP 401 - Unauthorized)
-        *"The user is banned"*
-        The user is marked as banned. Normally the user is informed by email about the reasons.
-*  16: (HTTP 403 - Forbidden)
-        *"Your facebook password changed. Please update your password in the Facebook settings."*
-        On iOS it is necessary to update the password in the native facebook app.
-*  17: (HTTP 403 - Forbidden)
-        *"There was a problem with your facebook credentials. Please try again later."*
+      </td>
+      <td align="right">400</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">14</td>
+      <td>
+        <q>Could not find user</q><br>
+        The user could not be found based on the provided identification.
+      </td>
+      <td align="right">404</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">15</td>
+      <td>
+        <q>The user is banned</q><br>
+        The user is marked as banned.
+        Normally the user is informed by email about the reasons.
+      </td>
+      <td align="right">401</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">16</td>
+      <td>
+        <q>Your facebook password changed.
+        Please update your password in the Facebook settings.</q><br>
+        On iOS it is necessary to update the password in the native Facebook app.
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">17</td>
+      <td>
+        <q>There was a problem with your facebook credentials. Please try again later.</q><br>
         The provided access token is likely expired.
-        This is usually handled by the native facebook app (so a new facebook access token should be requested), but it might also happen if the facebook server is not (yet) up to date.
-*  18: (HTTP 403 - Forbidden)
-        *"Unknown problem when communicating with facebook. Please try again later."*
-        Facebook servers are down
-*  19: (HTTP 403 - Forbidden)
-        *"You need a valid verified email address to signup."*
-        If the user has no validated email inside facebook, he cannot login with dealini
+        This is usually handled by the native Facebook app (so a new facebook access token should be requested), but it might also happen if the Facebook server is not (yet) up to date.
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">18</td>
+      <td>
+        <q>Unknown problem when communicating with facebook. Please try again later.</q><br>
+        The Facebook servers are currently unreachable from the dealini backend.
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">19</td>
+      <td>
+        <q>You need a valid verified email address to signup.</q><br>
+        If the user's Facebook email is not validated, he cannot login with dealini.
+      </td>
+      <td align="right">403</td>
+    </tr>
+  </tbody>
+</table>
 
 ## Session [/sessions/current]
 
@@ -319,48 +382,129 @@ All requests belonging to a user, e.g. creating, changing and fetching.
 
 ## Error-Codes
 
-*  16: (HTTP 403 - Forbidden)
-        *"Your facebook password changed. Please update your password in the Facebook settings."*
-        On iOS it is necessary to update the password in the native facebook app
-*  17: (HTTP 403 - Forbidden)
-        *"There was a problem with your facebook credentials. Please try again later."*
+<table>
+  <thead>
+    <tr>
+      <th align="center">Code</th>
+      <th>Message/Description</th>
+      <th align="right">HTTP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">16</td>
+      <td>
+        <q>Your facebook password changed.
+        Please update your password in the Facebook settings.</q><br>
+        On iOS it is necessary to update the password in the native Facebook app.
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">17</td>
+      <td>
+        <q>There was a problem with your facebook credentials. Please try again later.</q><br>
         The provided access token is likely expired.
-        This is usually handled by the native facebook app (so a new facebook access token should be requested), but it might also happen if the facebook server is not (yet) up to date.
-*  18: (HTTP 403 - Forbidden)
-        *"Unknown problem when communicating with facebook. Please try again later."*
-        Facebook servers are down
-*  19: (HTTP 403 - Forbidden)
-        *"You need a valid verified email address to signup."*
-        If the user has no validated email inside facebook, he cannot login with dealini
-*  20: (HTTP 403 - Forbidden)
-        *"Invalid email address"*
-        The provided email is not considered a valid email based on some basic regex
-*  21: (HTTP 403 - Forbidden)
-        *"Email address forbidden"*
-        The provided email domain is on a blacklist (mostly one-time trash email providers), the user must use another email address
-*  22: (HTTP 403 - Forbidden)
-        *"Password too short"*
-        The password must have at least 6 characters
-*  23: (HTTP 403 - Forbidden)
-        *"User already exists"*
-        A user with the same email address already registered.
-        Good oportunity to allow the user to re-send the confirmation mail or the password-forgotten dialog
-*  24: (HTTP 404 - NotFound)
-        *"User does not exist"*
-        No user with this ID ever existed
-*  25: (HTTP 400 - Bad Request)
-        *"Invalid access_token"*
-        Most likely the access token expired.
-        Other reasons include not having installed the dealini app or not having provided the necessary permissions (only email permission is required)
-*  26: (HTTP 403 - Forbidden)
-        *"Username too short"*
-        The username must have at least one non-blank character
-*  27: (HTTP 403 - Forbidden)
-        *"Invalid confirmation code"*
-        The user tried to verify with an invalid verification code
-*  28: (HTTP 403 - Forbidden)
-        *"This facebook account is already connected with another account."*
-        When trying to connect a user with a facebook account, but the facebook account is already connected to a user, this error will happen.
+        This is usually handled by the native Facebook app (so a new facebook access token should be requested), but it might also happen if the Facebook server is not (yet) up to date.
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">18</td>
+      <td>
+        <q>Unknown problem when communicating with facebook. Please try again later.</q><br>
+        The Facebook servers are currently unreachable from the dealini backend.
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">19</td>
+      <td>
+        <q>You need a valid verified email address to signup.</q><br>
+        If the user's Facebook email is not validated, he cannot login with dealini.
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">20</td>
+      <td>
+        <q>Invalid email address</q><br>
+        Our backend does not consider the provided email to be a valid email address (based on some regular expression).
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">21</td>
+      <td>
+        <q>Email address forbidden</q><br>
+        The provided email domain is on our blacklist (mostly one-time trash email providers).
+        The user must use another email address.
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">22</td>
+      <td>
+        <q>Password too short</q><br>
+        The password must contain at least 6 characters.
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">23</td>
+      <td>
+        <q>User already exists</q><br>
+        A user with the same email address is already registered.
+        The client should offer the user to re-send the confirmation email or request a new password.
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">24</td>
+      <td>
+        <q>User does not exist</q><br>
+        No user with this id has ever existed.
+      </td>
+      <td align="right">404</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">25</td>
+      <td>
+        <q>Invalid access_token</q><br>
+        There are several reasons possible:
+        <ul>
+          <li>The Facebook access token has expired.</li>
+          <li>The user is not connected to the dealini Facebook app.</li>
+          <li>The user has rejected one of the required Facebook permissions (currently only `email`)</li>
+      </td>
+      <td align="right">400</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">26</td>
+      <td>
+        <q>Username too short</q><br>
+        The username must contain at least one non-blank character.
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">27</td>
+      <td>
+        <q>Invalid confirmation code</q><br>
+        The user tried to verify with an invalid verification code.
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">28</td>
+      <td>
+        <q>This facebook account is already connected with another account.</q><br>
+        This error happens when you try to connect a user with a Facebook account, but the Facebook account is already connected to another user.
+      </td>
+      <td align="right">403</td>
+    </tr>
+  </tbody>
+</table>
 
 Default attributes:
 
@@ -792,12 +936,33 @@ If the settings of another than the logged-in user are checked, only the public 
 
 ## Error-Codes
 
-* 160: (HTTP 403 - Forbidden)
-        *"The users are already friends"*
-        A friend request can only be made to users who are not friends yet
-* 161: (HTTP 403 - Forbidden)
-        *"No pending friend request from other user"*
+<table>
+  <thead>
+    <tr>
+      <th align="center">Code</th>
+      <th>Message/Description</th>
+      <th align="right">HTTP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">160</td>
+      <td>
+        <q>The users are already friends</q><br>
+        A friend request can only be made to users who are not already friends.
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">161</td>
+      <td>
+        <q>No pending friend request from other user</q><br>
         To accept a friend request, there must be a pending friend request from the other user.
+      </td>
+      <td align="right">403</td>
+    </tr>
+  </tbody>
+</table>
 
 ## FriendRequest [/users/{user_id}/friendRequests/{friend_id}]
 
@@ -895,15 +1060,41 @@ Will issue a push notification to the addressee (code=3)
 
 ## Error-Codes
 
-* 170: (HTTP 403 - Forbidden)
-        *"Code already used by you"*
-        The provided code was used by the logged-in user, go and check cards or instant prizes.
-* 171: (HTTP 403 - Forbidden)
-        *"Code already used by another user"*
-        The provided code was used by someone other then the logged-in user.
-* 172: (HTTP 404 - NotFound)
-        *"Code does not exist"*
-        The provided code never existed in our database.
+<table>
+  <thead>
+    <tr>
+      <th align="center">Code</th>
+      <th>Message/Description</th>
+      <th align="right">HTTP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">170</td>
+      <td>
+        <q>Code already used by you</q><br>
+        The provided code has already been used by the logged-in user.
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">171</td>
+      <td>
+        <q>Code already used by another user</q><br>
+        The provided code has already been used by someone other then the logged-in user.
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">172</td>
+      <td>
+        <q>Code does not exist</q><br>
+        The provided code has never existed in our database.
+      </td>
+      <td align="right">404</td>
+    </tr>
+  </tbody>
+</table>
 
 ## Code [/codes/{code}]
 
@@ -942,15 +1133,41 @@ Credits represent flowpacks or special offers which the user can use to get more
 
 ## Error-Codes
 
-*  30: (HTTP 403 - Forbidden)
-        *"Access denied to credits of another user"*
-        The logged-in user does not own the queried credit
-*  31: (HTTP 403 - Forbidden)
-        *"Credit already used"*
+<table>
+  <thead>
+    <tr>
+      <th align="center">Code</th>
+      <th>Message/Description</th>
+      <th align="right">HTTP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">30</td>
+      <td>
+        <q>Access denied to credits of another user</q><br>
+        The logged-in user does not own the requested credit.
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">31</td>
+      <td>
+        <q>Credit already used</q><br>
         A credit can only be used once.
-* 237: (HTTP 403 - Forbidden)
-        *"Not enough dollarini"*
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">237</td>
+      <td>
+        <q>Not enough dollarini</q><br>
         The user does not have enough dollarini to buy a credit.
+      </td>
+      <td align="right">403</td>
+    </tr>
+  </tbody>
+</table>
 
 ## Credit [/users/{user_id}/credits/{credit_id}]
 
@@ -1058,8 +1275,24 @@ These credits are usually given to the user when he buys one or multiple flowpac
 
 ## Error-Codes
 
-* 180: (HTTP 403 - Forbidden)
-        *"Forbidden to access instant prize card belonging to another user"*
+<table>
+  <thead>
+    <tr>
+      <th align="center">Code</th>
+      <th>Message/Description</th>
+      <th align="right">HTTP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">180</td>
+      <td>
+        <q>Forbidden to access instant prize card belonging to another user</q><br>
+      </td>
+      <td align="right">403</td>
+    </tr>
+  </tbody>
+</table>
 
 ## InstantPrizeCard [/instantPrizeCards/{cardid}]
 
@@ -1176,16 +1409,42 @@ A deal is an offer which can be redeemed if a certain amount of distinct cards h
 
 ## Error-Codes
 
-*  40: (HTTP 404 - NotFound)
-        *"Card not found"*
+<table>
+  <thead>
+    <tr>
+      <th align="center">Code</th>
+      <th>Message/Description</th>
+      <th align="right">HTTP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">40</td>
+      <td>
+        <q>Card not found</q><br>
         The card does not exist in the database (anymore).
         When a deal cannot be collected anymore, the unsold cards are removed.
-*  50: (HTTP 404 - NotFound)
-        *"No Deal found"*
+      </td>
+      <td align="right">404</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">50</td>
+      <td>
+        <q>No Deal found</q><br>
         This deal never existed or the search returned no results.
-*  51: (HTTP 403 - Forbidden)
-        *"Cannot access deal"*
+      </td>
+      <td align="right">404</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">51</td>
+      <td>
+        <q>Cannot access deal</q><br>
         This deal is not yet active.
+      </td>
+      <td align="right"></td>
+    </tr>
+  </tbody>
+</table>
 
 ## Deal [/deals/{id}]
 
@@ -1624,19 +1883,6 @@ Admin attributes:
 
 A deal can have a category.
 
-## Error-Codes
-
-*  40: (HTTP 404 - NotFound)
-        *"Category not found"*
-        The card does not exist in the database (anymore).
-        When a deal cannot be collected anymore, the unsold cards are removed.
-*  50: (HTTP 404 - NotFound)
-        *"No Deal found"*
-        This deal never existed or the search returned no results
-*  51: (HTTP 403 - Forbidden)
-        *"Cannot access deal"*
-        This deal is not yet active
-
 ## Category collection [/categories]
 
 ### Retrieve all active Categories [GET]
@@ -1718,9 +1964,25 @@ A user can have multiple identical cards, but to redeem a deal it is necessary t
 
 ## Error-Codes
 
-*  50: (HTTP 404 - NotFound)
-        *"No Deal found"*
-        This deal never existed or the search returned no results
+<table>
+  <thead>
+    <tr>
+      <th align="center">Code</th>
+      <th>Message/Description</th>
+      <th align="right">HTTP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">50</td>
+      <td>
+        <q>No Deal found</q><br>
+        This deal never existed or the search returned no results.
+      </td>
+      <td align="right">404</td>
+    </tr>
+  </tbody>
+</table>
 
 ## CardUnits of a Deal [/cardUnits/{dealid}]
 
@@ -1963,18 +2225,49 @@ A user can show that he wants to collect a deal by liking it.
 
 ## Error-Codes
 
-*  70: (HTTP 404 - NotFound)
-        *"Trade not found"*
-        The requested trade could not be found
-*  71: (HTTP 403 - Forbidden)
-        *"Not allowed to request a foreign trade"*
-        The currently logged-in user tried to access a trade in which he is not part of
-*  72: (HTTP 403 - Forbidden)
-        *"Cannot create trade, illegal participants or added cards"*
+<table>
+  <thead>
+    <tr>
+      <th align="center">Code</th>
+      <th>Message/Description</th>
+      <th align="right">HTTP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">70</td>
+      <td>
+        <q>Trade not found</q><br>
+        The requested trade could not be found.
+      </td>
+      <td align="right">404</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">71</td>
+      <td>
+        <q>Not allowed to request a foreign trade</q><br>
+        The currently logged-in user is not part of the requested trade.
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">72</td>
+      <td>
+        <q>Cannot create trade, illegal participants or added cards</q><br>
         You can only create trades where you are the from_user and where all cards belong to the users in the trade.
-*  73: (HTTP 403 - Forbidden)
-        *"Cannot update trade state, invalid state transition"*
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">73</td>
+      <td>
+        <q>Cannot update trade state, invalid state transition</q><br>
         Only some trade state changes are allowed.
+      </td>
+      <td align="right">403</td>
+    </tr>
+  </tbody>
+</table>
 
 ## Trade [/trades/{id}]
 
@@ -2197,8 +2490,24 @@ If the formular would be sent by a browser, the minimal HTML code would have to 
 
 ## Error-Codes
 
-* 190: (HTTP 403 - Forbidden)
-        *"Uploading with this resource type is forbidden"*
+<table>
+  <thead>
+    <tr>
+      <th align="center">Code</th>
+      <th>Message/Description</th>
+      <th align="right">HTTP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">190</td>
+      <td>
+        <q>Uploading with this resource type is forbidden</q><br>
+      </td>
+      <td align="right">403</td>
+    </tr>
+  </tbody>
+</table>
 
 ## AWSS3Upload collection [/awsS3Uploads]
 
@@ -2236,10 +2545,31 @@ The following parameters are available:
 
 ## Error-Codes
 
-* 120: (HTTP 401 - Unauthorized)
-        *"Email or password did not match"*
-* 121: (HTTP 401 - Unauthorized)
-        *"Session does not exist"*
+<table>
+  <thead>
+    <tr>
+      <th align="center">Code</th>
+      <th>Message/Description</th>
+      <th align="right">HTTP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">120</td>
+      <td>
+        <q>Email or password did not match</q><br>
+      </td>
+      <td align="right">401</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">121</td>
+      <td>
+        <q>Session does not exist</q><br>
+      </td>
+      <td align="right">401</td>
+    </tr>
+  </tbody>
+</table>
 
 ### Create a new Session [POST]
 
@@ -2286,12 +2616,33 @@ The following parameters are available:
 
 ## Error-Codes
 
-* 130: (HTTP 404 - NotFound)
-        *"No User found"*
-        There is no user with the provided ID
-* 131: (HTTP 403 - Forbidden)
-        *"Email already exists"*
-        A user with the same email address already registered.
+<table>
+  <thead>
+    <tr>
+      <th align="center">Code</th>
+      <th>Message/Description</th>
+      <th align="right">HTTP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">130</td>
+      <td>
+        <q>No User found</q><br>
+        There is no user with the requested id.
+      </td>
+      <td align="right">404</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">131</td>
+      <td>
+        <q>Email already exists</q><br>
+        A user with the same email address is already registered.
+      </td>
+      <td align="right">403</td>
+    </tr>
+  </tbody>
+</table>
 
 ### Retrieve all DashboardUsers [GET]
 
@@ -2369,9 +2720,25 @@ The following parameters are available:
 
 ## Error-Codes
 
-* 140: (HTTP 403 - Forbidden)
-        *"Rolename already exists"*
-        A role with the same name already registered.
+<table>
+  <thead>
+    <tr>
+      <th align="center">Code</th>
+      <th>Message/Description</th>
+      <th align="right">HTTP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">140</td>
+      <td>
+        <q>Rolename already exists</q><br>
+        A role with the same name is already registered.
+      </td>
+      <td align="right">403</td>
+    </tr>
+  </tbody>
+</table>
 
 ### Retrieve all Roles [GET]
 
@@ -2418,9 +2785,25 @@ The following parameters are available:
 
 ## Error-Codes
 
-* 110: (HTTP 403 - Forbidden)
-        *"No Product found"*
-        Unknown product.
+<table>
+  <thead>
+    <tr>
+      <th align="center">Code</th>
+      <th>Message/Description</th>
+      <th align="right">HTTP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">110</td>
+      <td>
+        <q>No Product found</q><br>
+        This is an unknown product.
+      </td>
+      <td align="right">403</td>
+    </tr>
+  </tbody>
+</table>
 
 ## Product [/products/{id}]
 
@@ -2570,40 +2953,98 @@ Available parameters:
 
 ## Error-Codes
 
-* 100: (HTTP 403 - Forbidden)
-        *"Product out of stock"*
-        There are no more products available to be ordered
-* 101: (HTTP 403 - Forbidden)
-        *"User doesn't own enough cards"*
+<table>
+  <thead>
+    <tr>
+      <th align="center">Code</th>
+      <th>Message/Description</th>
+      <th align="right">HTTP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">100</td>
+      <td>
+        <q>Product out of stock</q><br>
+        There are no more products available to be ordered.
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">101</td>
+      <td>
+        <q>User doesn't own enough cards</q><br>
         To redeem, the user must have a card from each card unit of the product's deal.
-* 102: (HTTP 403 - Forbidden)
-        *"Cannot access order of another User"*
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">102</td>
+      <td>
+        <q>Cannot access order of another User</q><br>
         Only the orders of the logged-in user may be retrieved.
-* 103: (HTTP 404 - NotFound)
-        *"No order found"*
-        Order does not exist.
-* 104: (HTTP 403 - Forbidden)
-        *"Invalid update, order is read-only"*
-        Once the order is paid, no updates can be issued by the user
-* 105: (HTTP 403 - Forbidden)
-        *"Invalid update, invalid status change from {{old_status}} to {{new_status}}"*
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">103</td>
+      <td>
+        <q>No order found</q><br>
+        The requested order does not exist.
+      </td>
+      <td align="right">404</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">104</td>
+      <td>
+        <q>Invalid update, order is read-only</q><br>
+        Once the order is paid, no updates can be issued by the user.
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">105</td>
+      <td>
+        <q>Invalid update, invalid status change from {{old_status}} to {{new_status}}</q><br>
         Only some order status changes are allowed:
-
-    >   `reserved` -> `paid`: Mark an order as paid.
-        The server will check if the address and payment are complete.
-
-* 106: (HTTP 403 - Forbidden)
-        *"Invalid order, cannot be paid"*
+        <ul>
+          <li>`reserved` -> `paid`:
+              Marks an order as paid.
+              The server will check if the address and payment are complete.
+          </li>
+        </ul>
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">106</td>
+      <td>
+        <q>Invalid order, cannot be paid</q><br>
         The order got invalid during the reservation (out of stock, or cards have been traded).
-* 107: (HTTP 403 - Forbidden)
-        *"Transaction already recorded"*
+      </td>
+      <td align="right">40</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">107</td>
+      <td>
+        <q>Transaction already recorded</q><br>
         The transaction ID is already used.
         Most likely the receipt was accidentially sent twice.
-* 109: (HTTP 403 - Forbidden)
-        *"Not old enough to order the product"*
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">109</td>
+      <td>
+        <q>Not old enough to order the product</q><br>
         For some products, it is necessary to be above a certain age (e.g., 18 years old).
         This error will happen if the user has no birthday set (on billing_address.birthday and delivery_address.birthday) or if he is too young.
         See `Product.min_age`.
+      </td>
+      <td align="right">403</td>
+    </tr>
+  </tbody>
+</table>
 
 ## Order [/orders/{id}]
 
@@ -2922,12 +3363,33 @@ A payment mean is a credit card (or similar) to pay online.
 
 ## Error-Codes
 
-* 150: (HTTP 404 - NotFound)
-        *"PaymentMean not found"*
-        This payment mean does not exist in our database (anymore)
-* 151: (HTTP 403 - Forbidden)
-        *"Cannot access payment mean of another user"*
-        Only payment means owned by the logged-in user can be delete
+<table>
+  <thead>
+    <tr>
+      <th align="center">Code</th>
+      <th>Message/Description</th>
+      <th align="right">HTTP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">150</td>
+      <td>
+        <q>PaymentMean not found</q><br>
+        This payment mean does not exist in our database (anymore).
+      </td>
+      <td align="right">404</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">151</td>
+      <td>
+        <q>Cannot access payment mean of another user</q><br>
+        Only payment means owned by the logged-in user can be deleted.
+      </td>
+      <td align="right">403</td>
+    </tr>
+  </tbody>
+</table>
 
 ## PaymentMean [/paymentMeans/{id}]
 
@@ -3046,15 +3508,41 @@ For this reason, we are sending a subset of fields with shorter names as part of
 
 ## Error-Codes
 
-* 110: (HTTP 404 - NotFound)
-        *"Could not find notification"*
+<table>
+  <thead>
+    <tr>
+      <th align="center">Code</th>
+      <th>Message/Description</th>
+      <th align="right">HTTP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">110</td>
+      <td>
+        <q>Could not find notification</q><br>
         The requested notification does not exist.
-* 111: (HTTP 404 - NotFound)
-        *"Cannot access notification of another user"*
-        Only notifications of the logged-in user may be accessed.
-* 112: (HTTP 404 - NotFound)
-        *"Invalid notification change"*
+      </td>
+      <td align="right">404</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">111</td>
+      <td>
+        <q>Cannot access notification of another user</q><br>
+        Only notifications of the logged-in user can be accessed.
+      </td>
+      <td align="right">404</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">112</td>
+      <td>
+        <q>Invalid notification change</q><br>
         Cannot un-see or un-consume notification.
+      </td>
+      <td align="right">404</td>
+    </tr>
+  </tbody>
+</table>
 
 ## Possible Notifications
 
@@ -3434,12 +3922,33 @@ By default returns the daily top ten scores.
 
 ## Error-Codes
 
-* 250: (HTTP 403 - Forbidden)
-        *"No Access"*
-        No Access by wrong access key
-* 210: (HTTP 403 - Forbidden)
-        *"No Access"*
-        No Access by wrong access key
+<table>
+  <thead>
+    <tr>
+      <th align="center">Code</th>
+      <th>Message/Description</th>
+      <th align="right">HTTP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">250</td>
+      <td>
+        <q>No Access</q><br>
+        You supplied a wrong access key.
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">210</td>
+      <td>
+        <q>No Access</q><br>
+        You supplied a wrong access key.
+      </td>
+      <td align="right">403</td>
+    </tr>
+  </tbody>
+</table>
 
 ## CampaignStatistics HDMD14 [/campaignStats/HDM14{?access_key}]
 
