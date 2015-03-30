@@ -3,144 +3,369 @@ HOST: http://api4.dealini.ch
 
 
 # Dealini API
-Welcome to the Dealini API documentation. We are constantly adding and improving features of this API.
+
+Welcome to the Dealini API documentation.
+We are constantly adding and improving features of this API.
 Please add your comments and feedback to the API as comments!
 
-Requests with data (POST / PUT) will be JSON encoded. The Content-Type will be application/json
-All responses will to be JSON encoded. The Content-Type will always be application/json
+Our API is JSON-only:
+The request body must be JSON-encoded, having the *Content-Type* header set to `application/json`.
+In return, non-empty responses will also have a *Content-Type* of `application/json`.
 
-Most API calls are only available after authorization (login). For these calls it is necessary to send the
-auth-cookie which is set in the Response of POST /sessions along with the Request. Cookies will also be used
-for load balancing, so the consumer of the API should handle cookies the same way a browser would handle cookies.
+## Errors
 
-Some resources can be accessed by an anonymous user, but most resources need a registered user (e.g. with a valid email).
-If an anonymous user tries to access a resource available only to registered users, a HTTPForbidden error will be returned.
-As over time the resources available to anonymous users might change, a consumer of the API should implement a generic handler
-for these cases promting the anonymous user to register only after trying to access the protected route. For this reason the
-protected routes are not explicitly mentioned in the documentation.
+This API uses standard [HTTP status codes] to inform the client about the outcome of a request.
+If the response status code is in the `4xx`/`5xx` range, the response body contains an error object like the following:
 
-## General fields always available
-* suppress_response_codes: (bool) If this is provided and set to "true", the Error Codes will always return as a HTTP OK (200). The correct HTTP Error Code is stored in the JSOn encoded Error response
-* rollback: (bool) If this is set to "true", no changes will be saved in the database. Useful for testing.
-* fields (alt: fields[]): (string) Only return these fields/attributes. Must be provided to get optional fields/attributes. "id" is always returned.
-    To specify fields from embedded objects (e.g. products inside a deal), the dot-notation can be used (e.g. "product.name" to get only the name attribute)
-
-## Error Codes
-Error codes specific for the resources are described at the corresponding resource
-
-* 0: (HTTP 500 - Internal Server Error) Something did not work out as expected. An automatic E-Mail is sent to Dealini and we will look into the problem.
-* 1: (HTTP 400 - Bad Request) Generally malformatted input. A detailed description of the error is given in the error description
-* 2: (HTTP 401 - Unauthorized) A resource which is only available to logged-in user is requested by an unauthorized user. Either the user is not logged in or his session timed out.
-* 3: (HTTP 404 - NotFound) The resource does not exist
-* 4: (HTTP 403 - Forbidden) This resource is only available to non-anonymous users
-* 5: (HTTP 403 - Forbidden) Tried to change write-protected field without necessary permissions
-
-# Templates
-Often-used object templates are described here. later, only the tempaltes will be referred with the respective configuration.
-
-## Image <Image(width, height, optional:fill_mode, optional:thumb, optional:desc)>
-An image can have multiple versions (resolutions) to look good on all devices (e.g. retina display)
-
-* desc: (string) Description of the image
-* thumb: (bool) if True there is a thumbnail version
-* dimensions: (dict with width and height) The device independent pixel size of the image.
-    The pixel size of the image at the "1x" resoultion or the "mdpi" resolution equals the device independent pixel size.
-
-Possible fill_modes are:
-
-* fill: (default) Create an image with the exact given width and height while retaining original proportions.
-    Uses only a portion of the original image that fills the given dimensions.
-* fit: Change image size to fit in the given width & height while retaining original proportions. All original image parts are visible.
-    Both width and height dimensions of the transformed image must not exceed the specified width & height.
-
-Example:
-
-        {   
-            "desc": "ein Bild",
-            "url": "https://res.cloudinary.com/dealini/image/upload/sample.jpg",
-            "versions": {
-                '1x': u'https://res.cloudinary.com/dealini/image/upload/c_fill,h_50,w_50/sample.jpg',
-                '2x': u'https://res.cloudinary.com/dealini/image/upload/c_fill,dpr_2.0,h_50,w_50/sample.jpg', 
-                'mdpi': u'https://res.cloudinary.com/dealini/image/upload/c_fill,dpr_1.0,h_50,w_50/sample.jpg',
-                'hdpi': u'https://res.cloudinary.com/dealini/image/upload/c_fill,dpr_1.5,h_50,w_50/sample.jpg',
-                'xhdpi': u'https://res.cloudinary.com/dealini/image/upload/c_fill,dpr_2.0,h_50,w_50/sample.jpg',
-                'xxhdpi': u'https://res.cloudinary.com/dealini/image/upload/c_fill,dpr_3.0,h_50,w_50/sample.jpg',
-                'thumb': u'https://res.cloudinary.com/dealini/image/upload/c_thumb,h_50,w_50/sample.jpg'
-            },
-            "dimensions": {
-                "width": 100,
-                "height: 200
-            }
+    {
+        "response_code": 404,
+        "error": {
+            "code": 3,
+            "message": "The resource does not exist."
         }
+    }
 
+[HTTP status codes]: https://en.wikipedia.org/wiki/List_of_HTTP_status_codes
 
-# Internationalization support (i18n)
-The content and the error codes can be localized to one of the following languages: de, fr, it.
-By default, error messages will be in english and content in german.
+*   `response_code` (type: *int*) is the original HTTP status code of the response.
+*   `code` (type: *int*) represents a more specific error code.
+    It can help clients to automatically recover from an error.
+*   `message` (type: *string*) is a human readable description of the error.
+    It can be shown to users and is localizable (see the **I18N** section below).
 
-The preferred language can be chosen using the HTTP Accept-Language header. See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.4
+The additional error codes are usually specific to certain resources.
+They will be explained in the corresponding subsections of this documentation.
+However, there are a few generic error codes which can always happen:
 
+<table>
+  <thead>
+    <tr>
+      <th align="center">Code</th>
+      <th>Message/Description</th>
+      <th align="right">HTTP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">0</td>
+      <td>
+        <q>Something did not work out as expected.
+        An automatic E-Mail is sent to Dealini and we will look into the problem.</q>
+      </td>
+      <td align="right">500</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">1</td>
+      <td>
+        Generally malformatted input.
+        A detailed description of the error is given in the error description.
+      </td>
+      <td align="right">400</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">2</td>
+      <td>
+        <q>A resource which is only available to logged-in user is requested by an unauthorized user.
+        Either the user is not logged in or his session timed out.</q>
+      </td>
+      <td align="right">401</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">3</td>
+      <td>
+        <q>The resource does not exist.</q>
+      </td>
+      <td align="right">404</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">4</td>
+      <td>
+        <q>This resource is only available to non-anonymous users.</q>
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">5</td>
+      <td>
+        You tried to change a write-protected field without having the necessary permissions.
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">6</td>
+      <td>
+        The chosen request method is not allowed for this resource.
+      </td>
+      <td align="right">405</td>
+    </tr>
+  </tbody>
+</table>
+
+> *Note*:
+> If your client is not in control of the HTTP stack and can not properly handle `4xx`/`5xx` status codes, you can pass `suppress_response_codes=true` as a parameter to your request.
+> This tells the server to unconditionally return a **200 OK** response.
+> Your client is then responsible to distinguish between successful and errorneous answers.
+> The original status code is always available from the error object.
+
+## Authentication
+
+Most API calls require a valid *authentication token*.
+Such a token can be obtained from the **Sessions** resource.
+Our auth token is a standard [HTTP cookie], and should be handled by clients like browsers do (i.e. sending, receiving and expiration).
+
+[HTTP cookie]: https://en.wikipedia.org/wiki/HTTP_cookie
+
+There are two types of user accounts:
+
+*   *Registered* users are created with a valid email address (using a password or Facebook to log in).
+*   *Anonymous* users are created with a unique device identifier (using the this identifier alone to log in).
+
+Some API resources only work for *registered* users.
+The API will return a **HTTP 403 Forbidden** with the error code 4 in case an *anonymous* user tries to access such a resource.
+A client can only get around this error by upgrading the user account type (see the **Users** resource for details how to do that).
+The resources which are only available for *registered* users may change over time and are therefore not explicitly mentioned in this documentation.
+
+> *Recommendation*:
+> Clients should implement a generic handler for this error and offer the user to upgrade ("register") his account.
+
+## Internationalization (i18n)
+
+Document content and error messages can be localized to one of the following languages: `de`, `fr`, `it`.
+The preferred language can be chosen using the [HTTP *Accept-Language* header][HttpAcceptLanguage].
+If no suitable translation was found, the response uses a default language.
+For document content the default language is German, and for error messages it is English.
+
+[HttpAcceptLanguage]: http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.4
+
+## Request Parameters
+
+The API supports a few general parameters you can set when requesting documents.
+
+### Fields
+
+The `fields` (or `fields[]`) parameter can be used by clients to tailor the returned document to their needs.
+
+1.  Clients can request only a subset of the available resource attributes.
+    The `id` of the requested document is always included.
+    For example, the following request returns only the attributes `foo`, `bar` and `id`:
+    
+        GET /deals?fields=foo&fields=bar
+
+2.  Some resources also have additional *optional* attributes, which are only returned when requested by the client.
+
+3.  Embedded documents can also be targeted by this parameter using the dot notation.
+    For example, the following request returns only the `bar` attribute from the embedded `foo` document (and the `id` of course):
+    
+        GET /deals?fields=foo.bar
+
+> *Note*:
+> Remember that the response always only contains the requested attributes if the `fields` parameter is present.
+> If a client wants both the normal document as well as optional or embedded attributes, *all* these attributes have to be explicitly requested.
+
+### Testing
+
+It is sometimes undesirable to actually create data on the server while testing API calls.
+Adding the request parameter `rollback=true` prevents the server from persisting data created for a specific request.
+The response will still contain the data, as if everything worked normally.
+
+## Common Data Types
+
+There are a few generic data types used throughout the API.
+
+### Date Format
+
+JSON does not have a native datetime type.
+Instead the API always returns a JSON string containing an [ISO 8601] datetime (or date).
+To be precise, the only supported datetime format is `%Y-%m-%dT%H:%m:%SZ` (UTC, no microseconds).
+The date format is `%Y-%m-%d`.
+
+[ISO 8601]: https://en.wikipedia.org/wiki/ISO_8601
+
+The API not just responds with these formats, it also expects it on requests.
+Attributes which contain such a datetime (or date) value are marked as of type `isodatetime` (or `isodate`) throughout the documentation.
+
+### Images
+
+Images are not served by the API server itself, but rather a CDN.
+The CDN can serve the base image in different *version*, which correspond to the different screen resolutions on mobile devices.
+Resource attributes which point to images always return an embedded object like the following:
+
+    {   
+        "desc": "an image",
+        "url": "https://img.example.net/sample.jpg",
+        "versions": {
+            "1x": u"https://img.example.net/c_fill,h_50,w_50/sample.jpg",
+            "2x": u"https://img.example.net/c_fill,dpr_2.0,h_50,w_50/sample.jpg", 
+            "mdpi": u"https://img.example.net/c_fill,dpr_1.0,h_50,w_50/sample.jpg",
+            "hdpi": u"https://img.example.net/c_fill,dpr_1.5,h_50,w_50/sample.jpg",
+            "xhdpi": u"https://img.example.net/c_fill,dpr_2.0,h_50,w_50/sample.jpg",
+            "xxhdpi": u"https://img.example.net/c_fill,dpr_3.0,h_50,w_50/sample.jpg",
+            "thumb": u"https://img.example.net/c_thumb,h_50,w_50/sample.jpg"
+        },
+        "dimensions": {
+            "width": 100,
+            "height: 200
+        }
+    }
+
+*   `desc` (type: *string*) describes the image.
+*   `url` (type: *string*) is the base URL to the original image.
+*   `versions` (type: *object*) contains URLs for the original image transformed for different screen resolutions (.
+*   `dimensions` (type: *object*) describes the image size in *device independent pixels* (dip).
+    It contains the two keys `width` and `height`, both of type *int*.
+    
+    > *Note*:
+    > On Android, the device independent image size corresponds to the size of the image at the `mdpi` resolution.
+    > On iOS, it corresponds to the size of the image at the `1x` resolution.
+
+Attributes which point to an image are marked as of type `image(width, height)`, where `width` and `height` correspond to the `dimensions` value of the returned *Image* object.
 
 
 # Group Sessions
-Creation & removal of sessions. Login and Logout are handled here
+
+Creation & removal of sessions.
+Login and Logout are handled here
 
 ## Error-Codes
-* 10: (HTTP 400 - Bad Request) "Email and password or the Facebook access token must be provided" - This happens if either the facebook access token, the email or the password werent provided at all
-* 11: (HTTP 401 - Unauthorized) "Email or password did not match."
-* 12: (HTTP 401 - Unauthorized) "Session does not exist" - The session either never existed or it was already terminated
-* 13: (HTTP 400 - Bad Request) "Invalid Facebook access token" - The access token could not be used, either because it is malformatted or expired.
-* 14: (HTTP 404 - NotFound) "Could not find user" - The user could not be found based on the provided identification
-* 15: (HTTP 401 - Unauthorized) "The user is banned" - The user is marked as banned. Normally the user is informed by email about the reasons.
-* 16: (HTTP 403 - Forbidden) "Your facebook password changed. Please update your password in the Facebook settings." - for iOS Apps, it is necessary to update the password in the native facebook app
-* 17: (HTTP 403 - Forbidden) "There was a problem with your facebook credentials. Please try again later." - The provided access token is likely expired.
-    Is usually handled by the facebook native app (so a new facebook access token should be requested), but it might also happen if the facebook server is not (yet) up to date.
-* 18: (HTTP 403 - Forbidden) "Unknown problem when communicating with facebook. Please try again later." - Facebook servers are down
-* 19: (HTTP 403 - Forbidden) "You need a valid verified email address to signup." - If the user has no validated email inside facebook, he cannot login with dealini
+
+<table>
+  <thead>
+    <tr>
+      <th align="center">Code</th>
+      <th>Message/Description</th>
+      <th align="right">HTTP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">10</td>
+      <td>
+        <q>Email and password or the Facebook access token must be provided</q><br>
+        This happens if either the Facebook access token, the email or the password were not provided at all.
+      </td>
+      <td align="right">400</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">11</td>
+      <td>
+        <q>Email or password did not match.</q>
+      </td>
+      <td align="right">401</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">12</td>
+      <td>
+        <q>Session does not exist</q><br>
+        The session either never existed or it was already terminated.
+      </td>
+      <td align="right">401</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">13</td>
+      <td>
+        <q>Invalid Facebook access token</q><br>
+        The access token could not be used, either because it is malformatted or expired.
+      </td>
+      <td align="right">400</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">14</td>
+      <td>
+        <q>Could not find user</q><br>
+        The user could not be found based on the provided identification.
+      </td>
+      <td align="right">404</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">15</td>
+      <td>
+        <q>The user is banned</q><br>
+        The user is marked as banned.
+        Normally the user is informed by email about the reasons.
+      </td>
+      <td align="right">401</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">16</td>
+      <td>
+        <q>Your facebook password changed.
+        Please update your password in the Facebook settings.</q><br>
+        On iOS it is necessary to update the password in the native Facebook app.
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">17</td>
+      <td>
+        <q>There was a problem with your facebook credentials. Please try again later.</q><br>
+        The provided access token is likely expired.
+        This is usually handled by the native Facebook app (so a new facebook access token should be requested), but it might also happen if the Facebook server is not (yet) up to date.
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">18</td>
+      <td>
+        <q>Unknown problem when communicating with facebook. Please try again later.</q><br>
+        The Facebook servers are currently unreachable from the dealini backend.
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">19</td>
+      <td>
+        <q>You need a valid verified email address to signup.</q><br>
+        If the user's Facebook email is not validated, he cannot login with dealini.
+      </td>
+      <td align="right">403</td>
+    </tr>
+  </tbody>
+</table>
 
 ## Session [/sessions/current]
 
-The session object
+The session object.
 
-Attributes:
-
-* token: (string) encrypted hex-encoded 36 byte (72 chars) session ID
-* user_id: (int) ID of the user who owns the session token
-
-+ Model (application/json)
++ Model
 
     + Headers
 
             Set-Cookie: dealinidev_auth=5b068891ae586391d30c4aeed158ce5a6829af58b5bb9280f22c46689c9314b61482edf8; httponly; Path=/
 
-### Logout a user [DELETE]
+### Logout a User [DELETE]
 
 + Response 204
 
-## Sessions collection [/sessions]
+## Session collection [/sessions]
 
-### Create a new Session with Email and Password [POST]
+### Create a new Session [POST]
+
 The following parameters are available:
 
-* email: (unicode string) login of user
-* password: (unicode string) password of user
-* fb_access_token: (string) A valid FB access token. If this is given, email&password are ignored
-* device_identifier: (string) A unique identifier for the device used for anonymous users
+*   `email` *(unicode string)*:
+        login of user
+*   `password` *(unicode string)*:
+        password of user
+*   `fb_access_token` *(string)*:
+        A valid FB access token.
+        If this is given, email&password are ignored
+*   `device_identifier` *(string)*:
+        A unique identifier for the device used for anonymous users
 
-+ Request (application/json)
++ Request Login with E-Mail and Password (application/json)
 
         {
             "email": "dealinitest1@dealini.ch",
             "password": "de-a-lini"
         }
 
-+ Request with Facebook (application/json)
++ Request Login with Facebook (application/json)
 
         {
             "fb_access_token": "AAACukElzvo0BALBn7XKCA6ZAnJ5MZCaDV6JJK4f0XDVUENgqGyRRWLXAUV4yL8MnHaw4JUCzFvBZC7if9ZAsIoVhIuv3TljWxNKVY83eJR6sTX6pOZBqs"
         }
 
-+ Request with device_identifier (application/json)
++ Request Login with unique device identifier (application/json)
 
         {
             "device_identifier": "anystringwhichisunique"
@@ -152,53 +377,175 @@ The following parameters are available:
 
 
 # Group Users
+
 All requests belonging to a user, e.g. creating, changing and fetching.
 
 ## Error-Codes
-* 16: (HTTP 403 - Forbidden) "Your facebook password changed. Please update your password in the Facebook settings." - for iOS Apps, it is necessary to update the password in the native facebook app
-* 17: (HTTP 403 - Forbidden) "There was a problem with your facebook credentials. Please try again later." - The provided access token is likely expired.
-    Is usually handled by the facebook native app (so a new facebook access token should be requested), but it might also happen if the facebook server is not (yet) up to date.
-* 18: (HTTP 403 - Forbidden) "Unknown problem when communicating with facebook. Please try again later." - Facebook servers are down
-* 19: (HTTP 403 - Forbidden) "You need a valid verified email address to signup." - If the user has no validated email inside facebook, he cannot login with dealini
-* 20: (HTTP 403 - Forbidden) "Invalid email address" - The provided email is not considered a valid email based on some basic regex
-* 21: (HTTP 403 - Forbidden) "Email address forbidden" - The provided email domain is on a blacklist (mostly one-time trash email providers), the user must use another email address
-* 22: (HTTP 403 - Forbidden) "Password too short" - The password must have at least 6 characters
-* 23: (HTTP 403 - Forbidden) "User already exists" - A user with the same email address already registered. Good oportunity to allow the user to re-send the confirmation mail or the password-forgotten dialog
-* 24: (HTTP 404 - NotFound) "User does not exist" - No User with this ID ever existed
-* 25: (HTTP 400 - Bad Request) "Invalid access_token" - Most likely the access token expired. Other reasons include not having installed the dealini app
-    or not having provided the necessary permissions (only email permission is required)
-* 26: (HTTP 403 - Forbidden) "Username too short" - The username must have at least one non-blank character
-* 27: (HTTP 403 - Forbidden) "Invalid confirmation code" - The user tried to verify with an invalid verification code
-* 28: (HTTP 403 - Forbidden) "This facebook account is already connected with another account." - When trying to connect a user with a facebook account, but the facebook account is already connected to a user, this error will happen.
+
+<table>
+  <thead>
+    <tr>
+      <th align="center">Code</th>
+      <th>Message/Description</th>
+      <th align="right">HTTP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">16</td>
+      <td>
+        <q>Your facebook password changed.
+        Please update your password in the Facebook settings.</q><br>
+        On iOS it is necessary to update the password in the native Facebook app.
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">17</td>
+      <td>
+        <q>There was a problem with your facebook credentials. Please try again later.</q><br>
+        The provided access token is likely expired.
+        This is usually handled by the native Facebook app (so a new facebook access token should be requested), but it might also happen if the Facebook server is not (yet) up to date.
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">18</td>
+      <td>
+        <q>Unknown problem when communicating with facebook. Please try again later.</q><br>
+        The Facebook servers are currently unreachable from the dealini backend.
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">19</td>
+      <td>
+        <q>You need a valid verified email address to signup.</q><br>
+        If the user's Facebook email is not validated, he cannot login with dealini.
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">20</td>
+      <td>
+        <q>Invalid email address</q><br>
+        Our backend does not consider the provided email to be a valid email address (based on some regular expression).
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">21</td>
+      <td>
+        <q>Email address forbidden</q><br>
+        The provided email domain is on our blacklist (mostly one-time trash email providers).
+        The user must use another email address.
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">22</td>
+      <td>
+        <q>Password too short</q><br>
+        The password must contain at least 6 characters.
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">23</td>
+      <td>
+        <q>User already exists</q><br>
+        A user with the same email address is already registered.
+        The client should offer the user to re-send the confirmation email or request a new password.
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">24</td>
+      <td>
+        <q>User does not exist</q><br>
+        No user with this id has ever existed.
+      </td>
+      <td align="right">404</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">25</td>
+      <td>
+        <q>Invalid access_token</q><br>
+        There are several reasons possible:
+        <ul>
+          <li>The Facebook access token has expired.</li>
+          <li>The user is not connected to the dealini Facebook app.</li>
+          <li>The user has rejected one of the required Facebook permissions (currently only `email`)</li>
+      </td>
+      <td align="right">400</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">26</td>
+      <td>
+        <q>Username too short</q><br>
+        The username must contain at least one non-blank character.
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">27</td>
+      <td>
+        <q>Invalid confirmation code</q><br>
+        The user tried to verify with an invalid verification code.
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">28</td>
+      <td>
+        <q>This facebook account is already connected with another account.</q><br>
+        This error happens when you try to connect a user with a Facebook account, but the Facebook account is already connected to another user.
+      </td>
+      <td align="right">403</td>
+    </tr>
+  </tbody>
+</table>
 
 Default attributes:
- * id: (int) ID of the user
- * username: (string) Freely chosen username of the player
- * image: (Image) Location of the users image
- * status_message: (string, 80 chars) Freely setable status message
+
+*   `id` *(int)*:
+        ID of the user
+*   `username` *(string)*:
+        Freely chosen username of the user
+*   `image` *(Image)*:
+        Location of the users image
+*   `status_message` *(string, 80 chars)*:
+        Freely setable status message
 
 Optional Attributes:
- * push_notification_channel: (string) Unique name of the player-specific PARSE channel name for push notifications
- * email: (string) Valid email of the user. This is "null" for anonymous users
- * first_name: (string, optional)
- * last_name: (string, optional)
- * phone: (string, optional) 
- * birthday: (isodatetime, optional) 
- * settings: (Settings object) The individual settings of the user, described in "Settings of a user" 
- * number_of_common_friends: (int, optional) Relative to the logged-in user, gives the number of common friends (null: User is a friend).
-    This is only set when searching for users (/users?q=...).
- * facebook_connect: (bool) If the user is already conneted to a facebook account
- * number_of_trades: (int) All trades where the user is part of (including suggested, cancelled and closed trades)
+
+*   `push_notification_channel` *(string)*:
+        Unique name of the user-specific Parse channel name for push notifications
+*   `email` *(string)*:
+        Valid email of the user. This is "null" for anonymous users
+*   `first_name` *(string, optional)*
+*   `last_name` *(string, optional)*
+*   `phone` *(string, optional)*
+*   `birthday` *(isodatetime, optional)*
+*   `settings` *(Settings object)*:
+        The individual settings of the user, described below in *Settings of a User* 
+*   `number_of_common_friends` *(int, optional)*:
+        Relative to the logged-in user, gives the number of common friends (null: the other user is a friend).
+        This is only set when searching for users (/users?q=...).
+*   `facebook_connect` *(bool)*:
+        If the user is already conneted to a facebook account
+*   `number_of_trades` *(int)*:
+        All trades where the user is part of (including suggested, cancelled and closed trades)
 
 ## User [/users/{id}]
 
-One player of dealini.ch.
+One user of dealini.ch.
 When fetching a single user, the default and the optional attributes are returned.
 
 + Model (application/json)
 
     + Body
-    
+
             {
                 "user": {
                     "status_message": "Hello World",
@@ -218,47 +565,59 @@ When fetching a single user, the default and the optional attributes are returne
                 }
             }
 
-### Fetch a  User [GET]
+### Retrieve a User [GET]
 
 + Parameters
-    + id (int, required, `4809`) ... The id of the `user` to retrieve. Use "custom" to fetch the currently logged-in user
+
+    + id (int, required, `4809`)
+
+        The id of the `user` to retrieve.
+        Use `current` for the logged-in user.
 
 + Response 200
 
     [User][]
 
-### Update a user [PUT]
+### Update a User [PUT]
 
 Read-only fields are:
-* id
-* number_of_common_friends (changed by adding/deleting friends)
-* push_notification_channel
-* settings (can be changed, see below)
-* facebook_connect
-* number_of_trades
+
+*   `id`
+*   `number_of_common_friends`
+        Adding or deleting friends changes this value
+*   `push_notification_channel`
+*   `settings`
+        Can be changed, see below
+*   `facebook_connect`
+*   `number_of_trades`
 
 Write-only fields are:
-* password: (string) New user-chosen password
-* fb_access_token: (string) Valid facebook access token, account will be connected.
+
+*   `password` *(string)*:
+        New user-chosen password
+*   `fb_access_token` *(string)*:
+        Valid facebook access token, account will be connected.
 
 + Parameters
-    + id (int, required, `4809`) ... ID of the user
-    
+
+    + id (int, required, `4809`)
+
+        ID of the user
+
 + Request (application/json)
 
     + Body
-    
+
             {
                 "email": "dealinitest1@dealini.ch",
                 "password": "bla123"
             }
-            
+
 + Response 200
-    
+
     [User][]
 
-
-## User collection [/users]
+## User collection [/users{?q,type}]
 
 + Model (application/json)
 
@@ -275,23 +634,25 @@ Write-only fields are:
                 ]
             }
 
-### Create a User [POST]
+### Create a new User [POST]
 
-Create a new user. Will also return a valid new session.
+Create a new user.
+Will also return a valid new session.
 
 Available parameters:
 
-* username: (string) Will be used as the displayed name in the game.
+*   `username` *(string)*:
+        Will be used as the displayed name in the game.
+*   `email` *(string, valid email)*:
+        The new login name of the user
+*   `password` *(string)*:
+        The new password of the user
+*   `access_token` *(string, fb access token)*:
+        An authorized Facebook access token for the user
+*   `device_identifier` *(string)*:
+        A unique device identifing token, used to create a restricted, anonymous user
 
-* email: (string, valid email) The new login name of the user
-* password: (string) The new password of the user
-or
-* access_token: (string, fb access token) an authorized Facebook access token for the user
-or
-* device_identifier: (string) A unique device identifing token, used to create an limited anonymous user
-
-
-+ Request (application/json)
++ Request Sign up with E-Mail and Password (application/json)
 
         {
             "email": "dealinitest1@dealini.ch",
@@ -299,14 +660,14 @@ or
             "username": "Dealini Test"
         }
 
-+ Request with FB token (application/json)
++ Request Sign up with FB token (application/json)
 
         {
             "access_token": "AAACukElzvo0BALBn7XKCA6ZAnJ5MZCaDV6JJK4f0XDVUENgqGyRRWLXAUV4yL8MnHaw4JUCzFvBZC7if9ZAsIoVhIuv3TljWxNKVY83eJR6sTX6pOZBqs"
             "username": "Dealini Test"
         }
 
-+ Request with device_identifier (application/json)
++ Request Sign up with device_identifier (application/json)
 
         {
             "device_identifier": "anystringwhichisunique"
@@ -316,35 +677,51 @@ or
 
     [User][]
 
-## User collection search [/users{?q,type}]
-
-### Get multiple users [GET]
+### Search for Users [GET]
 
 + Parameters
-    + q (string, required, `dealinitest1`) ... Searches for exact matches of email and fuzzy matches of username and first+lastname.
-        When called as a admin (fromt he dashboard), all fields are searchy fuzzy and additional fields are searched.
-    + type (string, optional) ... When trying to find "suggested friends", this must be set to `suggested_friends`.
+
+    + q (string, required, `dealinitest1`)
+
+        Searches for exact matches of email and fuzzy matches of username and first+lastname.
+        When called as a admin (from the dashboard), all fields are fuzzy matched and additional fields are searched.
+
+    + type (string, optional, `suggested_friends`)
+
+        When trying to find "suggested friends", this must be set to `suggested_friends`.
         Will return up to 10 suggested friends based on the count of common friends (dealini and facebook friends).
 
 + Response 200
 
     [User collection][]
 
-## Cards of a user [/users/{user_id}/cards{?deal_id,include_redeemed_cards}]
+## Cards of a User [/users/{user_id}/cards{?deal_id,include_redeemed_cards}]
+
 A user has cards which can be traded with other users.
 
-### Get all cards - default: only tradeable [GET]
+### Retrieve all Cards of a User [GET]
+
+By default only tradeable cards are returned.
 
 + Parameters
-    + user_id (int, required, `4809`) ... The user for which we want to fetch the cards. *current* for the logged-in user.
-    + deal_id (int, optional) ... Filter cards by this dealid
-    + include_redeemed_cards (bool, optional, `false`) ... Returns also the redeemed cards, adding the field `quantity_redeemed`
+
+    + user_id (int, required, `4809`)
+
+        The user for which we want to fetch the cards.
+        Use `current` for the logged-in user.
+
+    + deal_id (int, optional, `42`)
+
+        Filter cards by this dealid
+
+    + include_redeemed_cards (bool, optional, `false`)
+
+        Returns also the redeemed cards, adding the field `quantity_redeemed`
 
 + Response 200 (application/json)
 
     + Body
 
-    
             {
                 "cards": [
                     {
@@ -368,24 +745,35 @@ A user has cards which can be traded with other users.
                 ]
             }
 
-## Friendship of a user [/users/{user_id}/friendships/friend_id]
+## Friend of a User [/users/{user_id}/friendships/{friend_id}]
 
-### Delete a friend [DELETE]
+### Delete a Friend [DELETE]
 
 Always "works", even if they were no friends
 
 + Parameters
-    + user_id (int, required, `current`) ... The user who is deleting the friend request. *current* for the logged-in user.
-    + friend_id (int, required, `631`) ... The user who is being removed from the friends.
+
+    + user_id (int, required, `current`)
+
+        The user who is deleting the friend request.
+        Use `current` for the logged-in user.
+
+    + friend_id (int, required, `631`)
+
+        The user who is being removed from the friends.
 
 + Response 204
 
-## Friendships of a user Collection [/users/{user_id}/friendships]
+## Friend collection of a User [/users/{user_id}/friendships]
 
-### Get all friends of this user [GET]
+### Retrieve all Friends of a User [GET]
 
 + Parameters
-    + user_id (int, required, `4809`) ... The user for which we want to fetch the friendships. *current* for the logged-in user.
+
+    + user_id (int, required, `4809`)
+
+        The user for which we want to fetch the friendships.
+        Use `current` for the logged-in user.
 
 + Response 200 (application/json)
 
@@ -406,12 +794,17 @@ Always "works", even if they were no friends
                 ]
             }
 
-### Add a friend - accept a friend request [POST]
+### Add a Friend [POST]
 
-Only works if a pending friend request is waiting. Will issue a push notification (code=4) to the user.
+Only works if a pending friend request is waiting.
+Will issue a push notification (code=4) to the user.
 
 + Parameters
-    + user_id (int, required, `current`) ... The user who is accepting the friend request. *current* for the logged-in user.
+
+    + user_id (int, required, `current`)
+
+        The user who is accepting the friend request.
+        Use `current` for the logged-in user.
 
 + Request (application/json)
 
@@ -436,14 +829,18 @@ Only works if a pending friend request is waiting. Will issue a push notificatio
                 }
             }
 
-## Settings of a user [/users/{user_id}/settings]
+## Settings of a User [/users/{user_id}/settings]
 
-### Get all his settings [GET]
+### Retrieve all Settings [GET]
 
-If the settings of another than the logged-in user are checked, only the public settings are returned
+If the settings of another than the logged-in user are checked, only the public settings are returned.
 
 + Parameters
-    + user_id (int, required, `4809`) ... The user for which we want to fetch the settings. *current* for the logged-in user.
+
+    + user_id (int, required, `4809`)
+
+        The user for which we want to fetch the settings.
+        Use `current` for the logged-in user.
 
 + Response 200 (application/json)
 
@@ -478,10 +875,14 @@ If the settings of another than the logged-in user are checked, only the public 
                 }
             }
 
-### Update a setting [PUT]
+### Update a Setting [PUT]
 
 + Parameters
-    + user_id (int, required, `4809`) ... The user for which we want to fetch the settings. *current* for the logged-in user.
+
+    + user_id (int, required, `4809`)
+
+        The user for which we want to update the settings.
+        Use `current` for the logged-in user.
 
 + Request (application/json)
 
@@ -531,20 +932,44 @@ If the settings of another than the logged-in user are checked, only the public 
             }
 
 
-
 # Group FriendRequests
 
-## Error-Codes:
-* 160: (HTTP 403 - Forbidden) "The players are already friends" - A friend request can only be made to players who are not friends yet
-* 161: (HTTP 403 - Forbidden) "No pending friend request from other player" To accept a friend request,
-    there must be a pending friend request from the other player.
+## Error-Codes
+
+<table>
+  <thead>
+    <tr>
+      <th align="center">Code</th>
+      <th>Message/Description</th>
+      <th align="right">HTTP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">160</td>
+      <td>
+        <q>The users are already friends</q><br>
+        A friend request can only be made to users who are not already friends.
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">161</td>
+      <td>
+        <q>No pending friend request from other user</q><br>
+        To accept a friend request, there must be a pending friend request from the other user.
+      </td>
+      <td align="right">403</td>
+    </tr>
+  </tbody>
+</table>
 
 ## FriendRequest [/users/{user_id}/friendRequests/{friend_id}]
 
 + Model (application/json)
 
     + Body
-    
+
             {
                 "friendRequest": {
                     "addressee_id": 631,
@@ -552,24 +977,30 @@ If the settings of another than the logged-in user are checked, only the public 
                     "time_created": "2014-04-04T23:59:59",
                 }
             }
-            
-### Reject a friend request [DELETE]
+
+### Reject a FriendRequest [DELETE]
 
 + Parameters
-    + user_id (int, required, `current`) ... The user who wants to reject the friend request. *current* for the logged-in user.
-    + friend_id (int, required, `631`) ... The user who is being rejected.
+
+    + user_id (int, required, `current`)
+
+        The user who wants to reject the friend request.
+        Use `current` for the logged-in user.
+
+    + friend_id (int, required, `631`)
+
+        The user who is being rejected.
 
 + Response 204
-    
 
 ## FriendRequest collection [/users/{user_id}/friendRequests]
 
-Alternative URL for /users/current/friendRequests: /friendRequests
+Alternative URL: `/friendRequests`
 
 + Model (application/json)
 
     + Body
-    
+
             {
                 "friendRequests": [
                     {
@@ -586,26 +1017,36 @@ Alternative URL for /users/current/friendRequests: /friendRequests
                 ]
             }
 
-### Get pending friend requests which can be accepted by the player [GET]
+### Retrieve pending FriendRequests [GET]
+
+Returns only friend requests which can be accepted by the user.
 
 + Parameters
-    + user_id (int, required, `current`) ... The user for which we want to fetch the settings. *current* for the logged-in user.
-    
+
+    + user_id (int, required, `current`)
+
+        The user for which we want to fetch the settings.
+        Use `current` for the logged-in user.
+
 + Response 200
 
     [FriendRequest collection][]
 
-### Create a new friend request [POST]
+### Create a new FriendRequest [POST]
 
 Will issue a push notification to the addressee (code=3)
 
 + Parameters
-    + user_id (int, required, `current`) ... The user for which we want to fetch the settings. *current* for the logged-in user.
+
+    + user_id (int, required, `current`)
+
+        The user for which we want to fetch the settings.
+        Use `current` for the logged-in user.
 
 + Request (application/json)
 
     + Body
-    
+
             {
                 "addressee_id": 631
             }
@@ -613,20 +1054,59 @@ Will issue a push notification to the addressee (code=3)
 + Response 200
 
     [FriendRequest][]
-    
+
+
 # Group Codes
 
-## Error-Codes:
-* 170: (HTTP 403 - Forbidden) "Code already used by you" - The provided code was used by the logged-in player, go and check cards or instant prizes.
-* 171: (HTTP 403 - Forbidden) "Code already used by another player" - The provided code was used by someone other then the logged-in player.
-* 172: (HTTP 404 - NotFound) "Code does not exist" -The provided code never existed in our database
+## Error-Codes
+
+<table>
+  <thead>
+    <tr>
+      <th align="center">Code</th>
+      <th>Message/Description</th>
+      <th align="right">HTTP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">170</td>
+      <td>
+        <q>Code already used by you</q><br>
+        The provided code has already been used by the logged-in user.
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">171</td>
+      <td>
+        <q>Code already used by another user</q><br>
+        The provided code has already been used by someone other then the logged-in user.
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">172</td>
+      <td>
+        <q>Code does not exist</q><br>
+        The provided code has never existed in our database.
+      </td>
+      <td align="right">404</td>
+    </tr>
+  </tbody>
+</table>
 
 ## Code [/codes/{code}]
 
-### Use a code to get a card [DELETE]
+### Use a Code [DELETE]
+
+A used code is turned into a card or an instant prize.
 
 + Parameters
-    + code (string, required, `AAAABBBBCCCC`) ... The code which should be converted into the card or isntant prize
+
+    + code (string, required, `AAAABBBBCCCC`)
+
+        The code which should be converted into the card or instant prize
 
 + Response 200 (application/json)
 
@@ -649,24 +1129,62 @@ Will issue a push notification to the addressee (code=3)
 
 # Group Credits
 
-Credits represent flowpacks or special offers which the player can use to get more cards.
+Credits represent flowpacks or special offers which the user can use to get more cards.
 
-## Error-Codes:
-* 30: (HTTP 403 - Forbidden) "Access denied to credits of another user" - The logged-in user does not own the queried credit
-* 31: (HTTP 403 - Forbidden) "Credit already used" - A credit can only be used once.
-* 237: (HTTP 403 - Forbidden) "Not enough dollarini" - A specific amount of dollarinis has to be own be the user to buy atleast one credit
+## Error-Codes
 
+<table>
+  <thead>
+    <tr>
+      <th align="center">Code</th>
+      <th>Message/Description</th>
+      <th align="right">HTTP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">30</td>
+      <td>
+        <q>Access denied to credits of another user</q><br>
+        The logged-in user does not own the requested credit.
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">31</td>
+      <td>
+        <q>Credit already used</q><br>
+        A credit can only be used once.
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">237</td>
+      <td>
+        <q>Not enough dollarini</q><br>
+        The user does not have enough dollarini to buy a credit.
+      </td>
+      <td align="right">403</td>
+    </tr>
+  </tbody>
+</table>
 
 ## Credit [/users/{user_id}/credits/{credit_id}]
 
-### Use a code to get a card [DELETE]
+### Use a Credit [DELETE]
 
 When a credit is used, either one specific card or several cards (3 right now) are given to the user.
-This is reported as a list of card_units and instant_prize_cards which are added to the credit
+This is reported as a list of `card_units` and `instant_prize_cards` which are added to the `credit`.
 
 + Parameters
-    + user_id (int, required, `4809`) ... The user owning the credit
-    + credit_id (int, required, `1`) ... The id of the credit which should be used
+
+    + user_id (int, required, `4809`)
+
+        The user owning the credit
+
+    + credit_id (int, required, `1`)
+
+        The id of the credit which should be used
 
 + Response 200 (application/json)
 
@@ -700,14 +1218,17 @@ This is reported as a list of card_units and instant_prize_cards which are added
                 }
             }
 
-## Credits Collection [/users/{user_id}/credits]
+## Credit collection [/users/{user_id}/credits]
 
-### Get unredeemed credits belonging to the user [GET]
+### Retrieve unredeemed Credits of a User [GET]
 
 These credits are usually given to the user when he buys one or multiple flowpacks.
 
 + Parameters
-    + user_id (int, required, `4809`) ... The user owning the credit
+
+    + user_id (int, required, `4809`)
+
+        The user owning the credit
 
 + Response 200 (application/json)
 
@@ -721,15 +1242,16 @@ These credits are usually given to the user when he buys one or multiple flowpac
                     }
                 ]
             }
-            
-            
-### Buy credits for dollarinis[POST]
+
+### Buy Credits with Dollarini [POST]
 
 + Parameters
-    + user_id (int, required, `4809`) ... The logged-in user
-    
+
+    + user_id (int, required, `4809`)
+
+        The logged-in user
+
 + Request (application/json)
-    
 
         {
             "dollarinis": 4
@@ -748,10 +1270,29 @@ These credits are usually given to the user when he buys one or multiple flowpac
                 ]
             }
 
+
 # Group InstantPrizeCards
 
-## Error-Codes:
-* 180: (HTTP 403 - Forbidden) "Forbidden to access instant prize card belonging to another user"
+## Error-Codes
+
+<table>
+  <thead>
+    <tr>
+      <th align="center">Code</th>
+      <th>Message/Description</th>
+      <th align="right">HTTP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">180</td>
+      <td>
+        <q>Forbidden to access instant prize card belonging to another user</q><br>
+      </td>
+      <td align="right">403</td>
+    </tr>
+  </tbody>
+</table>
 
 ## InstantPrizeCard [/instantPrizeCards/{cardid}]
 
@@ -760,7 +1301,7 @@ The instant prize itself is included by default
 + Model (application/json)
 
     + Body
-    
+
             {
                 "instantPrizeCard": {
                     "id": 1,
@@ -799,11 +1340,14 @@ The instant prize itself is included by default
                 }
             }
 
-### Get a single instant prize card [GET]
+### Retrieve an InstantPrizeCard [GET]
 
 + Parameters
-    + cardid (int, required, `1`) ... The ID of the instant prize card
-            
+
+    + cardid (int, required, `1`)
+
+        The ID of the instant prize card
+
 + Response 200
 
     [InstantPrizeCard][]
@@ -811,12 +1355,15 @@ The instant prize itself is included by default
 ### Update the delivery_details [PUT]
 
 + Parameters
-    + cardid (int, required, `1`) ... The ID of the instant prize card
+
+    + cardid (int, required, `1`)
+
+        The ID of the instant prize card
 
 + Request (application/json)
 
     + Body
-    
+
             {
                 "delivery_details": {
                     "email": "test@example.com"
@@ -827,17 +1374,20 @@ The instant prize itself is included by default
 
     [InstantPrizeCard][]
 
-## InstantPrizeCards collection [/users/{user_id}/instantPrizeCards]
+## InstantPrizeCard collection [/users/{user_id}/instantPrizeCards]
 
-### All instant prize cards of a user [GET]
+### Retrieve all InstantPrizeCards of a User [GET]
 
 + Parameters
-    + user_id (int, required, `4809`) ... The ID of the user owning the cards
+
+    + user_id (int, required, `4809`)
+
+        The ID of the user owning the cards
 
 + Response 200 (application/json)
 
     + Body
-    
+
             {
                 "instantPrizeCards": [
                     {
@@ -854,65 +1404,143 @@ The instant prize itself is included by default
 
 
 # Group Deals
+
 A deal is an offer which can be redeemed if a certain amount of distinct cards have been collected.
 
-## Error-Codes:
-* 40: (HTTP 404 - NotFound) "Card not found" - The card does not exist in the database (anymore).
-    When a deal cannot be collected anymore, the unsold cards are removed.
-* 50: (HTTP 404 - NotFound) "No Deal found" - This deal never existed or the search returned no results
-* 51: (HTTP 403 - Forbidden) "Cannot access deal" - This deal is not yet active
+## Error-Codes
+
+<table>
+  <thead>
+    <tr>
+      <th align="center">Code</th>
+      <th>Message/Description</th>
+      <th align="right">HTTP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">40</td>
+      <td>
+        <q>Card not found</q><br>
+        The card does not exist in the database (anymore).
+        When a deal cannot be collected anymore, the unsold cards are removed.
+      </td>
+      <td align="right">404</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">50</td>
+      <td>
+        <q>No Deal found</q><br>
+        This deal never existed or the search returned no results.
+      </td>
+      <td align="right">404</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">51</td>
+      <td>
+        <q>Cannot access deal</q><br>
+        This deal is not yet active.
+      </td>
+      <td align="right"></td>
+    </tr>
+  </tbody>
+</table>
 
 ## Deal [/deals/{id}]
-Deals are products for which the player can collect cards and, by doing that, earn a discount on the product.
+
+Deals are products for which the user can collect cards and, by doing that, earn a discount on the product.
 
 Attributes:
 
-* id: (int) ID of the deal
-* name: (string) Short name for this deal
-* image_logo: (Image) The logo of the deal.
-* image_overview: (Image) The image which is displayed when showing a list of deals.
-* image_featured: (Image) The image to display when this deal is featured.
-* rank: (int) Used for ordering multiple deals, e.g. in the album. Lower rank equals higher position (e.g. rank 1 = topmost deal)
-* likes: (int) Number of peoples who favourited this deal
-* number: (int) The identifier for this deal in numeric form for display purposes.
-* featured: (bool) If the deal should be featured (highlighted) in the album overview
-* brand: (string) name of the brand which the deal belongs to.
-* category_id: (int) ID of the category the deal belongs to.
+*   `id` *(int)*:
+        ID of the deal
+*   `name` *(string)*:
+        Short name of the deal
+*   `image_logo` *(Image)*:
+        The logo of the deal.
+*   `image_overview` *(Image)*:
+        The image which is displayed when showing a list of deals.
+*   `image_featured` *(Image)*:
+        The image to display when this deal is featured.
+*   `rank` *(int)*:
+        Used for ordering multiple deals, e.g. in the album.
+        A lower rank equals higher position (e.g. rank 1 = topmost deal)
+*   `likes` *(int)*:
+        Number of peoples who favourited this deal
+*   `number` *(int)*:
+        The identifier for this deal in numeric form for display purposes.
+*   `featured` *(bool)*:
+        If the deal should be featured (highlighted) in the album overview
+*   `brand` *(string)*:
+        Name of the brand which the deal belongs to.
+*   `category_id` *(int)*:
+        ID of the category the deal belongs to.
 
-Optional Attributes (Except for products, returned by default if a single deal is requested):
+Optional attributes, which (except for the `product` field) are returned by default:
 
-* attributes: (list of dicts) The possible choices for products for this deal
-* products: (list of dicts) All valid products for this deal
-* show_in_album: (bool) If the deal should be visible in the overview of deals ("album")
-* time_redeem_end: (isodatetime) Real end - no redemption anymore
-* image_background: (Image) The file which can be used as a background image when showing the deal details
-* image_background_web: (Image) Similar to image_background with better resolution
-* product_images: (list of Image) Different shots of the product or the brand
-* tint_color: (string, "#FFFFFF") Hex-coded color of the deal
-* longdesc: (string) Description of the deal
-* title: (string) Title of the deal
-* desc: (string) Description of the deal
-* terms: (string) Terms of the deal
-* plain_link_url: (string) Link to the brandpartner page
-* link_url: (string) Link to the brandpartner page with tracking
-* link_name: (string) Display text for link to the brandpartner page
-* sticker_text: (string) Text on the virtual cards
-* slug: (string) naming of the last part of link of the deal details
-* dealini_presents: (bool) If the deal should be labeled as recommendation in the deals overview
-* max_per_user: (int) Amount of maximum orders per user
+*   `attributes` *(list of dicts)*:
+        The possible choices for products for this deal
+*   `products` *(list of dicts)*:
+        All valid products for this deal
+*   `show_in_album` *(bool)*:
+        If the deal should be visible in the overview of deals ("album")
+*   `time_redeem_end` *(isodatetime)*:
+        Real end - no redemption anymore
+*   `image_background` *(Image)*:
+        The file which can be used as a background image when showing the deal details
+*   `image_background_web` *(Image)*:
+        Similar to image_background with better resolution
+*   `product_images` *(list of Image)*:
+        Different shots of the product or the brand
+*   `tint_color` *(string, "#FFFFFF")*:
+        Hex-coded color of the deal
+*   `longdesc` *(string)*:
+        Description of the deal
+*   `title` *(string)*:
+        Title of the deal
+*   `desc` *(string)*:
+        Description of the deal
+*   `terms` *(string)*:
+        Terms of the deal
+*   `plain_link_url` *(string)*:
+        Link to the brandpartner page
+*   `link_url` *(string)*:
+        Link to the brandpartner page with tracking
+*   `link_name` *(string)*:
+        Display text for link to the brandpartner page
+*   `sticker_text` *(string)*:
+        Text on the virtual cards
+*   `slug` *(string)*:
+        naming of the last part of link of the deal details
+*   `dealini_presents` *(bool)*:
+        If the deal should be labeled as recommendation in the deals overview
+*   `max_per_user` *(int)*:
+        Amount of maximum orders per user
 
 Admin attributes:
-* amount_of_distinct_cards: (int) How many cards have to be collected.
-* time_start: (isodatetime) Starting time of the deal
-* time_end: (isodatetime) End of the deal - can still be redeemed
-* total_amount_of_cards: (int) Amount of physical cards which are circulating
-* subject_id: (int) ID for card printing
-* redeeminfo: (string) How to complete an order text
-* redeemhelpinfo: (string) Help to complete to the order
-* bp_email: (string) Email of the executive person of the brandpartner
-* bp_stats_link: (string) Link to the deal statistics page
-* admin_bp_stats_link: (string) Link to the advanced deal statistics page
-* export_password: (string) Password to export all deal orders
+
+*   `amount_of_distinct_cards` *(int)*:
+        How many cards have to be collected.
+*   `time_start` *(isodatetime)*:
+        Starting time of the deal
+*   `time_end` *(isodatetime)*:
+        End of the deal - can still be redeemed
+*   `total_amount_of_cards` *(int)*:
+        Amount of physical cards which are circulating
+*   `subject_id` *(int)*:
+        ID for card printing
+*   `redeeminfo` *(string)*:
+        How to complete an order text
+*   `redeemhelpinfo` *(string)*:
+        Help to complete to the order
+*   `bp_email` *(string)*:
+        Email of the executive person of the brandpartner
+*   `bp_stats_link` *(string)*:
+        Link to the deal statistics page
+*   `admin_bp_stats_link` *(string)*:
+        Link to the advanced deal statistics page
+*   `export_password` *(string)*:
+        Password to export all deal orders
 
 + Model (application/json)
 
@@ -958,19 +1586,25 @@ Admin attributes:
                 }
             }
 
-### Fetch a single deal [GET]
+### Retrieve a Deal [GET]
 
 + Parameters
-    + id (int, required, `1012`) ... ID of the deal
+
+    + id (int, required, `1012`)
+
+        ID of the deal
 
 + Response 200
-    
+
     [Deal][]
 
-### update a single deal [PUT]
+### Update a Deal [PUT]
 
 + Parameters
-    + id (int, required, `1012`) ... ID of the deal
+
+    + id (int, required, `1012`)
+
+        ID of the deal
 
 + Request (application/json)
 
@@ -1048,9 +1682,9 @@ Admin attributes:
                     ]
                 }
             }
-            
+
 + Response 200
-    
+
             {
                 "deal": {
                     "name": "Mein Essen",
@@ -1091,16 +1725,16 @@ Admin attributes:
 
 ## Deal collection [/deals]
 
-### All active deals [GET]
+### Retrieve all active Deals [GET]
 
 + Response 200 (application/json)
 
     + Headers
-    
+
             Cache-Control: max-age=3600
             Date: Tue, 22 Apr 2014 15:46:23 GMT
             Expires: Tue, 22 Apr 2014 16:46:23 GMT
-    
+
     + Body
 
             {
@@ -1123,7 +1757,7 @@ Admin attributes:
                 ]
             }
 
-### create a single deal [POST]
+### Create a new Deal [POST]
 
 + Request (application/json)
 
@@ -1201,9 +1835,9 @@ Admin attributes:
                     ]
                 }
             }
-            
+
 + Response 200
-    
+
             {
                 "deal": {
                     "id": 1012,
@@ -1244,27 +1878,23 @@ Admin attributes:
                 }
             }
 
-# Group Categories
-A deal can have a category.
 
-## Error-Codes:
-* 40: (HTTP 404 - NotFound) "Category not found" - The card does not exist in the database (anymore).
-    When a deal cannot be collected anymore, the unsold cards are removed.
-* 50: (HTTP 404 - NotFound) "No Deal found" - This deal never existed or the search returned no results
-* 51: (HTTP 403 - Forbidden) "Cannot access deal" - This deal is not yet active
+# Group Categories
+
+A deal can have a category.
 
 ## Category collection [/categories]
 
-### All active categories [GET]
+### Retrieve all active Categories [GET]
 
 + Response 200 (application/json)
 
     + Headers
-    
+
             Cache-Control: max-age=3600
             Date: Tue, 22 Apr 2014 15:46:23 GMT
             Expires: Tue, 22 Apr 2014 16:46:23 GMT
-    
+
     + Body
 
             {
@@ -1328,19 +1958,42 @@ A deal can have a category.
 
 
 # Group CardUnits
-A cardunit describes the different cards collectable. A user can have multiple identical cards, but to redeem a deal it
-is necessary to have at least one card belonging to each of the cardunits of the deal.
 
-## Error-Codes:
-* 50: (HTTP 404 - NotFound) "No Deal found" - This deal never existed or the search returned no results
+A card unit describes the different cards collectable.
+A user can have multiple identical cards, but to redeem a deal it is necessary to have at least one card belonging to each of the card units of the deal.
 
-## CardUnit [/cardUnits/{dealid}]
+## Error-Codes
 
-### Cardunits of a deal[GET]
+<table>
+  <thead>
+    <tr>
+      <th align="center">Code</th>
+      <th>Message/Description</th>
+      <th align="right">HTTP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">50</td>
+      <td>
+        <q>No Deal found</q><br>
+        This deal never existed or the search returned no results.
+      </td>
+      <td align="right">404</td>
+    </tr>
+  </tbody>
+</table>
+
+## CardUnits of a Deal [/cardUnits/{dealid}]
+
+### Retrieve all CardUnits of a Deal [GET]
 
 + Parameters
-    + dealid (int, required, `1012`) ... ID of the deal
-    
+
+    + dealid (int, required, `1012`)
+
+        ID of the deal
+
 + Response 200 (application/json)
 
     + Body
@@ -1374,13 +2027,19 @@ is necessary to have at least one card belonging to each of the cardunits of the
                 ]
             }
 
-## single CardUnit [/cardUnits/{dealid}/{number}]
+## CardUnit of a Deal [/cardUnits/{dealid}/{number}]
 
-### Update a single cardunit [PUT]
+### Update a CardUnit [PUT]
 
 + Parameters
-    + dealid (int, required, `1012`) ... ID of the deal
-    + number (int, required, `2`) ... number of the cardunit
+
+    + dealid (int, required, `1012`)
+
+        ID of the deal
+
+    + number (int, required, `2`)
+
+        Number of the card unit
 
 + Request (application/json)
 
@@ -1403,22 +2062,28 @@ is necessary to have at least one card belonging to each of the cardunits of the
                 }
             }
 
-## CardUnits Collection [/cardUnits]
+## CardUnit collection [/cardUnits]
+
 Enumerates the different kind of cards available for all active deals.
 
 Attributes:
 
-* image: (Image) The image of the card.
-* deal_id: (int) ID of the deal this cardunit belongs to
-* number: (int) The identifier of the specific card inside a deal
-* name: (string) The name of the card that is displayed to the players. Format and content may change
+*   `image` *(Image)*:
+        The image of the card.
+*   `deal_id` *(int)*:
+        ID of the deal this cardunit belongs to
+*   `number` *(int)*:
+        The identifier of the specific card inside a deal
+*   `name` *(string)*:
+        The name of the card that is displayed to the users.
+        Format and content may change
 
-### All CardUnits of active Deals [GET]
+### Retrieve all CardUnits of active Deals [GET]
 
 + Response 200 (application/json)
 
     + Headers
-    
+
             Cache-Control: max-age=3600
             Date: Tue, 22 Apr 2014 15:46:23 GMT
             Expires: Tue, 22 Apr 2014 16:46:23 GMT
@@ -1480,14 +2145,19 @@ Attributes:
 
 
 # Group DealLikes
-A player can show that he wants to collect a deal by liking it.
+
+A user can show that he wants to collect a deal by liking it.
 
 ## DealLikes [/users/{user_id}/dealLikes/{deal_id}]
 
-### DealLikes for a user [GET]
+### Retrieve all DealLikes of a User [GET]
 
 + Parameters
-    + user_id (int, required, `4809`) ... The ID of the user whoes likes should be fetched. *current* for the logged-in user
+
+    + user_id (int, required, `4809`)
+
+        The ID of the user whoes likes should be fetched.
+        Use `current` for the logged-in user.
 
 + Response 200 (application/json)
 
@@ -1509,7 +2179,11 @@ A player can show that he wants to collect a deal by liking it.
 ### Like a Deal [POST]
 
 + Parameters
-    + user_id (string, required, `current`) ... The user liking a deal. Only *current* is allowed here.
+
+    + user_id (string, required, `current`)
+
+        The user liking a deal.
+        Only `current` is allowed here.
 
 + Request (application/json)
 
@@ -1534,37 +2208,88 @@ A player can show that he wants to collect a deal by liking it.
 ### Unlike a Deal [DELETE]
 
 + Parameters
-    + user_id (string, required, `current`) ... The user liking a deal. Only *current* is allowed here.
-    + deal_id (int, required, `1012`) ... ID of the deal which should be unliked
+
+    + user_id (string, required, `current`)
+
+        The user liking a deal.
+        Only `current` is allowed here.
+
+    + deal_id (int, required, `1012`)
+
+        ID of the deal which should be unliked
 
 + Response 204
 
 
 # Group Trades
 
-#### Error-Codes:
-* 70: (HTTP 404 - NotFound) "Trade not found" - The requested trade could not be found
-* 71: (HTTP 403 - Forbidden) "Not allowed to request a foreign trade" - The currently logged-in user tried to access a trade in which he is not part of
-* 72: (HTTP 403 - Forbidden) "Cannot create trade, illegal participants or added cards" - You can only create trades where you are the from_user and where all cards belong to the players in the trade.
-* 73: (HTTP 403 - Forbidden) "Cannot update trade state, invalid state transition" - Only some trade state changes are allowed.
+## Error-Codes
+
+<table>
+  <thead>
+    <tr>
+      <th align="center">Code</th>
+      <th>Message/Description</th>
+      <th align="right">HTTP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">70</td>
+      <td>
+        <q>Trade not found</q><br>
+        The requested trade could not be found.
+      </td>
+      <td align="right">404</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">71</td>
+      <td>
+        <q>Not allowed to request a foreign trade</q><br>
+        The currently logged-in user is not part of the requested trade.
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">72</td>
+      <td>
+        <q>Cannot create trade, illegal participants or added cards</q><br>
+        You can only create trades where you are the from_user and where all cards belong to the users in the trade.
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">73</td>
+      <td>
+        <q>Cannot update trade state, invalid state transition</q><br>
+        Only some trade state changes are allowed.
+      </td>
+      <td align="right">403</td>
+    </tr>
+  </tbody>
+</table>
 
 ## Trade [/trades/{id}]
 
 Attributes of a trade:
 
-* id: (int) The unique ID of the trade
-* from_user_id: (int) ID of the user who sent the trade
-* to_user_id: (int) ID of the user who recieved the trade
-* state: (string) The current state the trade is in. Can be one of the following:
+*   `id` *(int)*:
+        The unique ID of the trade
+*   `from_user_id` *(int)*:
+        ID of the user who sent the trade
+*   `to_user_id` *(int)*:
+        ID of the user who recieved the trade
+*   `state` *(string)*:
+        The current state the trade is in. Can be one of the following:
 
-    > suggested: A trade which is suggested to the from_user user.  
-    > sent: A trade offer sent to the to_user, ready for him to accept or decline.  
-    > declined: The trade was declined by the to_user.  
-    > accepted: Trade was successfull completed and the cards have been traded  
-    > cancelled: Trade was cancelled by the from_user, no cards were exchanged  
+    >   `suggested` - A trade which is suggested to the from_user user.  
+    >   `sent` - A trade offer sent to the to_user, ready for him to accept or decline.  
+    >   `declined` - The trade was declined by the to_user.  
+    >   `accepted` - Trade was successfull completed and the cards have been traded  
+    >   `cancelled` - Trade was cancelled by the from_user, no cards were exchanged  
 
-* time_updated: (isodatetime) The last time the trade was changed.
-
+*   `time_updated` *(isodatetime)*:
+        The last time the trade was changed.
 
 + Model (application/json)
 
@@ -1602,19 +2327,25 @@ Attributes of a trade:
                 }
             }
 
-### Get a single Trade [GET]
+### Retrieve a Trade [GET]
 
 + Parameters
-    + id (int, required, `123`) ... ID of the trade to fetch
+
+    + id (int, required, `123`)
+
+        ID of the trade to fetch
 
 + Response 200
 
     [Trade][]
 
-### Change a trade state [PUT]
+### Update the state of a Trade [PUT]
 
 + Parameters
-    + id (int, required, `123`) ... ID of the trade to fetch
+
+    + id (int, required, `123`)
+
+        ID of the trade to fetch
 
 + Request (application/json)
 
@@ -1628,15 +2359,26 @@ Attributes of a trade:
 
     [Trade][]
 
-
 ## Trade collection [/trades{?state,from_user_id,to_user_id}]
 
-### Get trades for a user for the different views [GET]
+### Retrieve all Trades of a User [GET]
 
 + Parameters
-    + state (string, required, `suggested`) ... Can be any of the states described as possible trade states. Parameter can also be named `state[]`
-    + from_user_id = `current` (int, optional) ... The ID of the user who started the trade. *current* for the logged-in user.
-    + to_user_id (int, optional) ... The ID of the user recieving the trade. *current* for the logged-in user.
+
+    + state (string, required, `suggested`)
+
+        Can be any of the possible trade states.
+        Parameter can also be named `state[]`
+
+    + from_user_id = `current` (int, optional)
+
+        The ID of the user who started the trade.
+        Use `current` for the logged-in user.
+
+    + to_user_id (int, optional)
+
+        The ID of the user recieving the trade.
+        Use `current` for the logged-in user.
 
 + Response 200 (application/json)
 
@@ -1676,12 +2418,12 @@ Attributes of a trade:
                 ]
             }
 
-### Create a new trade [POST]
+### Create a new Trade [POST]
 
-A new trade which is offered to another player. Special case is when the new trade gets created based on an existing
-trade (parent_trade_id is set), in which case the old trade will automatically be declinded or cancelled.
+A new trade which is offered to another user.
+Special case is when the new trade gets created based on an existing trade (`parent_trade_id` is set), in which case the old trade will automatically be declinded or cancelled.
 
-Special case: sending cards to another user (without receiving any cards in return)
+Special case: Sending cards to another user (without receiving any cards in return).
 In this case, the state of the trade can be set to "accepted" directly, causing the trade to be finished in one call.
 
 + Request (application/json)
@@ -1713,47 +2455,72 @@ In this case, the state of the trade can be set to "accepted" directly, causing 
     [Trade][]
 
 
-# Group AWS S3 Upload
+# Group AWS S3 Uploads
 
-To upload content (e.g. user pictures), it is necessary to get the credentials for the upload to S3. Our AWS Access Key ID is "AKIAJLTWEXEIQBB6JG5Q".
+To upload content (e.g. user pictures), it is necessary to get the credentials for the upload to S3.
+Our AWS Access Key ID is `AKIAJLTWEXEIQBB6JG5Q`.
 
 The process of uploading a user picture is:
 
-1. Get policy, key and signature by Posting an empty dict to /awsS3Uploads
-2. Use a POST with enctype "multipart/form-data" and policy, key, success_action_status (must be "201") and signature as fields to upload the image
-    (http://docs.aws.amazon.com/AmazonS3/latest/dev/HTTPPOSTForms.html)
-3. After successful upload, update the image (PUT /users/{id} with {"image": key})
+1.  Get policy, key and signature by POSTing an empty dict to /awsS3Uploads
+2.  Use a POST with enctype `multipart/form-data` and policy, key, success_action_status (must be "201") and signature as fields to upload the image.
+    See the [Amazon][AwsDocs] docs for details
+3.  After a successful upload, update the image (PUT /users/{id} with {"image": key})
+
+[AwsDocs]: http://docs.aws.amazon.com/AmazonS3/latest/dev/HTTPPOSTForms.html
 
 Limitations for userpic upload:
 
-* Only images are allowed (Content-Type: "image/*")
-* Max size is 4 MB
-* The filename cannot be chosen, a random key will be generated
-* The userpic can only be retrieved by using the name returned in the PUT response, as special URLs with formatted userpics will be generated
+*   Only images are allowed (Content-Type: `image/*`)
+*   The maximum file size is 4 megabytes.
+*   The filename cannot be chosen, instead a random key will be generated.
+*   The userpic can only be retrieved by using the name returned in the PUT response, as special URLs with formatted userpics will be generated.
 
-If the formular would be sent by a Browser, the minimal HTML code would have to look like this:
+If the formular would be sent by a browser, the minimal HTML code would have to look like this:
 
-        <form action="https://dealini-userupload.s3.amazonaws.com/" method="post" enctype="multipart/form-data">
-            <input type="hidden" name="key" value="userpics/akrwk45uksh3" />
-            <input type="hidden" name="AWSAccessKeyId " value="AKIAI3YXKI54O575Y6WA" />
-            <input type="hidden" name="Policy" value="eyAiZXhwaXJhdGlvbiI6ICIyMDA3LTEyLTAxVDEyOjAwOjAwLjAwMFoiLAogICJjb25kaXRpb25zIjogWwogICAgeyJidWNrZXQiOiAiam9obnNtaXRoIiB9LAogICAgWyJzdGFydHMtd2l0aCIsICIka2V5IiwgInVzZXIvZXJpYy8iXSwKICAgIHsiYWNsIjogInB1YmxpYy1yZWFkIiB9LAogICAgeyJyZWRpcmVjdCI6ICJodHRwOi8vam9obnNtaXRoLnMzLmFtYXpvbmF3cy5jb20vc3VjY2Vzc2Z1bF91cGxvYWQuaHRtbCIgfSwKICAgIFsic3RhcnRzLXdpdGgiLCAiJENvbnRlbnQtVHlwZSIsICJpbWFnZS8iXSwKICAgIHsieC1hbXotbWV0YS11dWlkIjogIjE0MzY1MTIzNjUxMjc0In0sCiAgICBbInN0YXJ0cy13aXRoIiwgIiR4LWFtei1tZXRhLXRhZyIsICIiXSwKICBdCn0K" />
-            <input type="hidden" name="Signature" value="2qCp0odXe7A9IYyUVqn0w2adtCA=" />
-            <input type="hidden" name="success_action_status" value="201" />
-            File: <input type="file" name="file" />
-            <input type="submit" name="submit" value="Upload to Amazon S3" />
-        </form>
+    <form action="https://dealini-userupload.s3.amazonaws.com/" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="key" value="userpics/akrwk45uksh3" />
+        <input type="hidden" name="AWSAccessKeyId " value="AKIAI3YXKI54O575Y6WA" />
+        <input type="hidden" name="Policy" value="eyAiZXhwaXJhdGlvbiI6ICIyMDA3LTEyLTAxVDEyOjAwOjAwLjAwMFoiLAogICJjb25kaXRpb25zIjogWwogICAgeyJidWNrZXQiOiAiam9obnNtaXRoIiB9LAogICAgWyJzdGFydHMtd2l0aCIsICIka2V5IiwgInVzZXIvZXJpYy8iXSwKICAgIHsiYWNsIjogInB1YmxpYy1yZWFkIiB9LAogICAgeyJyZWRpcmVjdCI6ICJodHRwOi8vam9obnNtaXRoLnMzLmFtYXpvbmF3cy5jb20vc3VjY2Vzc2Z1bF91cGxvYWQuaHRtbCIgfSwKICAgIFsic3RhcnRzLXdpdGgiLCAiJENvbnRlbnQtVHlwZSIsICJpbWFnZS8iXSwKICAgIHsieC1hbXotbWV0YS11dWlkIjogIjE0MzY1MTIzNjUxMjc0In0sCiAgICBbInN0YXJ0cy13aXRoIiwgIiR4LWFtei1tZXRhLXRhZyIsICIiXSwKICBdCn0K" />
+        <input type="hidden" name="Signature" value="2qCp0odXe7A9IYyUVqn0w2adtCA=" />
+        <input type="hidden" name="success_action_status" value="201" />
+        File: <input type="file" name="file" />
+        <input type="submit" name="submit" value="Upload to Amazon S3" />
+    </form>
 
-## Error Codes
-* 190: (HTTP 403 - Forbidden) "Uploading with this resource type is forbidden"
+## Error-Codes
+
+<table>
+  <thead>
+    <tr>
+      <th align="center">Code</th>
+      <th>Message/Description</th>
+      <th align="right">HTTP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">190</td>
+      <td>
+        <q>Uploading with this resource type is forbidden</q><br>
+      </td>
+      <td align="right">403</td>
+    </tr>
+  </tbody>
+</table>
 
 ## AWSS3Upload collection [/awsS3Uploads]
 
-### Create new Credentials [POST]
+### Create new AWS Credentials [POST]
+
 The following parameters are available:
 
-* type: (unicode string) either "userpics" (default) or "content" (admins only)
-* key: (unicode string) For "content" type upload only: use this exact filename.
-* extension: (unicode string) extension of the file
+*   `type` *(unicode string)*:
+        Either `userpics` (default) or `content` (admins only)
+*   `key` *(unicode string)*:
+        Only when uploading `type=content`: The exact filename to be used.
+*   `extension` *(unicode string)*:
+        File extension
 
 + Request for userpic upload (application/json)
 
@@ -1762,7 +2529,7 @@ The following parameters are available:
 + Response 200
 
     + Body
-    
+
             {
                 "awsS3Upload": {
                     "policy": "eyJjb25kaXRpb25zIjogW3siYnVja2V0IjogImRlYWxpbmktdXNlcnVwbG9hZCJ9LCB7ImtleSI6ICJ1c2VycGljL2tCSWdUYXJUYnY1RyJ9LCBbInN0YXJ0cy13aXRoIiwgIiRDb250ZW50LVR5cGUiLCAiaW1hZ2UvIl0sIFsiY29udGVudC1sZW5ndGgtcmFuZ2UiLCAwLCA0MTk0MzA0XSwgeyJzdWNjZXNzX2FjdGlvbl9zdGF0dXMiOiAiMjAxIn1dLCAiZXhwaXJhdGlvbiI6ICIyMDE0LTA2LTExVDA4OjA3OjM4WiJ9",
@@ -1771,21 +2538,49 @@ The following parameters are available:
                 }
             }
 
+
 # Group Dashboard
 
 ## Session collection [/dashboard/sessions]
 
 ## Error-Codes
-* 120: (HTTP 401 - Unauthorized) "Email or password did not match" 
-* 121: (HTTP 401 - Unauthorized) "Session does not exist"
 
-### Create a new Session with Email and Password [POST]
+<table>
+  <thead>
+    <tr>
+      <th align="center">Code</th>
+      <th>Message/Description</th>
+      <th align="right">HTTP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">120</td>
+      <td>
+        <q>Email or password did not match</q><br>
+      </td>
+      <td align="right">401</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">121</td>
+      <td>
+        <q>Session does not exist</q><br>
+      </td>
+      <td align="right">401</td>
+    </tr>
+  </tbody>
+</table>
+
+### Create a new Session [POST]
+
 The following parameters are available:
 
-* email: (unicode string) login of user
-* password: (unicode string) password of user
+*   `email` *(unicode string)*:
+        login of user
+*   `password` *(unicode string)*:
+        password of user
 
-+ Request (application/json)
++ Request Login with Email and Password (application/json)
 
         {
             "email": "dealiniadmin@dealini.ch",
@@ -1795,12 +2590,12 @@ The following parameters are available:
 + Response 200
 
     + Headers
-    
+
             Set-Cookie: dealinidev_auth=5b068891ae586391d30c4aeed158ce5a6829af58b5bb9280f22c46689c9314b61482edf8; httponly; Path=/
             Access-Control-Allow-Credentials: true
-    
+
     + Body
-    
+
             {
                 "session": {
                     "token": "5b068891ae586391d30c4aeed158ce5a6829af58b5bb9280f22c46689c9314b61482edf8",
@@ -1808,45 +2603,53 @@ The following parameters are available:
                 }
             }
 
-### Return permissions of setting sessions [OPTIONS]
-
-+ Response 200
-
-    + Headers
-    
-            Access-Control-Allow-Credentials: true
-
-## Session [/dashboard/sessions/current]
-
-### Return permissions of setting sessions [OPTIONS]
-
-+ Response 200
-
-    + Headers
-    
-            Access-Control-Allow-Credentials: true
-
-### Logout a user [DELETE]
+### Logout a User [DELETE]
 
 + Response 204
-    
+
     + Headers
-            
+
             Access-Control-Allow-Credentials: true
             Set-Cookie: dealinidev_auth=5b068891ae586391d30c4aeed158ce5a6829af58b5bb9280f22c46689c9314b61482edf8; expires=Mon, 18-Feb-2013 12:17:57 GMT; httponly; Path=/
 
-## Dashboarduser collection [/dashboard/dashboardusers]
+## DashboardUser collection [/dashboard/dashboardusers]
 
 ## Error-Codes
-* 130: (HTTP 404 - NotFound) "No User found" - There is no user with the provided ID
-* 131: (HTTP 403 - Forbidden) "Email already exists" - A user with the same email address already registered.
 
-### Get user info [GET]
+<table>
+  <thead>
+    <tr>
+      <th align="center">Code</th>
+      <th>Message/Description</th>
+      <th align="right">HTTP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">130</td>
+      <td>
+        <q>No User found</q><br>
+        There is no user with the requested id.
+      </td>
+      <td align="right">404</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">131</td>
+      <td>
+        <q>Email already exists</q><br>
+        A user with the same email address is already registered.
+      </td>
+      <td align="right">403</td>
+    </tr>
+  </tbody>
+</table>
+
+### Retrieve all DashboardUsers [GET]
 
 + Response 200
 
     + Body
-    
+
             {
                 "dashboardusers": [
                     {"id": 98, "email": "michael.wirth@dealini.ch", "last_login": "2014-02-01T08:15:30+01:00", "active": true},
@@ -1871,17 +2674,21 @@ The following parameters are available:
                 ]
             }
 
-## Dashboarduser [/dashboard/dashboardusers/{id}]
+## DashboardUser [/dashboard/dashboardusers/{id}]
 
-### Get user info [GET]
+### Retrieve a DashboardUser [GET]
 
 + Parameters
-    + id (int, required, `288`) ... ID of the user to fetch. Use `current` for the logged-in user.
+
+    + id (int, required, `288`)
+
+        ID of the user to fetch.
+        Use `current` for the logged-in user.
 
 + Response 200
 
     + Body
-    
+
             {
                 "dashboarduser": {
                     "id": 288,
@@ -1895,12 +2702,12 @@ The following parameters are available:
 
 ## Permission collection [/dashboard/permissions]
 
-### Get all permissions [GET]
+### Retrieve all Permissions [GET]
 
 + Response 200
 
     + Body
-    
+
             {
                 "permissions": [
                     {"id": 1, "name": "settings"},
@@ -1909,16 +2716,36 @@ The following parameters are available:
                 ]
             }
 
-## Roles Collection [/dashboard/roles]
+## Role collection [/dashboard/roles]
 
-* 140: (HTTP 403 - Forbidden) "Rolename already exists" - A role with the same name already registered.
+## Error-Codes
 
-### Get all role permission connections [GET]
+<table>
+  <thead>
+    <tr>
+      <th align="center">Code</th>
+      <th>Message/Description</th>
+      <th align="right">HTTP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">140</td>
+      <td>
+        <q>Rolename already exists</q><br>
+        A role with the same name is already registered.
+      </td>
+      <td align="right">403</td>
+    </tr>
+  </tbody>
+</table>
+
+### Retrieve all Roles [GET]
 
 + Response 200
 
     + Body
-    
+
             {
                 "roles": [
                     {"id": 1, "name": "admin", "permissions": []},
@@ -1929,49 +2756,79 @@ The following parameters are available:
 
 ## Role [/dashboard/roles/{id}]
 
-### Update role [PUT]
+### Update a Role [PUT]
 
 + Parameters
-    + id (int, required, `3`) ... ID of the role
-    
+
+    + id (int, required, `3`)
+
+        ID of the role
+
 + Request (application/json)
 
     + Body
-    
+
             {
                 "permissions": [{"id": 1}, {"id": 3}]
             }
-            
+
 + Response 200
-    
+
     + Body
-    
+
             {
                 "role": {"id": 3, "name": "bp",  "permissions": [{"id": 1}, {"id": 3}]}
             }
- 
 
-# Group Product
 
-#### Error-Codes:
-* 110: (HTTP 403 - Forbidden) "No Product found" - Unknown product.
+# Group Products
+
+## Error-Codes
+
+<table>
+  <thead>
+    <tr>
+      <th align="center">Code</th>
+      <th>Message/Description</th>
+      <th align="right">HTTP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">110</td>
+      <td>
+        <q>No Product found</q><br>
+        This is an unknown product.
+      </td>
+      <td align="right">403</td>
+    </tr>
+  </tbody>
+</table>
 
 ## Product [/products/{id}]
 
-A product describes something which can be bought / redeemed
+A product describes something which can be bought / redeemed.
 
 Attributes of a product:
 
-* id: (int) ID of the product
-* name: (string) Short descriptive name of the product
-* price_in_cents: (int) The products price in cents (Rappen)
-* image: (Image) The image of the product
-* configuration: (dict) The option for this product. Options are configured on the deal.
-* requires_shipping_address: (boolean) If a shipping address must be asked from the buyer.
-* requires_payment: (boolean) If a payment must be done for this product before a successful redemption
-* shipping_costs_in_cents: (int) The price for the shipping costs in cents (Rappen)
-* min_age: (int) The minimum age of the person ordering. In years. Usually null.
-
+*   `id` *(int)*:
+        ID of the product
+*   `name` *(string)*:
+        Short descriptive name of the product
+*   `price_in_cents` *(int)*:
+        The products price in cents (Rappen)
+*   `image` *(Image)*:
+        The image of the product
+*   `configuration` *(dict)*:
+        The option for this product. Options are configured on the deal.
+*   `requires_shipping_address` *(boolean)*:
+        If a shipping address must be asked from the buyer.
+*   `requires_payment` *(boolean)*:
+        If a payment must be done for this product before a successful redemption
+*   `shipping_costs_in_cents` *(int)*:
+        The price for the shipping costs in cents (Rappen)
+*   `min_age` *(int)*:
+        The minimum age of the person ordering in years (`null` if not restricted).
 
 + Model (application/json)
 
@@ -1998,26 +2855,35 @@ Attributes of a product:
                 }
             }
 
-### Get a single product [GET]
+### Retrieve a Product [GET]
 
 + Parameters
-    + id (int, required, `1`) ... ID of the product to fetch
+
+    + id (int, required, `1`)
+
+        ID of the product to fetch
 
 + Response 200
 
     [Product][]
 
-## Products of a deal [/deals/{id}/products]
+## Products of a Deal [/deals/{id}/products]
 
-### Get the products of a deal [GET]
+### Retrieve all Products of a Deal [GET]
 
 Available parameters:
 
-* limit: (int) Number of products to return. Default: All products.
-* configuration: (string) Only return the product with this configuration. Configuration must be given in this format: 1:1,2:2
+*   `limit` *(int)*:
+        Number of products to return. Default: All products.
+*   `configuration` *(string)*:
+        Only return the product with this configuration.
+        Configuration must be given in this format: `1:1,2:2`
 
 + Parameters
-    + id (int, required, `1012`) ... ID of the deal for which the products should be fetched
+
+    + id (int, required, `1012`)
+
+        ID of the deal for which the products should be fetched
 
 + Response 200
 
@@ -2083,24 +2949,102 @@ Available parameters:
             }
 
 
-# Group Order
+# Group Orders
 
-#### Error-Codes:
-* 100: (HTTP 403 - Forbidden) "Product out of stock" - There are no more products available to be ordered
-* 101: (HTTP 403 - Forbidden) "User doesn't own enough cards" - To redeem, the user must have all numbers of the products deal.
-* 102: (HTTP 403 - Forbidden) "Cannot access order of another player" - Only the orders of the logged-in user may be retrieved.
-* 103: (HTTP 404 - NotFound) "No order found" - Order does not exist.
-* 104: (HTTP 403 - Forbidden) "Invalid update, order is read-only" - Once the order is paid, no updates can be issued by the player
-* 105: (HTTP 403 - Forbidden) "Invalid update, invalid status change from old_status to new_status" - Only some order status changes are allowed:
+## Error-Codes
 
-    > reserved -> paid: Mark an order as paid. The server will check if the address and payment are complete.
-
-* 106: (HTTP 403 - Forbidden) "Invalid order, cannot be paid" - The order got invalid during the reservation (out of stock or cards traded).
-* 107: (HTTP 403 - Forbidden) "Transaction already recorded" - The transaction ID is already used. Most likely the receipt was accidentially sent twice.
-* 109: (HTTP 403 - Forbidden) "Not old enough to order the product" - For some products, it is necessary to be above a certain age (usually 18 years).
-    This error will happen if the user has no birthday set (on billing_address.birthday and delivery_address.birthday) or if he is too young. See product.min_age.
-
-
+<table>
+  <thead>
+    <tr>
+      <th align="center">Code</th>
+      <th>Message/Description</th>
+      <th align="right">HTTP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">100</td>
+      <td>
+        <q>Product out of stock</q><br>
+        There are no more products available to be ordered.
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">101</td>
+      <td>
+        <q>User doesn't own enough cards</q><br>
+        To redeem, the user must have a card from each card unit of the product's deal.
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">102</td>
+      <td>
+        <q>Cannot access order of another User</q><br>
+        Only the orders of the logged-in user may be retrieved.
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">103</td>
+      <td>
+        <q>No order found</q><br>
+        The requested order does not exist.
+      </td>
+      <td align="right">404</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">104</td>
+      <td>
+        <q>Invalid update, order is read-only</q><br>
+        Once the order is paid, no updates can be issued by the user.
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">105</td>
+      <td>
+        <q>Invalid update, invalid status change from {{old_status}} to {{new_status}}</q><br>
+        Only some order status changes are allowed:
+        <ul>
+          <li>`reserved` -> `paid`:
+              Marks an order as paid.
+              The server will check if the address and payment are complete.
+          </li>
+        </ul>
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">106</td>
+      <td>
+        <q>Invalid order, cannot be paid</q><br>
+        The order got invalid during the reservation (out of stock, or cards have been traded).
+      </td>
+      <td align="right">40</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">107</td>
+      <td>
+        <q>Transaction already recorded</q><br>
+        The transaction ID is already used.
+        Most likely the receipt was accidentially sent twice.
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">109</td>
+      <td>
+        <q>Not old enough to order the product</q><br>
+        For some products, it is necessary to be above a certain age (e.g., 18 years old).
+        This error will happen if the user has no birthday set (on billing_address.birthday and delivery_address.birthday) or if he is too young.
+        See `Product.min_age`.
+      </td>
+      <td align="right">403</td>
+    </tr>
+  </tbody>
+</table>
 
 ## Order [/orders/{id}]
 
@@ -2108,31 +3052,45 @@ An order corresponds to a user buying a product.
 
 Ordering a product usually involves the following steps:
 
-1. Prepare an order by creating a new empty order. It will expire after 15min (POST /orders)
-2. Update (PUT) the product chosen by the user. This will automatically extend the orders reservation time.
-3. Update (PUT) the necessary shipping information. This will automatically extend the orders reservation time.
-4. Process the payment using Datatrans. The payments refid and signature are provided in the `payment` object ("id" and "sign").
-5. If no payment is necessary (e.g. if the price is 0), the order is paid by setting the status to "paid" (PUT).
-6. Refresh the order if necessary, e.g. after processing the payment from datatrans. The status should be "paid" now.
+1.  Prepare an order by creating a new empty order.
+    It will expire after 15min (POST /orders)
+2.  Update (PUT) the product chosen by the user.
+    This will automatically extend the orders reservation time.
+3.  Update (PUT) the necessary shipping information.
+    This will automatically extend the orders reservation time.
+4.  Process the payment using Datatrans.
+    The payments refid and signature are provided in the `payment` object ("id" and "sign").
+5.  If no payment is necessary (e.g. if the price is 0), the order is paid by setting the status to "paid" (PUT).
+6.  Refresh the order if necessary, e.g. after processing the payment from datatrans.
+    The status should be "paid" now.
 
 Special cases:
 
-* Reservation times out, but order is still possible: The order is re-opened and used as if it never expired
-* The age of the user must be checked if product.min_age is given. In these cases, the birthday must be sent with the billing_address, otherwise the order will fail during payment.
+*   Reservation times out, but order is still possible:
+    The order is re-opened and used as if it never expired
+*   The age of the user must be checked if `product.min_age` is set.
+    In these cases, the birthday must be sent with the billing_address, otherwise the order will fail during payment.
 
 Attributes:
 
-* id: (int) ID of the order
-* product: (Product) The product which got ordered
-* user_id: (int) ID of the user who ordered this product
-* status: (string) Descriptive status of the orders state. Possible states:
+*   `id` *(int)*:
+        ID of the order
+*   `product` *(Product)*:
+        The product which got ordered
+*   `user_id` *(int)*:
+        ID of the user who ordered this product
+*   `status` *(string)*:
+        Descriptive status of the orders state. Possible states:
 
-    > * reserved: The order is not yet completed, but the product is reserved for the user. Reservations time out after 15 minutes.
-    > * paid: The order was completed successfully, e.g. the payment was received and the cards were redeemed.
-    > * more states will be defined to tell the user about the orders progress (e.g. shipping date & progress)
-    
-* status_formatted: (string) The status of the order as it can be displayed to the user (e.g. "Ausgeliefert").
-* time_ordered: (isodatetime) The time when the order was made (e.g. after successful payment / redemption)
+    >   `reserved` - The order is not yet completed, but the product is reserved for the user.
+        Reservations time out after 15 minutes.
+    >   `paid` - The order was completed successfully, e.g. the payment was received and the cards were redeemed.
+    >   more states will be defined to tell the user about the orders progress (e.g. shipping date and progress)
+
+*   `status_formatted` *(string)*:
+        The status of the order as it can be displayed to the user (e.g. "Ausgeliefert").
+*   `time_ordered` *(isodatetime)*:
+        The time when the order was made (e.g. after successful payment / redemption)
 
 + Model (application/json)
 
@@ -2180,25 +3138,36 @@ Attributes:
                 }
             }
 
-### Get a single order [GET]
+### Retrieve an Order [GET]
 
 + Parameters
-    + id (int, required, `1`) ... ID of the oder to fetch
+
+    + id (int, required, `1`)
+
+        ID of the oder to fetch
 
 + Response 200
 
     [Order][]
 
-### Update an order [PUT]
+### Update an Order [PUT]
 
 The following fields can be changed:
 
-* address: (Address) The billing address. Used as shipping address if no shipping address is defined.
-* status: (string) Can be set to "paid" for orders where no payment is necessary (e.g. where the product is free)
-* product: (Product) The product which should be ordered. Can be changed until the payment is processed.
+*   `address` *(Address)*:
+        The billing address.
+        Used as shipping address if no shipping address is defined.
+*   `status` *(string)*:
+        Can be set to "paid" for orders where no payment is necessary (e.g. where the product is free)
+*   `product` *(Product)*:
+        The product which should be ordered.
+        Can be changed until the payment is processed.
 
 + Parameters
-    + id (int, required, `1`) ... ID of the oder to update
+
+    + id (int, required, `1`)
+
+        ID of the oder to update
 
 + Request (application/json)
 
@@ -2222,14 +3191,16 @@ The following fields can be changed:
 
     [Order][]
 
-## Order Collection [/orders]
+## Order collection [/orders]
 
-### Show all orders for the logged-in user [GET]
+### Retrieve all Orders of a User [GET]
+
+Usually only shows the orders of the logged-in user.
 
 + Response 200
 
     + Body
-    
+
             {
                 "orders": [
                     {
@@ -2327,24 +3298,33 @@ The following fields can be changed:
                 ]
             }
 
-### Create a new order [POST]
+### Create a new Order [POST]
 
 Fields which can be set during creation (all optional):
-* product_id: (int) ID of the product for this order
-* user_id: (int) ID of the user who orders
-* payment: (PaymentRequestObject) For an inapp-purchase the order can directly be paid
+
+*   `product_id` *(int)*:
+        ID of the product for this order
+*   `user_id` *(int)*:
+        ID of the user who orders
+*   `payment` *(PaymentRequestObject)*:
+        For an in-app purchase the order can directly be paid
 
 #### PaymentRequestObject
-When creating an order, it can be directly paid using an inapp payment from apple or google.
-* apple_receipt: (base64 encoded string) The receipt received from apple after the inapp payment by the app
-* google_token: (string) Token received from the google play store after the inapp payment
-* google_product_id: (string) The product which was ordered as stored inside the google play store.
 
-#### Google Payment process
+When creating an order, it can be paid directly using an in-app payment from Apple or Google.
+
+*   `apple_receipt` *(base64 encoded string)*:
+        The receipt received from Apple after the in-app payment by the app
+*   `google_token` *(string)*:
+        Token received from the Google play store after the in-app payment
+*   `google_product_id` *(string)*:
+        The product which was ordered as stored inside the Google play store.
+
+#### Google payment process
+
 During the payment process, it is necessary to create a "developerPayload" which is used as the unique transaction ID.
-The app must create a random unsigned integer up to 8 bytes long (0-18'446'744'073'709'551'615) to make the transaction unique.
-This unique transaction ID must be sent to google when doing the payment
-and is later given to the API server (by the Google Developer API) during payment validation.
+The app must create a random unsigned integer up to 8 bytes long (0 - 18'446'744'073'709'551'615) to make the transaction unique.
+This unique transaction ID must be sent to Google when doing the payment and is later given to the API server (by the Google Developer API) during payment validation.
 
 + Request (application/json)
 
@@ -2377,25 +3357,58 @@ and is later given to the API server (by the Google Developer API) during paymen
             }
 
 
-
 # Group PaymentMeans
 
-A payment mean holds a credit card or similar ways to pay online (e.g. a Postcard).
+A payment mean is a credit card (or similar) to pay online.
 
-#### Error-Codes
-* 150: (HTTP 403 - NotFound) "PaymentMean not found" - This payment mean does not exist in our database (anymore)
-* 151: (HTTP 403 - Forbidden) "Cannot access payment mean of another user" - Only payment means owned by the logged-in user can be delete
+## Error-Codes
+
+<table>
+  <thead>
+    <tr>
+      <th align="center">Code</th>
+      <th>Message/Description</th>
+      <th align="right">HTTP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">150</td>
+      <td>
+        <q>PaymentMean not found</q><br>
+        This payment mean does not exist in our database (anymore).
+      </td>
+      <td align="right">404</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">151</td>
+      <td>
+        <q>Cannot access payment mean of another user</q><br>
+        Only payment means owned by the logged-in user can be deleted.
+      </td>
+      <td align="right">403</td>
+    </tr>
+  </tbody>
+</table>
 
 ## PaymentMean [/paymentMeans/{id}]
 
 Attributes:
-* id: (int) ID of the payment mean.
-* type: (string) Can be `visa` / `mastercard` or `postcard`.
-* holder: (string) Name of the holder of the card
-* alias: (string) A unique identifier of this card used by DataTrans.
-  Can be used to identify the card without having to provide the full data again
-* card_number_suffix: (string) The last 4 digits of the card. Usefull to show the user which card he has stored.
-* expiry_date: (string) Isodate of the first day of the month where the card expires
+
+*   `id` *(int)*:
+        ID of the payment mean.
+*   `type` *(string)*:
+        Can be `visa`, `mastercard` or `postcard`.
+*   `holder` *(string)*:
+        Name of the holder of the card
+*   `alias` *(string)*:
+        A unique identifier of this card used by Datatrans.
+        Can be used to identify the card without having to provide the full data again
+*   `card_number_suffix` *(string)*:
+        The last 4 digits of the card.
+        Usefull to show the user which card he has stored.
+*   `expiry_date` *(string)*:
+        Isodate of the first day of the month where the card expires
 
 + Model (application/json)
 
@@ -2412,18 +3425,18 @@ Attributes:
                 }
             }
 
-### Remove a payment mean [DELETE]
+### Remove a PaymentMean [DELETE]
 
 + Response 204
 
-## PaymentMean Collection [/paymentMeans]
+## PaymentMean collection [/paymentMeans]
 
-### Get all PaymentMeans of the logged-in user [GET]
+### Retrieve all PaymentMeans of the logged-in User [GET]
 
 + Response 200
 
     + Body
-    
+
             {
                 "paymentMeans": [
                     {
@@ -2467,53 +3480,94 @@ A payment mean should only be registered if it is checked and valid, e.g. after 
 # Group Notifications
 
 Notifications are generated by various actions, initiated by the user or the server.
-We are using parse to send push notifications to the mobile devices (using the users push_notification_channel)
+We are using [Parse] to send push notifications to the mobile devices (using the channel name set in `User.push_notification_channel`)
 
-Each mobile device should register to the push_notification_channel of the logged-in user
-(see https://www.parse.com/docs/push_guide#sending-channels/Android or https://www.parse.com/docs/push_guide#sending-channels/iOS)
+[Parse]: https://www.parse.com
+
+Each mobile device should register to the push notification channel of the logged-in user (see the Parse documentation on [Android][ParseAndroid] and [iOS][ParseIos]).
+
+[ParseAndroid]: https://www.parse.com/docs/push_guide#sending-channels/Android
+[ParseIos]: https://www.parse.com/docs/push_guide#sending-channels/iOS
 
 For every push notification, the following fields are set:
 
-* alert: (string) The text of the message
-* badge: (string, 'increment') Always set to "increment" to make parse do the counting.
-* content-available: (int, 1) Always active to allow push notifications without the app being active
+*   `alert` *(string)*:
+        The text of the message
+*   `badge` *(string, 'increment')*:
+        Always set to "increment" to make parse do the counting.
+*   `content-available` *(int, 1)*:
+        Always active to allow push notifications without the app being active
 
-The data sent using push notifications is limited by apples 255 byte limit.
+The data sent using push notifications is limited by Apple's 255 byte limit.
 For this reason, we are sending a subset of fields with shorter names as part of the "data":
 
-* code: (int) The code of the notification, used to call the correct action
-* i: (string) URL of the image which should be displayed next to the notification
+*   `code` *(int)*:
+        The code of the notification, used to call the correct action
+*   `i` *(string)*:
+        URL of the image which should be displayed next to the notification
 
-#### Error-Codes:
-* 110: (HTTP 404 - NotFound) "Could not find notification" - The requested notification does not exist.
-* 111: (HTTP 404 - NotFound) "Cannot access notification of another player" - Only notifications of the logged-in user may be accessed.
-* 112: (HTTP 404 - NotFound) "Invalid notification change" - Cannot un-see or un-consume notification.
+## Error-Codes
+
+<table>
+  <thead>
+    <tr>
+      <th align="center">Code</th>
+      <th>Message/Description</th>
+      <th align="right">HTTP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">110</td>
+      <td>
+        <q>Could not find notification</q><br>
+        The requested notification does not exist.
+      </td>
+      <td align="right">404</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">111</td>
+      <td>
+        <q>Cannot access notification of another user</q><br>
+        Only notifications of the logged-in user can be accessed.
+      </td>
+      <td align="right">404</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">112</td>
+      <td>
+        <q>Invalid notification change</q><br>
+        Cannot un-see or un-consume notification.
+      </td>
+      <td align="right">404</td>
+    </tr>
+  </tbody>
+</table>
 
 ## Possible Notifications
-General:
 
-* Code 1: - Not used in Code, can be used for manual messages
+#### General
 
-Trades:
+*   Code 1: - Reserved for manual messages
 
-* Code 11: "Neues Tauschangebot erhalten" - when a suggested trade is sent to a user
-* Code 12: "%s hat dein Angebot akzeptiert" - when a trade is accepted
-* Code 13: "%s hat dein Angebot abgelehnt" - when a trade is declined by the receiving player
-* Code 14: "%s hat dir einen Sticker geschickt" - when a card is sent (gifted) to a friend
+#### Trades
 
-Friend requests:
+*   Code 11: *"Neues Tauschangebot erhalten"* - when a suggested trade is sent to a user
+*   Code 12: *"%s hat dein Angebot akzeptiert"* - when a trade is accepted
+*   Code 13: *"%s hat dein Angebot abgelehnt"* - when a trade is declined by the receiving user
+*   Code 14: *"%s hat dir einen Sticker geschickt"* - when a card is sent (gifted) to a friend
 
-* Code 21: "%s möchte dich als Freund hinzufügen" - on friend request
-* Code 22: "%s hat deine Freundschaftanfrage akzeptiert" - on friend accept. Can also happen on friend request if the other player already requested the friendship.
+#### Friend requests
 
-Credits / Flowpacks:
+*   Code 21: *"%s möchte dich als Freund hinzufügen"* - on friend request
+*   Code 22: *"%s hat deine Freundschaftanfrage akzeptiert"* - on friend accept.
+        Can also happen on friend request if the other user already requested the friendship.
 
-* Code 31: "Du hast von %s ein Sticker-Päckchen gesponsert bekommen!" - when a flowpack is gifted to a player from a brand
+#### Credits / Flowpacks
 
+*   Code 31: *"Du hast von %s ein Sticker-Päckchen gesponsert bekommen!"* - when a flowpack is gifted to a user from a brand
 
 ## Notification [/notifications/{id}]
-
-### Notification
 
 + Model (application/json)
 
@@ -2531,10 +3585,13 @@ Credits / Flowpacks:
                 }
             }
 
-### Mark notification as consumed or seen [PUT]
+### Mark a Notification as consumed or seen [PUT]
 
 + Parameters
-    + id (int, required, `1`) ... ID of the notification to update
+
+    + id (int, required, `1`)
+
+        ID of the notification to update
 
 + Request (application/json)
 
@@ -2548,12 +3605,12 @@ Credits / Flowpacks:
 
 ## Notification collection [/notifications]
 
-### Get all notifications for current user [GET]
+### Retrieve all Notifications of the logged-in User [GET]
 
 + Response 200 (application/json)
 
     + Body
-    
+
             {
                 "notifications": [
                     {
@@ -2604,9 +3661,9 @@ Credits / Flowpacks:
                 ]
             }
 
-### Update all notifications of the logged-in user [PUT]
+### Update all Notifications of the logged-in User [PUT]
 
-Return the newest 10 notifications, independent if they were changed or not
+Return the newest 10 notifications, independent if they were changed or not.
 
 + Request (application/json)
 
@@ -2617,7 +3674,7 @@ Return the newest 10 notifications, independent if they were changed or not
 + Response 200 (application/json)
 
     + Body
-    
+
             {
                 "notifications": [
                     {
@@ -2641,44 +3698,52 @@ Return the newest 10 notifications, independent if they were changed or not
                 ]
             }
 
-## Reset Password [/resetPassword]
 
-Send a 'Reset Password' mail and reset password
+# Group PasswordResets
 
-### Send reset password mail [POST]
+## PasswordReset [/resetPassword]
+
+Send a password reset email and reset password
+
+### Request a PasswordReset [POST]
 
 + Request (application/json)
 
     + Body
-    
+
             {
                 "email": "dealinitest1@dealini.ch",
             }
-            
+
 + Response 204
 
-### Reset password [PUT]
-    
+### Perform a PasswordReset [PUT]
+
 + Request (application/json)
 
     + Body
-    
+
             {
                 "email": "dealinitest1@dealini.ch",
                 "password": "bla123",
                 "reset_token": "q7H6kw25Fd",
             }
-            
+
 + Response 204
 
-# Group Game
 
-## Gamecredits of a user [/users/{user_id}/gamecredits]
+# Group Games
 
-### Get all usable gamecredits of a user[GET]
+## GameCredit collection [/users/{user_id}/gamecredits]
+
+### Retrieve all usable GameCredits of a User [GET]
 
 + Parameters
-    + user_id (int, required, `4809`) ... The user for which we want to fetch the friendships. *current* for the logged-in user.
+
+    + user_id (int, required, `4809`)
+
+        The user for which we want to fetch the friendships.
+        Use `current` for the logged-in user.
 
 + Response 200 (application/json)
 
@@ -2719,7 +3784,7 @@ Send a 'Reset Password' mail and reset password
                 ]
             }
 
-### Create gamecredits with dollarinis [POST]
+### Buy GameCredits with Dollarini [POST]
 
 + Request (application/json)
 
@@ -2741,10 +3806,10 @@ Send a 'Reset Password' mail and reset password
                     }
                 ]
             }
-            
-## Gamecredit of a user [/users/{user_id}/gamecredits/{gamecredit_id}]
 
-### Add to a highscore[PUT]
+## GameCredit [/users/{user_id}/gamecredits/{gamecredit_id}]
+
+### Record a GameScore [PUT]
 
 + Request (application/json)
 
@@ -2763,14 +3828,19 @@ Send a 'Reset Password' mail and reset password
                     "time_created": "2014-05-26T08:32:22"
                 }
             }
-            
-## Highscore of the game [/games/{game_id}/highscores]
 
-### Get get daily top ten of the game[GET]
+## Highscore collection [/games/{game_id}/highscores]
+
+### Retrieve the Highscores of a Game [GET]
+
+By default returns the daily top ten scores.
 
 + Parameters
-    + game_id (int, required, `1`) ... The id of the highscore's game
-    
+
+    + game_id (int, required, `1`)
+
+        The id of the highscore's game
+
 + Response 200 (application/json)
 
     + Body
@@ -2830,31 +3900,65 @@ Send a 'Reset Password' mail and reset password
                 ]
             }
 
-# Group Confirm
 
-## Confirm image for a new user [/confirm/{user_id}]
+# Group ConfirmImages
 
-### Get a confirm image [GET]
+## ConfirmImage for a new User [/confirm/{user_id}]
+
+### Retrieve a ConfirmImage [GET]
 
 + Parameters
-    + user_id (int, required, `4809`) ... The user which registed with the email address where this image will be found
+
+    + user_id (int, required, `4809`)
+
+        The user which registered with the email address where this image will be found
 
 + Response 200 (image/jpg)
 
         <Imagedata>
 
+
 # Group Statistics
 
-#### Error-Codes
-* 250: (HTTP 403 - Forbidden) "No Access" - No Access by wrong access key
-* 210: (HTTP 403 - Forbidden) "No Access" - No Access by wrong access key
+## Error-Codes
 
-## Campaign Statistic HDM14 [/campaignStats/HDM14{?access_key}]
+<table>
+  <thead>
+    <tr>
+      <th align="center">Code</th>
+      <th>Message/Description</th>
+      <th align="right">HTTP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">250</td>
+      <td>
+        <q>No Access</q><br>
+        You supplied a wrong access key.
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">210</td>
+      <td>
+        <q>No Access</q><br>
+        You supplied a wrong access key.
+      </td>
+      <td align="right">403</td>
+    </tr>
+  </tbody>
+</table>
 
-### Get statistics [GET]
+## CampaignStatistics HDMD14 [/campaignStats/HDM14{?access_key}]
+
+### Retrieve CampaignStatistics [GET]
 
 + Parameters
-    + access_key (string, required, `n5i43b531b34`) ... key for access
+
+    + access_key (string, required, `n5i43b531b34`)
+
+        key for access
 
 + Response 200 (application/json)
 
@@ -2875,13 +3979,19 @@ Send a 'Reset Password' mail and reset password
                 }
             }
 
-## Deal Statistics [/deals/{deal_id}/statistics{?access_key}]
+## DealStatistics [/deals/{deal_id}/statistics{?access_key}]
 
-### Get statistics of a deal[GET]
+### Retrieve Statistics of a Deal [GET]
 
 + Parameters
-    + deal_id (string, required, `n5i43b531b34`) ... key for access
-    + access_key (string, required, `n5i43b531b34`) ... key for access
+
+    + deal_id (string, required, `n5i43b531b34`)
+
+        key for access
+
+    + access_key (string, required, `n5i43b531b34`)
+
+        key for access
 
 + Response 200 (application/json)
 
