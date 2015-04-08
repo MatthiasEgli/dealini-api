@@ -510,21 +510,21 @@ Default attributes:
 
 *   `id` *(int)*:
         ID of the user
-*   `username` *(string)*:
+*   `username` *(string, maxlength: 50)*:
         Freely chosen username of the user
 *   `image` *(Image)*:
         Location of the users image
-*   `status_message` *(string, 80 chars)*:
+*   `status_message` *(string, maxlength: 80)*:
         Freely setable status message
 
 Optional Attributes:
 
 *   `push_notification_channel` *(string)*:
         Unique name of the user-specific Parse channel name for push notifications
-*   `email` *(string)*:
+*   `email` *(string, maxlength: 200)*:
         Valid email of the user. This is "null" for anonymous users
-*   `first_name` *(string, optional)*
-*   `last_name` *(string, optional)*
+*   `first_name` *(string, optional, maxlength: 60)*
+*   `last_name` *(string, optional, maxlength: 100)*
 *   `phone` *(string, optional)*
 *   `birthday` *(isodatetime, optional)*
 *   `settings` *(Settings object)*:
@@ -593,7 +593,7 @@ Read-only fields are:
 
 Write-only fields are:
 
-*   `password` *(string)*:
+*   `password` *(string, minlength: 6)*:
         New user-chosen password
 *   `fb_access_token` *(string)*:
         Valid facebook access token, account will be connected.
@@ -641,15 +641,15 @@ Will also return a valid new session.
 
 Available parameters:
 
-*   `username` *(string)*:
+*   `username` *(string, maxlength: 50)*:
         Will be used as the displayed name in the game.
-*   `email` *(string, valid email)*:
+*   `email` *(string, valid email, maxlength: 200)*:
         The new login name of the user
-*   `password` *(string)*:
+*   `password` *(string, minlength: 6)*:
         The new password of the user
 *   `access_token` *(string, fb access token)*:
         An authorized Facebook access token for the user
-*   `device_identifier` *(string)*:
+*   `device_identifier` *(string, maxlength: 200)*:
         A unique device identifing token, used to create a restricted, anonymous user
 
 + Request Sign up with E-Mail and Password (application/json)
@@ -1471,7 +1471,7 @@ Attributes:
         The identifier for this deal in numeric form for display purposes.
 *   `featured` *(bool)*:
         If the deal should be featured (highlighted) in the album overview
-*   `brand` *(string)*:
+*   `brand` *(string, maxlength: 50)*:
         Name of the brand which the deal belongs to.
 *   `category_id` *(int)*:
         ID of the category the deal belongs to.
@@ -1498,8 +1498,6 @@ Optional attributes, which (except for the `product` field) are returned by defa
         Description of the deal
 *   `title` *(string)*:
         Title of the deal
-*   `desc` *(string)*:
-        Description of the deal
 *   `terms` *(string)*:
         Terms of the deal
 *   `plain_link_url` *(string)*:
@@ -1508,9 +1506,9 @@ Optional attributes, which (except for the `product` field) are returned by defa
         Link to the brandpartner page with tracking
 *   `link_name` *(string)*:
         Display text for link to the brandpartner page
-*   `sticker_text` *(string)*:
+*   `sticker_text` *(string, maxlength: 300)*:
         Text on the virtual cards
-*   `slug` *(string)*:
+*   `slug` *(string, unique, maxlength: 50)*:
         naming of the last part of link of the deal details
 *   `dealini_presents` *(bool)*:
         If the deal should be labeled as recommendation in the deals overview
@@ -1529,11 +1527,7 @@ Admin attributes:
         Amount of physical cards which are circulating
 *   `subject_id` *(int)*:
         ID for card printing
-*   `redeeminfo` *(string)*:
-        How to complete an order text
-*   `redeemhelpinfo` *(string)*:
-        Help to complete to the order
-*   `bp_email` *(string)*:
+*   `bp_email` *(string, maxlength: 200)*:
         Email of the executive person of the brandpartner
 *   `bp_stats_link` *(string)*:
         Link to the deal statistics page
@@ -3399,15 +3393,15 @@ Attributes:
         ID of the payment mean.
 *   `type` *(string)*:
         Can be `visa`, `mastercard` or `postcard`.
-*   `holder` *(string)*:
+*   `holder` *(string, maxlength: 50)*:
         Name of the holder of the card
 *   `alias` *(string)*:
         A unique identifier of this card used by Datatrans.
         Can be used to identify the card without having to provide the full data again
-*   `card_number_suffix` *(string)*:
+*   `card_number_suffix` *(string, maxlength: 4)*:
         The last 4 digits of the card.
         Usefull to show the user which card he has stored.
-*   `expiry_date` *(string)*:
+*   `expiry_date` *(isodate)*:
         Isodate of the first day of the month where the card expires
 
 + Model (application/json)
