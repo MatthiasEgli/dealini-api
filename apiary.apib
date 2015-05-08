@@ -4006,3 +4006,141 @@ By default returns the daily top ten scores.
                     "orders_rank": 10
                 }
             }
+
+# Group PartnerLinks
+
+## Error-Codes
+
+<table>
+  <thead>
+    <tr>
+      <th align="center">Code</th>
+      <th>Message/Description</th>
+      <th align="right">HTTP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">200</td>
+      <td>
+        <q>Unknown code</q>
+      </td>
+      <td align="right">404</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">201</td>
+      <td>
+        <q>Code already used</q>
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">202</td>
+      <td>
+        <q>Dieser Code wurde von dir bereits eingelöst.</q>
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">203</td>
+      <td>
+        <q>Du hast den Code heute bereits gescannt.</q>
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">204</td>
+      <td>
+        <q>You can only create invite links originating from the logged-in user</q>
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">205</td>
+      <td>
+        <q>You cannot use an invite link which you created yourself</q>
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">206</td>
+      <td>
+        <q>The card cannot be gifted as the user does not own any such card</q>
+      </td>
+      <td align="right">403</td>
+    </tr>
+  </tbody>
+</table>
+
+## PartnerLinks Collection [/partnerLinks]
+
+### Create PartnerLink to invite friend or send a card [POST]
+
+The `become_friend_with` parameter inside `data` is mandatory, the `gift_card` is optional.
+If a `gift_card` is provided, this card will immediatly be removed from the players cards. The player
+who is using the partnerlink (see DELETE call) gets the card, which can be the same user.
+
++ Request (application/json)
+
+        {
+            "data": {
+                "become_friend_with": {"id": 1},
+                "gift_card": {"deal_id": 1, "number": 1}
+            }
+        }
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "partnerLink": {
+                    "url": "http://example.com/N26f0vVqRUn0",
+                    "credits": null,
+                    "code": "N26f0vVqRUn0",
+                    "data": {
+                        "gift_card": {
+                            "deal_id": 1,
+                            "number": 1
+                        },
+                        "become_friend_with": {
+                            "id": 1
+                        }
+                    }
+                }
+            }
+
+## PartnerLink [/partnerLinks/{code}]
+
+### Use a PartnerLink [DELETE]
+
+This is usually done using a web form where the URL parameter is actually linking to.
+Except for "invalidating" a partner code if the user wants his card back, there is no
+use for this call inside the app (for now).
+
++ Parameters
+
+    + code (string, required, `N26f0vVqRUn0`)
+
+        The actual partner code
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "partnerLink": {
+                    "url": "http://example.com/N26f0vVqRUn0",
+                    "credits": null,
+                    "code": "N26f0vVqRUn0",
+                    "data": {
+                        "gift_card": {
+                            "deal_id": 1,
+                            "number": 1
+                        },
+                        "become_friend_with": {
+                            "id": 1
+                        }
+                    }
+                }
+            }
