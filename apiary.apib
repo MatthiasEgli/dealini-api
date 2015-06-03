@@ -2217,6 +2217,89 @@ A user can show that he wants to collect a deal by liking it.
 + Response 204
 
 
+# Group DealPrices
+
+Some deals can have variable prices which are randomly drawn
+
+## Error-Codes
+
+<table>
+  <thead>
+    <tr>
+      <th align="center">Code</th>
+      <th>Message/Description</th>
+      <th align="right">HTTP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">270</td>
+      <td>
+        <q>This user has already an active price for this deal</q><br>
+        A user can only get a price every 24h. (10 seconds on the staging/testing server)
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">101</td>
+      <td>
+        <q>User doesn't own enough cards</q><br>
+        The currently logged-in user has not all cards of the deal
+      </td>
+      <td align="right">403</td>
+    </tr>
+  </tbody>
+</table>
+
+## DealPrices [/deals/{deal_id}/dealPrices]
+
+### Retrieve all DealPrices of a User for a deal [GET]
+
++ Parameters
+
+    + deal_id (int, required, `1`)
+
+        The deal for which the dealPrices should be fetched. Will return 0 or 1 result
+        as a user has only one active dealPrice at a time for a deal.
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "dealPrices": [
+                    {
+                        "id": 1,
+                        "price_in_cents": 100,
+                        "dealid": 1,
+                        "time_used": "2015-06-03T20:54:59"
+                    }
+                ]
+            }
+
+### Draw a DealPrice for a deal for the logged-in user [POST]
+
++ Parameters
+
+    + deal_id (int, required, `1`)
+
+        The deal for which the dealPrice should be generated
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "dealPrice": {
+                    "id": 1,
+                    "price_in_cents": 100,
+                    "dealid": 1,
+                    "time_used": "2015-06-03T20:54:59"
+                }
+            }
+                
+
+
 # Group Trades
 
 ## Error-Codes
