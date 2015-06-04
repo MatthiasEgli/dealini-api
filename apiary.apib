@@ -2219,7 +2219,8 @@ A user can show that he wants to collect a deal by liking it.
 
 # Group DealPrices
 
-Some deals can have variable prices which are randomly drawn
+Some deals can have variable prices which are randomly drawn.
+For these deals an order can only be completed if there is a valid DealPrice for the user
 
 ## Error-Codes
 
@@ -3119,6 +3120,30 @@ Available parameters:
         For some products, it is necessary to be above a certain age (e.g., 18 years old).
         This error will happen if the user has no birthday set (on billing_address.birthday and delivery_address.birthday) or if he is too young.
         See `Product.min_age`.
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">10001</td>
+      <td>
+        <q>Product is not redeemable anymore</q><br>
+        The product has been set to non-redeemable manually
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">10002</td>
+      <td>
+        <q>User doesn't have a valid price for this deal</q><br>
+        For deals with variable_pricing enabled, a valid (not older than 24h) dealPrice must exists.
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">10003</td>
+      <td>
+        <q>User doesn't own this instant prize card</q><br>
+        For instant prices, the user must own the instant price card to redeem it.
       </td>
       <td align="right">403</td>
     </tr>
