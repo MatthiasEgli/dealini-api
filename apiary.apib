@@ -503,6 +503,14 @@ All requests belonging to a user, e.g. creating, changing and fetching.
       </td>
       <td align="right">403</td>
     </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">20004</td>
+      <td>
+        <q>Please sign up for the newsletter to register</q><br>
+        For the case where a sync to the Funworld API (from MediaMarkt) is done, it is necessary to accept the newsletter
+      </td>
+      <td align="right">403</td>
+    </tr>
   </tbody>
 </table>
 
@@ -651,6 +659,8 @@ Available parameters:
         An authorized Facebook access token for the user
 *   `device_identifier` *(string, maxlength: 200)*:
         A unique device identifing token, used to create a restricted, anonymous user
+*   `newsletter` *(bool, mandatory if used with MM Funworld API)*:
+        Register the user for the newsletter. Mandatory for the MediaMarkt campaign, optinal otherwise.
 
 + Request Sign up with E-Mail and Password (application/json)
 
