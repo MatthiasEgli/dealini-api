@@ -1891,6 +1891,73 @@ Admin attributes:
             }
 
 
+# Group DailyPrize
+
+For every scanned sticker the user gets a "chip". These chips can be set on the daily prizes and
+constitute a chance in winning htis daily prize. Daily prizes are drawn every day during the campaign.
+
+## Error-Codes
+
+<table>
+  <thead>
+    <tr>
+      <th align="center">Code</th>
+      <th>Message/Description</th>
+      <th align="right">HTTP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">xxx</td>
+      <td>
+        <q>Nothing defined yet</q><br>
+        Nothing special yet.
+      </td>
+      <td align="right">200</td>
+    </tr>
+  </tbody>
+</table>
+
+## DailyPrize Collection [/dailyPrizes]
+
+A daily prize is a prize where the user can use his chips as entries into the prize drawing.
+
+Attributes:
+
+*   `id` *(int)*:
+        ID of the daily prize
+*   `title` *(string)*:
+        Title of the daily prize
+*   `desc` *(string)*:
+        A longer description of the daily prize
+*   `image_background` *(Image)*:
+        The image which is displayed behind the title in the daily prize overview
+*   `time_drawing` *(isodatetime)*:
+        When the drawing of the prize will take place. Afterwards there are winners available.
+*   `winners` *(list of users)*:
+        A list of users which did win the prize.
+*   `total_chip_count` *(int)*:
+        Number of chips already being used to win this deal
+
++ Model (application/json)
+
+    + Body
+
+            {
+                "dailyPrizes": [
+                    {
+                        "id": 1,
+                        "title": "Ein toller Preis",
+                        "desc": "Mit diesem tollen preis kannst du viele tolle Sachen machen. Toll, oder?",
+                        "image_background": <Image(320, 180)>,
+                        "time_drawing": "2015-09-14T16:00:00",
+                        "winners": [],
+                        "total_chip_count": 123
+                    }
+                ]
+            }
+
+
 # Group Categories
 
 A deal can have a category.
