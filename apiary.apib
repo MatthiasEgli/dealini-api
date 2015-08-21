@@ -546,6 +546,8 @@ Optional Attributes:
         All trades where the user is part of (including suggested, cancelled and closed trades)
 *   `free_chips` *(int)*:
         Number of chips the user can still use for daily prizes.
+*   `daily_prize_users` *(DailyPrizeUser objects)*:
+        If the user did set some of his chips on daily prizes, they are listed here.
 
 ## User [/users/{id}]
 
@@ -572,7 +574,14 @@ When fetching a single user, the default and the optional attributes are returne
                     "push_notification_channel": "56171a345483545d823bf3fab4a6ac2b453f0b3f822386360b0561f7748bd967",
                     "facebook_connect": false,
                     "number_of_trades": 55,
-                    "free_chips": 0
+                    "free_chips": 0,
+                    "daily_prize_users": [
+                        {
+                            "user_id": 4809,
+                            "daily_prize_id": 1,
+                            "chips": 4
+                        }
+                    ]
                 }
             }
 
