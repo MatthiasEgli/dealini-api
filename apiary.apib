@@ -1,5 +1,5 @@
 FORMAT: 1A
-HOST: http://api4.dealini.ch
+HOST: http://api-md15.dealini.ch
 
 
 # Dealini API
@@ -544,7 +544,7 @@ Optional Attributes:
         If the user is already conneted to a facebook account
 *   `number_of_trades` *(int)*:
         All trades where the user is part of (including suggested, cancelled and closed trades)
-*   `daily_prize_chips` *(int)*:
+*   `free_chips` *(int)*:
         Number of chips the user can still use for daily prizes.
 
 ## User [/users/{id}]
@@ -571,7 +571,8 @@ When fetching a single user, the default and the optional attributes are returne
                     "number_of_common_friends": null,
                     "push_notification_channel": "56171a345483545d823bf3fab4a6ac2b453f0b3f822386360b0561f7748bd967",
                     "facebook_connect": false,
-                    "number_of_trades": 55
+                    "number_of_trades": 55,
+                    "free_chips": 0
                 }
             }
 
