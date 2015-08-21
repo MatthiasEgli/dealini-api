@@ -1911,12 +1911,32 @@ constitute a chance in winning htis daily prize. Daily prizes are drawn every da
   </thead>
   <tbody>
     <tr><!-- === ERROR DEFINITION === -->
-      <td align="center">xxx</td>
+      <td align="center">310</td>
       <td>
-        <q>Nothing defined yet</q><br>
-        Nothing special yet.
+        <q>Cannot change daily_prize_chips for another user</q>
       </td>
-      <td align="right">200</td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">311</td>
+      <td>
+        <q>You don't have enough chips, scan more sticker to get additional chips.</q>
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">312</td>
+      <td>
+        <q>Invalid number of chips provided. Chips cannot be reduced.</q>
+      </td>
+      <td align="right">403</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">313</td>
+      <td>
+        <q>This user already set chips on the daily prize, use PUT instead</q>
+      </td>
+      <td align="right">403</td>
     </tr>
   </tbody>
 </table>
@@ -1967,7 +1987,67 @@ Attributes:
 + Response 200
 
     [DailyPrize][]
+    
+## DailyPrizeUser Collection [/users/{user_id}/dailyPrizeUsers]
 
+### Create a new DailyPrizeUser object to set chips on a daily prize [POST]
+
++ Parameters
+
+    + user_id (int, required, `1`)
+
+        ID of the user
+
++ Request (application/json)
+
+        {
+            "chips": 4,
+            "daily_prize_id": 1
+        }
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "dailyPrizeUser": {
+                    "daily_prize_id": 1,
+                    "user_id": 4809,
+                    "chips": 4
+                }
+            }
+
+## DailyPrizeUser [/users/{user_id}/dailyPrizeUsers/{daily_prize_id}]
+
+### Create a new DailyPrizeUser object to set chips on a daily prize [PUT]
+
++ Parameters
+
+    + user_id (int, required, `1`)
+
+        ID of the user
+    
+    + daily_prize_id (int, required, `4`)
+
+        ID of the daily prize
+
++ Request (application/json)
+
+        {
+            "chips": 4
+        }
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "dailyPrizeUser": {
+                    "daily_prize_id": 1,
+                    "user_id": 4809,
+                    "chips": 4
+                }
+            }
 
 # Group Categories
 
