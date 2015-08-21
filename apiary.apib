@@ -1947,6 +1947,13 @@ constitute a chance in winning htis daily prize. Daily prizes are drawn every da
       </td>
       <td align="right">403</td>
     </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">314</td>
+      <td>
+        <q>The user did not yet set any chips on this daily prize</q>
+      </td>
+      <td align="right">404</td>
+    </tr>
   </tbody>
 </table>
 
@@ -1981,7 +1988,7 @@ Attributes:
                         "id": 1,
                         "title": "Ein toller Preis",
                         "desc": "Mit diesem tollen preis kannst du viele tolle Sachen machen. Toll, oder?",
-                        "image_background": <Image(320, 180)>,
+                        "image_background": <Image(414, 74)>,
                         "time_drawing": "2015-09-14T16:00:00",
                         "winners": [],
                         "total_chip_count": 123
@@ -2028,7 +2035,47 @@ Attributes:
 
 ## DailyPrizeUser [/users/{user_id}/dailyPrizeUsers/{daily_prize_id}]
 
-### Create a new DailyPrizeUser object to set chips on a daily prize [PUT]
+A daily prize user represents the chips being set by a user on a daily prize.
+
+Attributes:
+
+*   `user_id` *(int)*:
+        ID of the user
+*   `daily_prize_id` *(int)*:
+        ID of the daily prize
+*   `chips` *(int)*:
+        Number of chips set by the user on this daily prize
+
++ Model (application/json)
+
+    + Body
+
+            {
+                "dailyPrizeUser": {
+                    "user_id": 4801,
+                    "daily_prize_id": 1,
+                    "chips": 4
+                }
+            }
+
+
+### Get a DailyPrizeUser object [GET]
+
++ Parameters
+
+    + user_id (int, required, `1`)
+
+        ID of the user
+    
+    + daily_prize_id (int, required, `4`)
+
+        ID of the daily prize
+
++ Response 200
+
+    [DailyPrizeUser][]
+
+### Update a DailyPrizeUser object - increase the chip count [PUT]
 
 + Parameters
 
@@ -2046,17 +2093,9 @@ Attributes:
             "chips": 4
         }
 
-+ Response 200 (application/json)
++ Response 200
 
-    + Body
-
-            {
-                "dailyPrizeUser": {
-                    "daily_prize_id": 1,
-                    "user_id": 4809,
-                    "chips": 4
-                }
-            }
+    [DailyPrizeUser][]
 
 # Group Categories
 
