@@ -1973,8 +1973,8 @@ Attributes:
         The image which is displayed behind the title in the daily prize overview
 *   `time_drawing` *(isodatetime)*:
         When the drawing of the prize will take place. Afterwards there are winners available.
-*   `winners` *(list of users)*:
-        A list of users which did win the prize.
+*   `winners` *(list of str)*:
+        A list of strings int he format "user from city" which did win the prize.
 *   `total_chip_count` *(int)*:
         Number of chips already being used to win this deal
 
@@ -1990,7 +1990,7 @@ Attributes:
                         "desc": "Mit diesem tollen preis kannst du viele tolle Sachen machen. Toll, oder?",
                         "image_background": <Image(414, 74)>,
                         "time_drawing": "2015-09-14T16:00:00",
-                        "winners": [],
+                        "winners": ["Emil aus Stadt"],
                         "total_chip_count": 123
                     }
                 ]
