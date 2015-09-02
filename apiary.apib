@@ -1902,6 +1902,43 @@ Admin attributes:
                 }
             }
 
+# Group FeaturedContent
+
+The primary image and action which should be shown in the album
+
+## FeaturedContent [/featuredContent]
+
+A daily prize is a prize where the user can use his chips as entries into the prize drawing.
+
+Attributes:
+
+*   `id` *(int)*:
+        ID of the daily prize
+*   `image` *(Image)*:
+        The picture to show
+*   `action` *(object)*:
+        An object telling the app where to link to when the image is tapped.
+        Can have the keys "daily_prizes" (true/false) or "dealid" (int)
+
++ Model (application/json)
+
+    + Body
+
+            {
+                "featuredContent": {
+                    "id": 1,
+                    "image": <Image(392, 250)>,
+                    "action": {
+                        "daily_prizes": true
+                    }
+                }
+            }
+
+### Retrieve the current featured content [GET]
+
++ Response 200
+
+    [FeaturedContent][]
 
 # Group DailyPrize
 
