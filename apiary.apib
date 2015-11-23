@@ -1,5 +1,5 @@
 FORMAT: 1A
-HOST: http://api-md15.dealini.ch
+HOST: http://api-geschenkt.dealini.ch
 
 
 # Dealini API
@@ -2008,12 +2008,30 @@ Attributes:
 
 *   `id` *(int)*:
         ID of the daily prize
+*   `brand` *(string)*:
+        Brand of the daily prize
 *   `title` *(string)*:
-        Title of the daily prize
+        Title of the daily prize (50 signs)
 *   `desc` *(string)*:
-        A longer description of the daily prize
+        A long description of the daily prize (50 words)
+*   `about` *(string)*:
+        A long text about the brand and/or prize (150 words)
+*   `short_about` *(string)*:
+        A shorter version of the about text for mobile devices
+*   `link_url` *(string)*:
+        Target URL for the external URL. Usually a redirect-url for tracking
+*   `link_name` *(string)*:
+        Display name of the URL
+*   `video` *(string)*:
+        (optional) A video about the brand/prize. Usually a youtube embedable video.
 *   `image_background` *(Image)*:
         The image which is displayed behind the title in the daily prize overview
+*   `image_logo` *(Image)*:
+        The logo image (served as png)
+*   `background_images` *(list of Image)*:
+        The background images for the detail page.
+*   `product_images` *(list of Image)*:
+        The product images for the detail page
 *   `time_drawing` *(isodatetime)*:
         When the drawing of the prize will take place. Afterwards there are winners available.
 *   `winners` *(list of str)*:
@@ -2021,7 +2039,49 @@ Attributes:
 *   `total_chip_count` *(int)*:
         Number of chips already being used to win this deal
 
+
 + Model (application/json)
+
+    + Body
+
+            {
+                "dailyPrize": {
+                    "id": 1,
+                    "brand": "MeineMarke",
+                    "title": "Ein toller Preis",
+                    "desc": "Mit diesem tollen preis kannst du viele tolle Sachen machen. Toll, oder?",
+                    "about": "Ein gaaaanz langer Text wo wir viel erzählen können.",
+                    "short_about": "Ein nicht ganz so langer Text.",
+                    "link_url": "http://api-geschenkt.dealini.ch/trLinks?redirect_to=http%3A%2F%2Fexample.com",
+                    "link_name": "Example Page",
+                    "video": "https://www.youtube.com/watch?v=818RUrKUs68",
+                    "image_background": <Image(414, 74)>,
+                    "image_logo": <Image(165, 61)>,
+                    "background_images": [<Image(1920, 1080)>],
+                    "product_images": [<Image(500, 500)>],
+                    "time_drawing": "2015-09-14T16:00:00",
+                    "winners": ["Emil aus Stadt"],
+                    "total_chip_count": 123
+                }
+            }
+
+### Retrieve a DailyPrize [GET]
+
++ Parameters
+
+    + id (int, required, `1`)
+
+        ID of the daily prize
+
++ Response 200
+
+    [DailyPrize][]
+
+## DailyPrize Collection [/dailyPrizes]
+
+### Retrieve all DailyPrizes [GET]
+
++ Response 200 (application/json)
 
     + Body
 
@@ -2029,23 +2089,17 @@ Attributes:
                 "dailyPrizes": [
                     {
                         "id": 1,
+                        "brand": "MeineMarke",
                         "title": "Ein toller Preis",
                         "desc": "Mit diesem tollen preis kannst du viele tolle Sachen machen. Toll, oder?",
                         "image_background": <Image(414, 74)>,
+                        "image_logo": <Image(165, 61)>,
                         "time_drawing": "2015-09-14T16:00:00",
                         "winners": ["Emil aus Stadt"],
                         "total_chip_count": 123
                     }
                 ]
             }
-
-## DailyPrize Collection [/dailyPrizes]
-
-### Retrieve all DailyPrizes [GET]
-
-+ Response 200
-
-    [DailyPrize][]
     
 ## DailyPrizeUser Collection [/users/{user_id}/dailyPrizeUsers]
 
