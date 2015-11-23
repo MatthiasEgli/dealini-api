@@ -2030,6 +2030,8 @@ Attributes:
         The logo image (served as png)
 *   `background_images` *(list of Image)*:
         The background images for the detail page.
+*   `background_images_mobile` *(list of Image)*:
+        The background images for the detail page on mobile.
 *   `product_images` *(list of Image)*:
         The product images for the detail page
 *   `time_drawing` *(isodatetime)*:
@@ -2053,11 +2055,13 @@ Attributes:
                     "about": "Ein gaaaanz langer Text wo wir viel erzählen können.",
                     "about_short": "Ein nicht ganz so langer Text.",
                     "link_url": "http://api-geschenkt.dealini.ch/trLinks?redirect_to=http%3A%2F%2Fexample.com",
+                    "link_url_plain": "http://example.com",
                     "link_name": "Example Page",
                     "video": "https://www.youtube.com/watch?v=818RUrKUs68",
-                    "image_background": <Image(414, 74)>,
-                    "image_logo": <Image(165, 61)>,
-                    "background_images": [<Image(1920, 1080)>],
+                    "image_background": <Image(768, 768)>,
+                    "image_logo": <Image(125, 35)>,
+                    "background_images": [<Image(1920, 670)>],
+                    "background_images_mobile": [<Image(768, 1200)>],
                     "product_images": [<Image(500, 500)>],
                     "time_drawing": "2015-09-14T16:00:00",
                     "winners": ["Emil aus Stadt"],
@@ -2092,8 +2096,8 @@ Attributes:
                         "brand": "MeineMarke",
                         "title": "Ein toller Preis",
                         "desc": "Mit diesem tollen preis kannst du viele tolle Sachen machen. Toll, oder?",
-                        "image_background": <Image(414, 74)>,
-                        "image_logo": <Image(165, 61)>,
+                        "image_background": <Image(768, 768)>,
+                        "image_logo": <Image(125, 35)>,
                         "time_drawing": "2015-09-14T16:00:00",
                         "winners": ["Emil aus Stadt"],
                         "total_chip_count": 123
