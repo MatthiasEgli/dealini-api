@@ -2104,35 +2104,10 @@ Attributes:
                     }
                 ]
             }
-    
-## DailyPrizeUser Collection [/users/{user_id}/dailyPrizeUsers]
 
-### Create a new DailyPrizeUser object to set chips on a daily prize [POST]
+# Group DailyPrizeUsers
 
-+ Parameters
-
-    + user_id (int, required, `1`)
-
-        ID of the user
-
-+ Request (application/json)
-
-        {
-            "chips": 4,
-            "daily_prize_id": 1
-        }
-
-+ Response 200 (application/json)
-
-    + Body
-
-            {
-                "dailyPrizeUser": {
-                    "daily_prize_id": 1,
-                    "user_id": 4809,
-                    "chips": 4
-                }
-            }
+Here a user can set chips on a daily prize
 
 ## DailyPrizeUser [/users/{user_id}/dailyPrizeUsers/{daily_prize_id}]
 
@@ -2197,6 +2172,136 @@ Attributes:
 + Response 200
 
     [DailyPrizeUser][]
+
+## DailyPrizeUser Collection [/users/{user_id}/dailyPrizeUsers]
+
+### Create a new DailyPrizeUser object to set chips on a daily prize [POST]
+
++ Parameters
+
+    + user_id (int, required, `1`)
+
+        ID of the user
+
++ Request (application/json)
+
+        {
+            "chips": 4,
+            "daily_prize_id": 1
+        }
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "dailyPrizeUser": {
+                    "daily_prize_id": 1,
+                    "user_id": 4809,
+                    "chips": 4
+                }
+            }
+
+
+# Group DailyPrizeCodes
+
+A code can be exclusively for daily prizes (not for stickers and instant prizes).
+This code can be checked and redeemed with this resource.
+
+<table>
+  <thead>
+    <tr>
+      <th align="center">Code</th>
+      <th>Message/Description</th>
+      <th align="right">HTTP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">172</td>
+      <td>
+        <q>Code does not exist</q><br>
+      </td>
+      <td align="right">404</td>
+    </tr>
+    <tr><!-- === ERROR DEFINITION === -->
+      <td align="center">174</td>
+      <td>
+        <q>Code already used</q><br>
+        This code was already used, potentially by the same user asking
+      </td>
+      <td align="right">404</td>
+    </tr>
+  </tbody>
+</table>
+
+## DailyPrizeCode [/dailyPrizeCodes/{code}]
+
+A daily prize code
+
+Attributes:
+
+*   `id` *(int)*:
+        ID of the code
+*   `code` *(int)*:
+        The alphanumerical code itself
+
++ Model (application/json)
+
+    + Body
+
+            {
+                "dailyPrizeCode": {
+                    "id": 1,
+                    "code": "ABCD0001"
+                }
+            }
+
+
+### Check  if a DailyPrizeCode is valid without redeeming [GET]
+
++ Parameters
+
+    + code (int, required, `ABCD0001`)
+
+        The code to be checked
+
++ Response 200
+
+    [DailyPrizeCode][]
+
+## DailyPrizeCode Collection [/dailyPrizeCodes]
+
+### Redeem a dailyPrizeCode [POST]
+
++ Request (application/json)
+
+        {
+            "code": "ABCD0001",
+            "daily_prize_id": 1,
+            "email": "test@example.com",
+            "address": {
+                "title": "Mr",
+                "first_name": "First",
+                "last_name": "Last",
+                "street": "Strasse 1",
+                "postal_code": "1234",
+                "city": "city",
+                "phone": "+41791234567"
+            }
+        }
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "dailyPrizeCode": {
+                    "id": 1,
+                    "code": "ABCD0001"
+                }
+            }
+
 
 # Group Categories
 
