@@ -548,6 +548,8 @@ Optional Attributes:
         Number of chips the user can still use for daily prizes.
 *   `daily_prize_users` *(DailyPrizeUser objects)*:
         If the user did set some of his chips on daily prizes, they are listed here.
+*   `status` *(string, optional)*
+        Shows if a user is verified or not. Can either be "verified" or "unverified".
 
 ## User [/users/{id}]
 
@@ -565,6 +567,7 @@ When fetching a single user, the default and the optional attributes are returne
                     "image": "<Image(50, 50)>",
                     "id": 4809,
                     "email": "dealinitest1@dealini.ch",
+                    "title": "Mr",
                     "first_name": "Dealini",
                     "last_name": "Testuser",
                     "phone": "+41445201122",
@@ -1426,6 +1429,34 @@ The instant prize itself is included by default
                 ]
             }
 
+## Redeem an Instantprize [/instantPrizeCards/code/{code}]
+
+### Redeem an Instantprize [DELETE]
+
++ Paramaeters
+
+    + code (CHAR, required, 'SLCIEMDSI')
+
+        The Code that a user uses
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "instasntPrizeCards": [
+                    {
+                        "id": 1,
+                        "webview_url": "http://sticker.dealini.ch/#1"
+                        "instant_prize": {
+                             "id": 1,
+                             "name": "Eat.ch 5 CHF Gutschein",
+                             "image_card": <Image(66, 88)>
+                         },
+                        "redeemed": true,
+                    }
+                ]
+            }
 
 # Group Deals
 
@@ -1482,6 +1513,8 @@ Attributes:
         Short name of the deal
 *   `image_logo` *(Image)*:
         The logo of the deal.
+*   `image_logo_stickers` *(Image)*:
+        The logo of the deal on a Sticker.
 *   `image_overview` *(Image)*:
         The image which is displayed when showing a list of deals.
 *   `image_featured` *(Image)*:
@@ -1499,6 +1532,12 @@ Attributes:
         Name of the brand which the deal belongs to.
 *   `category_id` *(int)*:
         ID of the category the deal belongs to.
+*   `amount_of_distinct_cards` *(int)*:
+        How many cards have to be collected.
+*   `variable_pricing` *(bool)*:
+        The products for this deal have changing prices which must be drawn using DealPrices before redemption.
+*   `overview_web` *(Image)*:
+        Defines the size of an image in the Album Overview
 
 Optional attributes, which (except for the `product` field) are returned by default:
 
@@ -1544,13 +1583,9 @@ Optional attributes, which (except for the `product` field) are returned by defa
         If the deal should be labeled as recommendation in the deals overview
 *   `max_per_user` *(int)*:
         Amount of maximum orders per user
-*   `variable_pricing` *(bool)*:
-        The products for this deal have changing prices which must be drawn using DealPrices before redemption.
 
 Admin attributes:
 
-*   `amount_of_distinct_cards` *(int)*:
-        How many cards have to be collected.
 *   `time_start` *(isodatetime)*:
         Starting time of the deal
 *   `time_end` *(isodatetime)*:
@@ -1926,6 +1961,13 @@ Attributes:
         An object telling the app where to link to when the image is tapped.
         Can have the keys "daily_prizes" (true/false) or "dealid" (int)
 
+Optional Attributes:
+
+*   `time_start` *(datetime)*:
+        The time from when on the daily prize is available
+*   `time_end` *(datetime)*:
+        The time the daily prize winner is drawn
+
 + Model (application/json)
 
     + Body
@@ -1949,7 +1991,7 @@ Attributes:
 # Group DailyPrize
 
 For every scanned sticker the user gets a "chip". These chips can be set on the daily prizes and
-constitute a chance in winning htis daily prize. Daily prizes are drawn every day during the campaign.
+constitute a chance in winning this daily prize. Daily prizes are drawn every day during the campaign.
 
 ## Error-Codes
 
@@ -2018,29 +2060,44 @@ Attributes:
         A long text about the brand and/or prize (150 words)
 *   `about_short` *(string)*:
         A shorter version of the about text for mobile devices
-*   `link_url` *(string)*:
-        Target URL for the external URL. Usually a redirect-url for tracking
 *   `link_name` *(string)*:
         Display name of the URL
-*   `video` *(string)*:
-        (optional) A video about the brand/prize. Usually a youtube embedable video.
 *   `image_background` *(Image)*:
         The image which is displayed behind the title in the daily prize overview
 *   `image_logo` *(Image)*:
         The logo image (served as png)
 *   `background_images` *(list of Image)*:
         The background images for the detail page.
-*   `background_images_mobile` *(list of Image)*:
-        The background images for the detail page on mobile.
-*   `product_images` *(list of Image)*:
-        The product images for the detail page
 *   `time_drawing` *(isodatetime)*:
         When the drawing of the prize will take place. Afterwards there are winners available.
 *   `winners` *(list of str)*:
         A list of strings int he format "user from city" which did win the prize.
 *   `total_chip_count` *(int)*:
         Number of chips already being used to win this deal
+*   `chip_count_this_week *(int)*:
+        Number of chips that were set on this daily prize the last 7 days
+*   `time_start` *(datetime)*:
+        The time from when on a user can bet on this daily prize
+*   `time_end` *(datetime)*:
+        The time from when on a user cannot bet on a daily prize anymore
 
+
+Optional Attributes:
+
+*   `link_url_plain` *(VARCHAR, maxlength: 500)*:
+        Target URL for the external URL. Usually a redirect-url for tracking
+
+*   `background_images_mobile` *(list of Image)*:
+        The background images for the detail page on mobile.
+
+*   `product_images` *(list of Image)*:
+        The product images for the detail page
+
+*   `video` *(string)*:
+        A video about the brand/prize. Usually a youtube embedable video.
+
+*   `nr_participants` *(int)*:
+        The amount of users that bet on this prize.
 
 + Model (application/json)
 
@@ -2120,7 +2177,15 @@ Attributes:
 *   `daily_prize_id` *(int)*:
         ID of the daily prize
 *   `chips` *(int)*:
-        Number of chips set by the user on this daily prize
+        Number of chips set by the user on this daily prize.
+*   `daily_prize_title` *(text)*:
+        The title of a daily prize.
+*   `daily_prize_time_start` *(datetime)*:
+        The time that users can start betting on the daily prize.
+*   `daily_prize_time_end` *(datetime)*:
+        The time that users cannot bet on a daily prize anymore (usually the same as daily_prize_time_drawing).
+*   `daily_prize_time_drawing` *(datetime)*:
+        The time that the winner of a daily prize is drawn.
 
 + Model (application/json)
 
@@ -2142,7 +2207,7 @@ Attributes:
     + user_id (int, required, `1`)
 
         ID of the user
-    
+
     + daily_prize_id (int, required, `4`)
 
         ID of the daily prize
@@ -2158,7 +2223,7 @@ Attributes:
     + user_id (int, required, `1`)
 
         ID of the user
-    
+
     + daily_prize_id (int, required, `4`)
 
         ID of the daily prize
@@ -2245,6 +2310,8 @@ Attributes:
         ID of the code
 *   `code` *(int)*:
         The alphanumerical code itself
+*   `user` *(int)*:
+        The ID of the user that set the code on the daily prize.
 
 + Model (application/json)
 
@@ -2728,7 +2795,7 @@ For these deals an order can only be completed if there is a valid DealPrice for
                     "time_valid_until": "2015-06-04T20:54:59"
                 }
             }
-                
+
 
 
 # Group Trades
@@ -2785,18 +2852,18 @@ Attributes of a trade:
 
 *   `id` *(int)*:
         The unique ID of the trade
-*   `from_user_id` *(int)*:
+*   `from_user` *(int)*:
         ID of the user who sent the trade
-*   `to_user_id` *(int)*:
+*   `to_user` *(int)*:
         ID of the user who recieved the trade
 *   `state` *(string)*:
         The current state the trade is in. Can be one of the following:
 
-    >   `suggested` - A trade which is suggested to the from_user user.  
-    >   `sent` - A trade offer sent to the to_user, ready for him to accept or decline.  
-    >   `declined` - The trade was declined by the to_user.  
-    >   `accepted` - Trade was successfull completed and the cards have been traded  
-    >   `cancelled` - Trade was cancelled by the from_user, no cards were exchanged  
+    >   `suggested` - A trade which is suggested to the from_user user.
+    >   `sent` - A trade offer sent to the to_user, ready for him to accept or decline.
+    >   `declined` - The trade was declined by the to_user.
+    >   `accepted` - Trade was successfull completed and the cards have been traded
+    >   `cancelled` - Trade was cancelled by the from_user, no cards were exchanged
 
 *   `time_updated` *(isodatetime)*:
         The last time the trade was changed.
@@ -3202,8 +3269,8 @@ The following parameters are available:
             {
                 "dashboarduser": {
                     "id": 288,
-                    "email": "james@prodigi.ch", 
-                    "last_login": "2013-11-21T08:15:30+01:00", 
+                    "email": "james@prodigi.ch",
+                    "last_login": "2013-11-21T08:15:30+01:00",
                     "active": true,
                     "roles": ["bp", "admin"],
                     "permissions": ["main", "register", "settings", "permissions"]
@@ -3334,7 +3401,9 @@ Attributes of a product:
 *   `requires_shipping_address` *(boolean)*:
         If a shipping address must be asked from the buyer.
 *   `requires_payment` *(boolean)*:
-        If a payment must be done for this product before a successful redemption
+        If a payment must be done for this product before a successful redemption.
+*   `requires_phone` *(boolean)*:
+        If an order needs a phone from the buyer.
 *   `shipping_costs_in_cents` *(int)*:
         The price for the shipping costs in cents (Rappen)
 *   `min_age` *(int)*:
@@ -3359,6 +3428,7 @@ Attributes of a product:
                     "configuration": {"1": 1},
                     "requires_shipping_address": true,
                     "requires_payment": true,
+                    "requires_phone": false,
                     "shipping_costs_in_cents": 0,
                     "min_age": null,
                     "requires_phone": false
@@ -3415,6 +3485,7 @@ Available parameters:
                         "configuration": {"1": 1},
                         "requires_shipping_address": true,
                         "requires_payment": true,
+                        "requires_phone": false,
                         "shipping_costs_in_cents": 0,
                         "min_age": null,
                         "requires_phone": false
@@ -3433,6 +3504,7 @@ Available parameters:
                         "configuration": {"1": 1},
                         "requires_shipping_address": true,
                         "requires_payment": true,
+                        "requires_phone": false,
                         "shipping_costs_in_cents": 0,
                         "min_age": null,
                         "requires_phone": false
@@ -3451,6 +3523,7 @@ Available parameters:
                         "configuration": {"1": 1},
                         "requires_shipping_address": true,
                         "requires_payment": true,
+                        "requires_phone": false,
                         "shipping_costs_in_cents": 0,
                         "min_age": null,
                         "requires_phone": false
@@ -3625,6 +3698,14 @@ Attributes:
         The status of the order as it can be displayed to the user (e.g. "Ausgeliefert").
 *   `time_ordered` *(isodatetime)*:
         The time when the order was made (e.g. after successful payment / redemption)
+*   `billing_address` *(boolean)*:
+        The address where the bill will be sent to.
+*   `shipping_address` *(boolean)*:
+        The address where the product will be sent to (mostly the same as `billing_address`).
+*   `use_billing_address_as_shipping_address` *(boolean)*:
+        If the `biling_address` is the same as `shipping_address`.
+*   `pdf` *(string)*:
+        A link to a PDF if the order needs the buyer to fill out a form or if we want to send him information via PDF, otherwise set as `NULL`
 
 + Model (application/json)
 
@@ -3649,7 +3730,8 @@ Attributes:
                         "requires_payment": true,
                         "shipping_costs_in_cents": 0,
                         "min_age": null,
-                        "requires_phone": false
+                        "requires_phone": false,
+                        "stock": "infinity"
                     },
                     "user_id": 82887,
                     "payment": {
@@ -3657,6 +3739,7 @@ Attributes:
                         "sign": "089652cb68092e6fb321d15cd4f507be"
                     },
                     "billing_address": {
+                        "id": 29301,
                         "title": "Mr",
                         "first_name": "Max",
                         "last_name": "Mustermann",
@@ -3665,10 +3748,29 @@ Attributes:
                         "city": "Stadt",
                         "country_iso_code": "CH",
                         "birthday": "1984-12-31"
+                        "phone": null,
+                        "company_name": "",
+                        "unformatted": ""
                     },
                     "status": "paid",
                     "status_formatted": "Bezahlt",
                     "time_ordered": "2014-03-10T23:59:59"
+                    "time_confirmed": "2014-03-11T23:59:59"
+                    "use_billing_address_as_shipping_address": true,
+                    "shipping_address": {
+                        "id": 29301,
+                        "title": "Mr",
+                        "first_name": "Max",
+                        "last_name": "Mustermann",
+                        "street": "Strasse 1",
+                        "postal_code": "1234",
+                        "city": "Stadt",
+                        "country_iso_code": "CH",
+                        "birthday": "1984-12-31"
+                        "phone": null,
+                        "company_name": "",
+                        "unformatted": ""
+                    },
                 }
             }
 
@@ -3827,7 +3929,23 @@ Usually only shows the orders of the logged-in user.
                         },
                         "status": "reserved",
                         "status_formatted": "Reserviert (15min)",
-                        "time_ordered": "2014-03-10T23:59:59"
+                        "time_ordered": "2014-03-10T23:59:59",
+                        "time_confirmed": "2014-03-11T23:59:59"
+                        "use_billing_address_as_shipping_address": true,
+                        "shipping_address": {
+                            "id": 29301,
+                            "title": "Mr",
+                            "first_name": "Max",
+                            "last_name": "Mustermann",
+                            "street": "Strasse 1",
+                            "postal_code": "1234",
+                            "city": "Stadt",
+                            "country_iso_code": "CH",
+                            "birthday": "1984-12-31"
+                            "phone": null,
+                            "company_name": "",
+                            "unformatted": ""
+                        },
                     }
                 ]
             }
