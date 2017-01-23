@@ -533,10 +533,11 @@ Optional Attributes:
         Valid email of the user. This is "null" for anonymous users
 *   `first_name` *(string, optional, maxlength: 60)*
 *   `last_name` *(string, optional, maxlength: 100)*
+*   `home_town` *(string, optional, maxlength: 100)*
 *   `phone` *(string, optional)*
 *   `birthday` *(isodatetime, optional)*
 *   `settings` *(Settings object)*:
-        The individual settings of the user, described below in *Settings of a User* 
+        The individual settings of the user, described below in *Settings of a User*
 *   `number_of_common_friends` *(int, optional)*:
         Relative to the logged-in user, gives the number of common friends (null: the other user is a friend).
         This is only set when searching for users (/users?q=...).
@@ -550,6 +551,12 @@ Optional Attributes:
         If the user did set some of his chips on daily prizes, they are listed here.
 *   `status` *(string, optional)*
         Shows if a user is verified or not. Can either be "verified" or "unverified".
+*   `language` *(string, optional)*:
+        The default language of a user.
+*   `email_verified` *(string, optional)*:
+        Determines if a users e-mail has been verified with a verification link. Can be `verified` or `unverified`.
+*   `group_id`  *(int, optional)*:
+        If a user is connected to other users they share the same `group_id`.
 
 ## User [/users/{id}]
 
@@ -1533,7 +1540,7 @@ Attributes:
 *   `category_id` *(int)*:
         ID of the category the deal belongs to.
 *   `amount_of_distinct_cards` *(int)*:
-        How many cards have to be collected.
+        How many cards have to be collected to redeem the deal.
 *   `variable_pricing` *(bool)*:
         The products for this deal have changing prices which must be drawn using DealPrices before redemption.
 *   `overview_web` *(Image)*:
@@ -1583,6 +1590,8 @@ Optional attributes, which (except for the `product` field) are returned by defa
         If the deal should be labeled as recommendation in the deals overview
 *   `max_per_user` *(int)*:
         Amount of maximum orders per user
+*   `daily_prize` *(boolean)*:
+        If a deal is a daily prize.
 
 Admin attributes:
 
@@ -2099,6 +2108,16 @@ Optional Attributes:
 *   `nr_participants` *(int)*:
         The amount of users that bet on this prize.
 
+*   `product_images` *(object)*:
+        Contains links to images that are shown on the product page.
+
+*   `video` *(string)*:
+        A link to a video that can be embeded (usually from youtube).
+
+*   `nr_participants` *(int)*:
+        The amount of participants that bet their chips on a daily prize.
+
+
 + Model (application/json)
 
     + Body
@@ -2180,12 +2199,13 @@ Attributes:
         Number of chips set by the user on this daily prize.
 *   `daily_prize_title` *(text)*:
         The title of a daily prize.
-*   `daily_prize_time_start` *(datetime)*:
+*   `daily_prize_time_start` *(isodatetime)*:
         The time that users can start betting on the daily prize.
-*   `daily_prize_time_end` *(datetime)*:
-        The time that users cannot bet on a daily prize anymore (usually the same as daily_prize_time_drawing).
-*   `daily_prize_time_drawing` *(datetime)*:
+*   `daily_prize_time_drawing` *(isodatetime)*:
         The time that the winner of a daily prize is drawn.
+*   `daily_prize_time_end` *(isodatetime)*:
+        The time that users cannot bet on a daily prize anymore (usually the same as daily_prize_time_drawing).
+
 
 + Model (application/json)
 
@@ -2196,6 +2216,9 @@ Attributes:
                     "user_id": 4801,
                     "daily_prize_id": 1,
                     "chips": 4
+                    "daily_prize_time_start": "2016-09-18T22:00:00+00:00",
+                    "daily_prize_time_drawing": "2016-09-27T17:00:00+00:00",
+                    "daily_prize_time_end": "2016-09-27T17:00:00+00:00"
                 }
             }
 
@@ -2867,6 +2890,9 @@ Attributes of a trade:
 
 *   `time_updated` *(isodatetime)*:
         The last time the trade was changed.
+
+*   `trade_cards` *(object)*:
+        Contains the card(s) that will be traded.
 
 + Model (application/json)
 
